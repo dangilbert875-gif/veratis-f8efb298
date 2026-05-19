@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { AgeGate } from "@/components/site/AgeGate";
 
 function NotFoundComponent() {
   return (
@@ -121,7 +122,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <AgeGate>
+        <Outlet />
+      </AgeGate>
     </QueryClientProvider>
   );
 }
