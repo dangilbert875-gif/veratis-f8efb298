@@ -15,7 +15,9 @@ export type ArticleSection =
   | { kind: "h"; text: string }
   | { kind: "quote"; text: string; cite?: string }
   | { kind: "list"; items: string[] }
-  | { kind: "table"; head: string[]; rows: string[][] };
+  | { kind: "table"; head: string[]; rows: string[][] }
+  | { kind: "definition"; term: string; body: string }
+  | { kind: "figure"; figure: "chromatogram" | "peptide" | "timeline"; caption?: string };
 
 export type Article = {
   slug: string;
@@ -26,6 +28,8 @@ export type Article = {
   publishedOn: string;     // ISO
   updatedOn: string;       // ISO
   author: string;
+  reviewedBy?: string;     // e.g. "VERATIS Analytical"
+  revision?: string;       // e.g. "1.3"
   image: string;
   featured?: boolean;
   mostReferenced?: boolean;
@@ -59,6 +63,8 @@ export const articles: Article[] = [
     publishedOn: "2026-02-11",
     updatedOn: "2026-05-04",
     author: "Northbridge Analytical · Method group",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.4",
     image: lab,
     featured: true,
     mostReferenced: true,
@@ -74,6 +80,8 @@ export const articles: Article[] = [
     ],
     body: [
       { kind: "p", text: "Reverse-phase HPLC with UV detection is the working standard for peptide purity. The number printed on a certificate of analysis is the integrated area of the main peak divided by the total integrated area across the chromatogram, expressed as a percentage." },
+      { kind: "figure", figure: "chromatogram", caption: "Representative RP-HPLC trace at 214 nm. Main peak integrated at Rt 12.84 min; satellite peaks visible at 8.3, 16.3, and 19.4 min are summed into the denominator of the purity calculation." },
+      { kind: "definition", term: "Area-percent purity", body: "Integrated UV area of the main peak divided by the total integrated UV area between the void volume and the gradient wash, at a stated detection wavelength." },
       { kind: "h", text: "What the number includes" },
       { kind: "p", text: "Every UV-absorbing species eluting between the void volume and the gradient wash is counted toward total area. Truncations, deamidated isomers, oxidation products, residual scavengers — if it absorbs at the detection wavelength and elutes in the integration window, it appears in the denominator." },
       { kind: "quote", text: "A purity number is a statement about what the detector saw at one wavelength — nothing more, nothing less." },
@@ -105,6 +113,8 @@ export const articles: Article[] = [
     publishedOn: "2026-01-22",
     updatedOn: "2026-04-30",
     author: "VERATIS Standards desk",
+    reviewedBy: "VERATIS Analytical",
+    revision: "2.1",
     image: lab,
     mostReferenced: true,
     pullQuote: "A COA without a lot number is a marketing document, not a release record.",
@@ -148,6 +158,8 @@ export const articles: Article[] = [
     publishedOn: "2026-03-04",
     updatedOn: "2026-05-10",
     author: "Northbridge Analytical · MS group",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.2",
     image: lab,
     featuredMethod: true,
     pullQuote: "Purity tells you how much. Mass spec tells you what.",
@@ -159,6 +171,7 @@ export const articles: Article[] = [
     ],
     body: [
       { kind: "p", text: "HPLC quantifies. Mass spectrometry identifies. The two tests answer different questions and a release record needs both." },
+      { kind: "figure", figure: "peptide", caption: "Schematic of a 15-residue peptide sequence. ESI-MS reports the deconvoluted intact mass; the sequence below is the molecule the released mass is compared against." },
       { kind: "h", text: "The measurement" },
       { kind: "p", text: "Electrospray ionization (ESI) produces a series of multiply-charged ions from the intact peptide. Deconvolution yields a monoisotopic or average mass that is compared against the theoretical mass calculated from the sequence." },
       { kind: "quote", text: "Purity tells you how much. Mass spec tells you what." },
@@ -180,6 +193,8 @@ export const articles: Article[] = [
     publishedOn: "2025-11-18",
     updatedOn: "2026-03-14",
     author: "VERATIS Quality",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.1",
     image: lab,
     pullQuote: "Most peptide degradation in a research freezer is caused by the freezer, not the peptide.",
     references: [
@@ -207,6 +222,8 @@ export const articles: Article[] = [
     publishedOn: "2026-02-03",
     updatedOn: "2026-04-18",
     author: "VERATIS Manufacturing",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.0",
     image: lab,
     recentlyUpdated: true,
     pullQuote: "A collapsed cake is not cosmetic. It is a stability problem you can see from across the bench.",
@@ -240,6 +257,8 @@ export const articles: Article[] = [
     publishedOn: "2026-01-09",
     updatedOn: "2026-04-02",
     author: "Northbridge Analytical · Microbiology",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.0",
     image: lab,
     references: [
       "USP <85> Bacterial Endotoxins Test.",
@@ -266,6 +285,8 @@ export const articles: Article[] = [
     publishedOn: "2026-03-21",
     updatedOn: "2026-05-12",
     author: "VERATIS Engineering",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.3",
     image: lab,
     featured: true,
     recentlyUpdated: true,
@@ -277,6 +298,7 @@ export const articles: Article[] = [
     ],
     body: [
       { kind: "p", text: "The verification system has one job: given a lot number, return the exact certificate that was released for that lot — unchanged, signed, dated, and resolvable indefinitely." },
+      { kind: "figure", figure: "timeline", caption: "Release timeline for a representative lot. Each event is recorded as an append-only entry; corrections issue a new revision rather than overwriting the previous one." },
       { kind: "h", text: "Architecture" },
       { kind: "list", items: [
         "Records are append-only. A correction creates a new revision; the previous revision is retained.",
@@ -298,6 +320,8 @@ export const articles: Article[] = [
     publishedOn: "2025-12-12",
     updatedOn: "2026-03-30",
     author: "VERATIS Standards desk",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.0",
     image: lab,
     references: [
       "Curtis et al., Experimental design and analysis and their reporting II. Br. J. Pharmacol. 2018.",
