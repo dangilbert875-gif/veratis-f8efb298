@@ -5,9 +5,9 @@ export const Route = createFileRoute("/payment-policy")({
   head: () => ({
     meta: [
       { title: "Payment Policy — VERATIS" },
-      { name: "description", content: "Accepted payment methods, transaction security, fraud prevention, and refund handling for the VERATIS ordering system." },
+      { name: "description", content: "Bitcoin-only settlement standards, invoice handling, refund routing, and fraud prevention for the VERATIS ordering system." },
       { property: "og:title", content: "Payment Policy — VERATIS" },
-      { property: "og:description", content: "Encrypted checkout, billing verification, declined transactions, and refund processing standards." },
+      { property: "og:description", content: "Encrypted checkout, on-chain settlement, invoice validity, and refund routing standards." },
       { property: "og:url", content: "https://pure-peptide-labs.lovable.app/payment-policy" },
     ],
   }),
@@ -19,68 +19,75 @@ function Page() {
     <LegalDoc
       eyebrow="Standards"
       title="Payment policy."
-      lead="The standards that govern checkout, billing verification, and refund handling for orders placed through the VERATIS platform."
-      meta={{ reference: "VRT-STD-005", revision: "1.1", updated: "May 2026" }}
+      lead="The standards that govern checkout, on-chain settlement, invoice validity, and refund routing for orders placed through the VERATIS platform."
+      meta={{ reference: "VRT-STD-005", revision: "1.2", updated: "May 2026" }}
     >
       <DocSection number="01" title="Accepted payment methods">
         <p>
-          VERATIS accepts the following instruments at checkout. Payment is
-          settled in United States dollars.
+          VERATIS currently settles orders using Bitcoin only. Prices are
+          quoted in United States dollars and converted to BTC at the
+          checkout conversion rate held for the duration of the invoice.
         </p>
         <DocList
           items={[
-            ["Cards", "Visa, Mastercard, American Express, Discover"],
-            ["Bank", "ACH / domestic wire (order held until clearance)"],
-            ["Digital asset", "Bitcoin, on-chain settlement"],
-            ["Currency", "USD only"],
+            ["Network", "Bitcoin (BTC)"],
+            ["Settlement", "On-chain settlement"],
+            ["Currency", "USD pricing · BTC settled at checkout conversion rate"],
+            ["Confirmation", "Orders release after network confirmation threshold"],
           ]}
         />
       </DocSection>
 
       <DocSection number="02" title="Transaction security">
         <p>
-          The checkout is served over TLS. Card data is collected directly by
-          our PCI-DSS compliant processor and is never transmitted through or
-          stored on VERATIS infrastructure. We receive only a tokenized
-          authorization reference and the last four digits of the instrument
-          for reconciliation.
+          The checkout environment is served over encrypted TLS connections.
+          A unique wallet address and settlement request are generated for
+          each order session and bound to that invoice. VERATIS does not
+          custody customer financial accounts and does not collect or store
+          cardholder data. Inbound settlements are matched to the originating
+          invoice and verified against the network confirmation threshold
+          before the order is released for fulfilment.
         </p>
       </DocSection>
 
-      <DocSection number="03" title="Billing verification">
+      <DocSection number="03" title="Order screening">
         <p>
-          Orders are screened on submission. Billing address, AVS, and CVV
-          must match the issuing bank's records. Mismatches result in
-          decline. For higher-value orders we may request additional
-          verification before dispatch; in such cases the order is held, not
-          captured, until verification is complete.
+          Orders may be reviewed for duplicate submissions, automated abuse
+          patterns, high-risk routing activity, or inconsistent order
+          metadata prior to release. Where review is required, the order is
+          held against its invoice until screening is complete; settlement
+          already received remains attributed to the order throughout.
         </p>
       </DocSection>
 
       <DocSection number="04" title="Fraud prevention">
         <p>
-          Transactions are scored against device, network, and behavioral
-          signals. Orders flagged at high risk are held pending review. Orders
-          confirmed as fraudulent are voided prior to capture and reported to
-          the relevant networks.
+          Submissions are evaluated against device, network, and behavioral
+          signals, with additional checks for duplicate orders, automated
+          abuse patterns, and transaction anomalies. Orders identified as
+          high-risk are held pending review and, where appropriate, the
+          associated invoice is cancelled before settlement.
         </p>
       </DocSection>
 
-      <DocSection number="05" title="Declined transactions">
+      <DocSection number="05" title="Expired & underpaid invoices">
         <p>
-          A declined transaction is not a hold against the customer. If your
-          issuer reports a soft decline, please retry once or contact your
-          issuer. Repeated declines from the same account may trigger a
-          temporary block to protect against testing activity.
+          If settlement is not received within the invoice validity window,
+          the order request expires automatically and inventory is released
+          back into allocation. Underpaid invoices, transactions submitted on
+          an unsupported network, or settlements pending beyond the
+          confirmation threshold are queued for manual reconciliation;
+          customers are contacted at the address provided at checkout.
         </p>
       </DocSection>
 
       <DocSection number="06" title="Refunds">
         <p>
-          Refunds are issued to the original payment instrument. Card refunds
-          typically post within five to ten business days; ACH and wire
-          refunds within five business days; digital-asset refunds are
-          returned to the originating wallet, net of network fees.
+          Approved refunds are returned to the originating wallet address
+          or to another verified customer-provided address, net of any
+          applicable network fees. Refund value is calculated in United
+          States dollars at the time of approval and settled in BTC at the
+          prevailing conversion rate.
           Conditions under which refunds are issued are set out in
           <span className="text-ink"> VRT-STD-003 · Shipping & returns</span>.
         </p>
@@ -90,18 +97,21 @@ function Page() {
         <p>
           Before initiating a chargeback, contact{" "}
           <span className="text-primary">billing@veratisbio.com</span>. Almost
-          every billing question is resolved within one business day. We
-          respond to all chargebacks with order, dispatch, and signed
-          certificate documentation from the verification archive.
+          every billing question is resolved within one business day. Because
+          Bitcoin settlements are final at the network layer, on-chain
+          transactions are not reversible; disputes are handled through
+          direct correspondence and resolved with order, dispatch, and
+          signed certificate documentation from the verification archive.
         </p>
       </DocSection>
 
       <DocSection number="08" title="Currency & taxes">
         <p>
-          All amounts are quoted and settled in United States dollars. Taxes,
-          where applicable, are calculated at checkout based on the shipping
-          address. Customers are responsible for any local levies that apply
-          on receipt.
+          All amounts are quoted in United States dollars and settled in
+          Bitcoin at the checkout conversion rate. Taxes, where applicable,
+          are calculated at checkout based on the shipping address and
+          included in the invoice total. Customers are responsible for any
+          local levies that apply on receipt.
         </p>
       </DocSection>
     </LegalDoc>
