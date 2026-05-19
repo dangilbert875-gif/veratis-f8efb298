@@ -799,6 +799,36 @@ export type Database = {
         }
         Relationships: []
       }
+      schema_migrations: {
+        Row: {
+          applied_at: string
+          applied_by: string | null
+          checksum: string | null
+          id: string
+          name: string
+          notes: string | null
+          version: string
+        }
+        Insert: {
+          applied_at?: string
+          applied_by?: string | null
+          checksum?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          version: string
+        }
+        Update: {
+          applied_at?: string
+          applied_by?: string | null
+          checksum?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           btc_wallet: string | null
@@ -870,6 +900,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_is_admin: { Args: never; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -877,6 +908,9 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      restore: { Args: { _id: string; _table: string }; Returns: undefined }
+      soft_delete: { Args: { _id: string; _table: string }; Returns: undefined }
     }
     Enums: {
       affiliate_status: "active" | "paused" | "suspended"
