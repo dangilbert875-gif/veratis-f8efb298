@@ -39,7 +39,7 @@ export function Footer() {
 
       {/* Body: editorial brand block + linkrails */}
       <div className="mx-auto max-w-7xl px-6 pt-24 pb-20 grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-10">
-        <div className="col-span-2 md:col-span-5 lg:col-span-5">
+        <div className="col-span-2 md:col-span-4 lg:col-span-4">
           <Logo className="h-auto w-[200px] lg:w-[224px] text-background opacity-95" />
           <p className="mt-8 font-display text-[1.75rem] leading-[1.15] tracking-[-0.022em] text-background max-w-md">
             Documented. Verified. Archived.
@@ -77,12 +77,18 @@ export function Footer() {
           ["Testing standards", "/standards"],
           ["Lab partner", "/lab-testing"],
         ]} />
+        <FooterCol title="Standards" links={[
+          ["Privacy policy", "/privacy"],
+          ["Terms & conditions", "/terms"],
+          ["Shipping & returns", "/shipping-returns"],
+          ["Research use disclaimer", "/research-use"],
+          ["Payment policy", "/payment-policy"],
+        ]} />
         <FooterCol title="Company" links={[
           ["About", "/about"],
           ["Education", "/blog"],
           ["FAQ", "/faq"],
           ["How to pay", "/how-to-pay"],
-          ["Shipping & returns", "/shipping-returns"],
           ["Contact", "/contact"],
         ]} />
       </div>
