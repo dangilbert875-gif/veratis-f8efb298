@@ -229,5 +229,6 @@ function titleFor(id: SectionId): string {
     case "articles": return "Educational publications";
     case "partners": return "Research partners";
     case "customers": return "Customer registry";
+    default: return "Operations";
   }
 }
