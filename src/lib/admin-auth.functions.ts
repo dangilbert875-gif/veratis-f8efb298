@@ -2,11 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const BOOTSTRAP_ADMIN_EMAIL = "dangilbert875@gmail.com";
-
 export const resolveAdminAccess = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const bootstrapAdminEmail = "dangilbert875@gmail.com";
     const { supabase, userId, claims } = context as any;
     const authEmail = typeof claims?.email === "string" ? claims.email.toLowerCase() : null;
     const authUser = await supabaseAdmin.auth.admin.getUserById(userId);
@@ -14,7 +13,7 @@ export const resolveAdminAccess = createServerFn({ method: "GET" })
 
     const email = (authUser.data.user?.email ?? authEmail ?? "").toLowerCase();
     const fullName = authUser.data.user?.user_metadata?.full_name ?? authUser.data.user?.user_metadata?.name ?? null;
-    const isBootstrapAdmin = email === BOOTSTRAP_ADMIN_EMAIL;
+    const isBootstrapAdmin = email === bootstrapAdminEmail;
 
     const profileLookup = await supabase.from("profiles").select("id, email, full_name").eq("id", userId).maybeSingle();
     if (profileLookup.error) {
