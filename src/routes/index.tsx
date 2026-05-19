@@ -266,34 +266,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Educational */}
-      <section className="border-y border-border">
-        <div className="mx-auto max-w-7xl px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
-          <div className="aspect-[5/4] rounded-xl overflow-hidden border border-border">
-            <img src={lab} alt="Independent laboratory" loading="lazy" width={1536} height={1024} className="w-full h-full object-cover" />
-          </div>
-          <div>
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Education</p>
-            <h2 className="text-3xl md:text-4xl text-ink">From synthesis to your bench.</h2>
-            <p className="mt-5 text-muted-foreground leading-relaxed">
-              We control three things obsessively: peptide identity, purity, and stability. Below is the short version of how we deliver that, every time.
-            </p>
-            <ul className="mt-8 space-y-5">
-              {[
-                ["Quality", "Solid-phase peptide synthesis in cGMP facilities, sequence confirmed by mass spectrometry before any release."],
-                ["Storage", "Lyophilized under nitrogen, kept at –20 °C, shipped insulated. Stability tested at 30, 60, and 90 days."],
-                ["Testing", "Every lot is HPLC and MS verified by an independent ISO 17025 laboratory. COAs published per batch."],
-              ].map(([k, v]) => (
-                <li key={k} className="border-l border-ink/30 pl-5">
-                  <p className="text-sm uppercase tracking-[0.18em] text-ink/80">{k}</p>
-                  <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{v}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
       {/* Operational metrics — replaces testimonials */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid md:grid-cols-12 gap-12 md:gap-20">
@@ -338,37 +310,6 @@ function Home() {
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="border-t border-border bg-mist/40">
-        <div className="mx-auto max-w-4xl px-6 py-24">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3 text-center">— FAQ</p>
-          <h2 className="text-3xl md:text-4xl text-ink text-center">Common questions</h2>
-          <Accordion type="single" collapsible className="mt-12">
-            {faqs.map((f, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border-border">
-                <AccordionTrigger className="text-left text-base text-ink hover:no-underline py-5 [&>svg]:hidden group">
-                  <span className="flex-1">{f.q}</span>
-                  <Plus size={18} className="text-muted-foreground group-data-[state=open]:hidden" />
-                  <Minus size={18} className="text-muted-foreground hidden group-data-[state=open]:block" />
-                </AccordionTrigger>
-                <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-6">
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          <div className="text-center mt-10">
-            <Link to="/faq" className="text-sm text-primary hover:underline">See all questions →</Link>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 }
-
-const faqs = [
-  { q: "Are your peptides for human use?", a: "No. All products sold by VERATIS are intended strictly for in-vitro laboratory and research use." },
-  { q: "How are products tested?", a: "Every batch is tested by an independent ISO 17025 accredited laboratory using HPLC and mass spectrometry. The COA is linked to the exact lot you receive." },
-  { q: "How quickly do orders ship?", a: "Orders place before 2pm ET ship the same business day. Most orders are dispatched within 48 hours, with cold-pack insulation included automatically." },
-  { q: "What is your return policy?", a: "Unopened vials may be returned within 14 days. If a lot fails our published specifications, we replace or refund — no questions asked." },
-];
