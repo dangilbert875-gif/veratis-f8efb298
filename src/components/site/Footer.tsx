@@ -33,16 +33,16 @@ export function Footer() {
           ["Stacks", "/shop"],
         ]} />
         <FooterCol title="Trust" links={[
-          ["Lab testing & COA", "/lab-testing"],
+          ["Verify batch", "/verify"],
+          ["COA archive", "/coa-archive"],
+          ["Testing standards", "/standards"],
           ["Shipping & Returns", "/shipping-returns"],
-          ["FAQ", "/faq"],
-          ["About", "/about"],
         ]} />
         <FooterCol title="Company" links={[
-          ["Contact", "/contact"],
+          ["About", "/about"],
           ["Education", "/blog"],
-          ["Terms", "/shipping-returns"],
-          ["Privacy", "/shipping-returns"],
+          ["FAQ", "/faq"],
+          ["Contact", "/contact"],
         ]} />
       </div>
       <div className="border-t border-border">

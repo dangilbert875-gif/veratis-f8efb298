@@ -4,7 +4,8 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { products, categories } from "@/data/products";
 import heroVial from "@/assets/hero-vial.jpg";
 import lab from "@/assets/lab.jpg";
-import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check } from "lucide-react";
+import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive } from "lucide-react";
+import { BatchVerify } from "@/components/site/BatchVerify";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
@@ -123,6 +124,39 @@ function Home() {
         </div>
       </section>
 
+      {/* Why Pure Peptide Exists — brand philosophy */}
+      <section className="mx-auto max-w-7xl px-6 pt-24 pb-8">
+        <div className="grid md:grid-cols-12 gap-12 md:gap-16">
+          <div className="md:col-span-5">
+            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why Pure Peptide exists</p>
+            <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
+              The industry's quietest standard.
+            </h2>
+          </div>
+          <div className="md:col-span-7">
+            <p className="text-[1.0625rem] text-foreground/80 leading-[1.75]">
+              Most peptide suppliers recycle a single certificate across dozens of lots, redact the laboratory name, or publish nothing at all. We were chemists before we were a company, and we found that unacceptable.
+            </p>
+            <p className="mt-5 text-[1.0625rem] text-foreground/80 leading-[1.75]">
+              Pure Peptide exists to operate on the opposite premise — that the document a researcher receives must correspond, exactly, to the vial in their hand. Every lot. Every time. Verifiable by anyone.
+            </p>
+            <ul className="mt-10 grid sm:grid-cols-2 gap-x-8 gap-y-5">
+              {[
+                ["Public batch documentation", "Every lot's COA is posted to the archive at the moment of release."],
+                ["Independent verification", "Sealed vials are couriered blind to an ISO 17025 accredited laboratory."],
+                ["Documented purity standards", "≥ 98% purity, < 1.0 EU/mg endotoxin — published, not implied."],
+                ["Never recycled, never redacted", "Each certificate is signed, dated, and tied to a single production lot."],
+              ].map(([k, v]) => (
+                <li key={k} className="border-l-2 border-primary/70 pl-4">
+                  <p className="text-[13px] text-ink font-medium">{k}</p>
+                  <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed">{v}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* Featured products */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="flex items-end justify-between mb-10">
@@ -189,53 +223,38 @@ function Home() {
 
       {/* COA Preview */}
       <section className="border-y border-border bg-ink text-background">
-        <div className="mx-auto max-w-7xl px-6 py-24 grid md:grid-cols-12 gap-12 items-center">
+        <div className="mx-auto max-w-7xl px-6 py-24 grid md:grid-cols-12 gap-12 lg:gap-16 items-start">
           <div className="md:col-span-5">
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Certificate of analysis</p>
-            <h2 className="text-3xl md:text-4xl text-background">Every lot. Every time. Publicly verifiable.</h2>
-            <p className="mt-5 text-background/70 leading-relaxed">
-              Each vial ships with a lot number printed on its label. Enter that number in our lab portal to retrieve the exact COA — signed, dated, and timestamped by an independent ISO 17025 laboratory.
+            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Signature feature</p>
+            <h2 className="text-3xl md:text-[2.5rem] text-background leading-[1.1] tracking-[-0.02em]">
+              Authenticate any vial,<br />in under five seconds.
+            </h2>
+            <p className="mt-6 text-background/70 leading-[1.75] max-w-md">
+              Enter the lot printed on the label. The archive returns the original certificate — purity, identity, endotoxin, water content — signed by an independent laboratory at the moment of release.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/lab-testing" className="inline-flex items-center gap-2 bg-background text-ink px-6 py-3.5 rounded-md text-sm font-medium hover:bg-background/90 transition">
-                Verify a lot number <ArrowRight size={16} />
+            <ul className="mt-8 space-y-3.5 text-[13px] text-background/80">
+              {[
+                "Live query against our laboratory archive",
+                "Permanent record — never recycled between batches",
+                "Same lookup that powers our outer carton QR codes",
+              ].map((t) => (
+                <li key={t} className="inline-flex items-start gap-2.5">
+                  <Check size={14} className="text-primary mt-0.5 shrink-0" strokeWidth={2.5} />
+                  {t}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <Link to="/coa-archive" className="inline-flex items-center gap-2 border border-background/25 text-background px-5 py-3 rounded-md text-[13px] font-medium hover:bg-background/5 transition">
+                <Archive size={14} /> Browse full archive
               </Link>
-              <Link to="/lab-testing" className="inline-flex items-center gap-2 border border-background/20 px-6 py-3.5 rounded-md text-sm font-medium hover:bg-background/5 transition">
-                <FileText size={16} /> View sample COA
+              <Link to="/standards" className="inline-flex items-center gap-2 text-background/80 hover:text-background px-2 py-3 text-[13px] font-medium transition">
+                Testing standards <ArrowRight size={13} />
               </Link>
             </div>
           </div>
           <div className="md:col-span-7">
-            <div className="bg-background text-ink rounded-lg p-8 shadow-xl border border-background/10">
-              <div className="flex items-start justify-between border-b border-border pb-5">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Certificate of Analysis</p>
-                  <p className="mt-1 font-display text-xl text-ink">BPC-157 · 5 mg lyophilized</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Lot</p>
-                  <p className="mt-1 font-display text-xl text-ink tabular-nums">PP-2426</p>
-                </div>
-              </div>
-              <dl className="mt-6 grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
-                {[
-                  ["Identity (MS)", "Confirmed"],
-                  ["Purity (HPLC)", "99.42%"],
-                  ["Endotoxin", "< 0.5 EU/mg"],
-                  ["Water content", "1.8%"],
-                  ["Appearance", "White lyophilized cake"],
-                  ["Test date", "04 May 2026"],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex justify-between border-b border-border/60 pb-2">
-                    <dt className="text-muted-foreground">{k}</dt>
-                    <dd className="text-ink tabular-nums">{v}</dd>
-                  </div>
-                ))}
-              </dl>
-              <div className="mt-6 flex items-center gap-2 text-xs text-primary">
-                <ShieldCheck size={14} /> Verified by ISO 17025 accredited laboratory
-              </div>
-            </div>
+            <BatchVerify />
           </div>
         </div>
       </section>
