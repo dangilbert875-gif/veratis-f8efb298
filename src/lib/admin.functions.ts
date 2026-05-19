@@ -272,3 +272,135 @@ export const setUserRole = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+// ───── Operational alerts (Phase 2.5 A) ─────
+export const getAdminAlerts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    const [products, lots, payouts, orders] = await Promise.all([
+      supabase
+        .from("products")
+        .select("id, name, slug, inventory_count, low_stock_threshold, status, archived_at")
+        .is("archived_at", null),
+      supabase
+        .from("product_lots")
+        .select("id, lot_number, best_before, active, archived_at, product_id")
+        .is("archived_at", null),
+      supabase
+        .from("payouts")
+        .select("id, status, amount_usd, partner_id")
+        .in("status", ["pending", "approved"]),
+      supabase
+        .from("orders")
+        .select("id, order_number, status, risk_flag, archived_at")
+        .is("archived_at", null),
+    ]);
+
+    const lowStock = (products.data ?? []).filter(
+      (p: any) =>
+        p.status === "published" &&
+        Number(p.inventory_count ?? 0) <= Number(p.low_stock_threshold ?? 0),
+    );
+
+    const expiredLots = (lots.data ?? []).filter(
+      (l: any) => l.best_before && l.best_before < today && l.active,
+    );
+
+    const pendingPayouts = payouts.data ?? [];
+    const flaggedOrders = (orders.data ?? []).filter((o: any) => o.risk_flag);
+    const unfulfilledOrders = (orders.data ?? []).filter(
+      (o: any) => o.status === "paid",
+    );
+
+    return {
+      lowStock: lowStock.map((p: any) => ({
+        id: p.id,
+        label: p.name,
+        slug: p.slug,
+        count: Number(p.inventory_count ?? 0),
+      })),
+      expiredLots: expiredLots.map((l: any) => ({
+        id: l.id,
+        lot_number: l.lot_number,
+        best_before: l.best_before,
+      })),
+      pendingPayouts: {
+        count: pendingPayouts.length,
+        total: pendingPayouts.reduce(
+          (s: number, p: any) => s + Number(p.amount_usd ?? 0),
+          0,
+        ),
+      },
+      flaggedOrders: flaggedOrders.map((o: any) => ({
+        id: o.id,
+        order_number: o.order_number,
+      })),
+      unfulfilledOrders: {
+        count: unfulfilledOrders.length,
+      },
+    };
+  });
+
+// ───── Global command-bar search (Phase 2.5 A) ─────
+const searchInput = z.object({ q: z.string().max(128).optional() });
+
+export const commandSearch = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => searchInput.parse(d ?? {}))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+
+    const q = (data.q ?? "").trim();
+    const like = q ? `%${q.replace(/[%_]/g, "")}%` : null;
+
+    const limited = (table: string, sel: string, filter: (qb: any) => any) => {
+      let qb = supabase.from(table).select(sel).limit(8);
+      qb = filter(qb);
+      return qb;
+    };
+
+    const [products, orders, customers, articles, lots, affiliates, partners] =
+      await Promise.all([
+        limited("products", "id, name, slug, status", (qb: any) =>
+          like ? qb.or(`name.ilike.${like},slug.ilike.${like}`) : qb.order("updated_at", { ascending: false }),
+        ),
+        limited("orders", "id, order_number, customer_email, status", (qb: any) =>
+          like
+            ? qb.or(`order_number.ilike.${like},customer_email.ilike.${like}`)
+            : qb.order("created_at", { ascending: false }),
+        ),
+        limited("profiles", "id, email, full_name", (qb: any) =>
+          like ? qb.or(`email.ilike.${like},full_name.ilike.${like}`) : qb.order("created_at", { ascending: false }),
+        ),
+        limited("educational_articles", "id, title, slug, status", (qb: any) =>
+          like ? qb.or(`title.ilike.${like},slug.ilike.${like}`) : qb.order("updated_at", { ascending: false }),
+        ),
+        limited("product_lots", "id, lot_number, product_id, active", (qb: any) =>
+          like ? qb.ilike("lot_number", like) : qb.order("created_at", { ascending: false }),
+        ),
+        limited("affiliates", "id, affiliate_code, user_id, status", (qb: any) =>
+          like ? qb.ilike("affiliate_code", like) : qb.order("created_at", { ascending: false }),
+        ),
+        limited("research_partners", "id, institution, contact_email, status", (qb: any) =>
+          like
+            ? qb.or(`institution.ilike.${like},contact_email.ilike.${like}`)
+            : qb.order("created_at", { ascending: false }),
+        ),
+      ]);
+
+    return {
+      products: products.data ?? [],
+      orders: orders.data ?? [],
+      customers: customers.data ?? [],
+      articles: articles.data ?? [],
+      lots: lots.data ?? [],
+      affiliates: affiliates.data ?? [],
+      partners: partners.data ?? [],
+    };
+  });

@@ -63,6 +63,11 @@
   /* Deep charcoal-navy surface for archive / verification terminals.
      Lifted off pure black so the page reads as pharmaceutical, not cyber. */
   --archive: oklch(0.18 0.014 245);
+  /* Operational state tokens — muted, archival, never saturated. */
+  --state-success: oklch(0.55 0.06 155);
+  --state-warning: oklch(0.62 0.08 75);
+  --state-danger:  oklch(0.55 0.10 25);
+  --state-archived: oklch(0.50 0.04 240);
 }
 
 .dark {
@@ -143,4 +148,39 @@
   opacity: 0.035;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Command palette (admin). Restrained, archival. */
+.cmd-group [cmdk-group-heading] {
+  padding: 10px 16px 4px;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 45%, transparent);
+}
+.cmd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--foreground);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+}
+.cmd-item[data-selected="true"] {
+  background-color: color-mix(in oklab, var(--ink) 6%, transparent);
+  border-left-color: var(--ink);
+}
+.cmd-item .cmd-sub {
+  margin-left: auto;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--foreground) 45%, transparent);
+}
+.cmd-item .cmd-arrow {
+  color: color-mix(in oklab, var(--foreground) 40%, transparent);
+  width: 12px;
+  display: inline-block;
 }

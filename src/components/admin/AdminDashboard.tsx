@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { OverviewPanel } from "./panels/OverviewPanel";
@@ -11,6 +11,7 @@ import { ArticlesPanel } from "./panels/ArticlesPanel";
 import { CustomersPanel } from "./panels/CustomersPanel";
 import { CoaUploadsPanel } from "./panels/CoaUploadsPanel";
 import { PartnersPanel } from "./panels/PartnersPanel";
+import { CommandBar } from "./CommandBar";
 
 export type AdminDebugState = {
   userId: string | null;
@@ -22,24 +23,66 @@ export type AdminDebugState = {
 
 export type Viewer = { email: string | null; fullName: string | null; userId: string };
 
-const sections = [
-  { id: "overview", label: "Overview" },
-  { id: "products", label: "Products" },
-  { id: "orders", label: "Orders" },
-  { id: "archive", label: "Verification Archive" },
-  { id: "coa", label: "COA Uploads" },
-  { id: "articles", label: "Education" },
-  { id: "partners", label: "Research Partners" },
-  { id: "referrals", label: "Referrals" },
-  { id: "payouts", label: "Payouts" },
-  { id: "customers", label: "Customers" },
+// Sidebar order reflects operational priority:
+// Orders → Verification/COAs → Inventory → Customers → secondary.
+const sectionGroups = [
+  {
+    heading: "Primary",
+    items: [
+      { id: "overview", label: "Overview" },
+      { id: "orders", label: "Orders" },
+      { id: "coa", label: "COA Uploads" },
+      { id: "archive", label: "Verification Archive" },
+      { id: "products", label: "Inventory" },
+      { id: "customers", label: "Customers" },
+    ],
+  },
+  {
+    heading: "Secondary",
+    items: [
+      { id: "articles", label: "Education" },
+      { id: "referrals", label: "Referrals" },
+      { id: "partners", label: "Research Partners" },
+      { id: "payouts", label: "Payouts" },
+    ],
+  },
 ] as const;
 
-type SectionId = (typeof sections)[number]["id"];
+export type SectionId =
+  | "overview"
+  | "products"
+  | "orders"
+  | "archive"
+  | "coa"
+  | "articles"
+  | "partners"
+  | "referrals"
+  | "payouts"
+  | "customers";
+
+type SectionItem = { id: SectionId; label: string };
+const sections: SectionItem[] = sectionGroups.flatMap(
+  (g) => g.items as readonly SectionItem[],
+);
 
 export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: AdminDebugState }) {
   const [active, setActive] = useState<SectionId>("overview");
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((v) => !v);
+      }
+      if (e.key === "Escape" && paletteOpen) {
+        setPaletteOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [paletteOpen]);
 
   const signOut = async () => {
     console.info("[Admin Auth] Sign out requested", { userId: viewer.userId });
@@ -56,20 +99,29 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           <div className="text-[9px] tracking-[0.32em] uppercase text-foreground/45">Veratis</div>
           <div className="mt-1 text-[14px] font-medium tracking-tight">Operations Console</div>
         </div>
-        <nav className="flex-1 px-3 py-5 space-y-0.5">
-          {sections.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setActive(s.id)}
-              className={[
-                "w-full text-left px-3 py-2 text-[12.5px] tracking-[0.02em] transition-colors",
-                active === s.id
-                  ? "bg-ink text-background"
-                  : "text-foreground/70 hover:text-ink hover:bg-background",
-              ].join(" ")}
-            >
-              {s.label}
-            </button>
+        <nav className="flex-1 px-3 py-5 space-y-5 overflow-y-auto">
+          {sectionGroups.map((g) => (
+            <div key={g.heading}>
+              <div className="px-3 mb-2 text-[9px] tracking-[0.28em] uppercase text-foreground/40">
+                {g.heading}
+              </div>
+              <div className="space-y-0.5">
+                {g.items.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setActive(s.id as SectionId)}
+                    className={[
+                      "w-full text-left px-3 py-2 text-[12.5px] tracking-[0.02em] transition-colors",
+                      active === s.id
+                        ? "bg-ink text-background"
+                        : "text-foreground/70 hover:text-ink hover:bg-background",
+                    ].join(" ")}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
         <div className="px-6 py-5 border-t border-ink/10 text-[11px] text-foreground/60">
@@ -95,20 +147,32 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
               {titleFor(active)}
             </h1>
           </div>
-          {/* Mobile section switcher */}
-          <select
-            className="md:hidden h-9 px-2 text-[12px] border border-ink/15 bg-background"
-            value={active}
-            onChange={(e) => setActive(e.target.value as SectionId)}
-          >
-            {sections.map((s) => (
-              <option key={s.id} value={s.id}>{s.label}</option>
-            ))}
-          </select>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPaletteOpen(true)}
+              className="hidden md:inline-flex items-center gap-3 h-9 pl-3 pr-2 border border-ink/15 bg-background text-[12px] text-foreground/55 hover:border-ink/30 hover:text-ink transition-colors"
+            >
+              <span>Search anything…</span>
+              <kbd className="border border-ink/15 px-1.5 py-0.5 text-[10px] tracking-[0.1em] text-foreground/50">
+                ⌘K
+              </kbd>
+            </button>
+            {/* Mobile section switcher */}
+            <select
+              className="md:hidden h-9 px-2 text-[12px] border border-ink/15 bg-background"
+              value={active}
+              onChange={(e) => setActive(e.target.value as SectionId)}
+            >
+              {sections.map((s) => (
+                <option key={s.id} value={s.id}>{s.label}</option>
+              ))}
+            </select>
+          </div>
         </header>
         <div className="p-6 md:p-10">
           {debug && <AdminAuthDebugPanel debug={debug} />}
-          {active === "overview" && <OverviewPanel />}
+          {active === "overview" && <OverviewPanel onNavigate={setActive} />}
           {active === "orders" && <OrdersPanel />}
           {active === "referrals" && <ReferralsPanel />}
           {active === "payouts" && <PayoutsPanel />}
@@ -120,6 +184,12 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           {active === "customers" && <CustomersPanel />}
         </div>
       </main>
+
+      <CommandBar
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        onNavigate={(s) => setActive(s)}
+      />
     </div>
   );
 }
