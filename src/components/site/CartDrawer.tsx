@@ -2,6 +2,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useCart } from "@/lib/cart";
 import { VialImage } from "./VialImage";
 import { X, ShieldCheck, Snowflake, Lock } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 
 function titleFor(name: string) {
   return name
@@ -16,6 +17,12 @@ function sizeFor(size: string) {
 
 export function CartDrawer() {
   const { isOpen, closeCart, items, subtotal, setQuantity, removeItem, count } = useCart();
+  const navigate = useNavigate();
+
+  function checkout() {
+    closeCart();
+    navigate({ to: "/how-to-pay" });
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={(o) => (o ? null : closeCart())}>
@@ -146,7 +153,10 @@ export function CartDrawer() {
             <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/50">
               Median dispatch · 48 hrs · taxes calculated at checkout
             </p>
-            <button className="w-full bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-ink/90 active:scale-[0.99] transition-all duration-200 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]">
+            <button
+              onClick={checkout}
+              className="w-full bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-ink/90 active:scale-[0.99] transition-all duration-200 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]"
+            >
               Checkout · ${subtotal.toFixed(0)}
             </button>
             <button

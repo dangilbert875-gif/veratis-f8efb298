@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { useCart } from "@/lib/cart";
+import { SearchOverlay } from "./SearchOverlay";
 
 const nav = [
   { to: "/shop", label: "Shop" },
@@ -33,12 +34,6 @@ const IconSearch = ({ size = 18, className }: IconProps) => (
   <svg {...baseSvg(size)} className={className}>
     <circle cx="10.5" cy="10.5" r="6" />
     <path d="m20 20-4.6-4.6" />
-  </svg>
-);
-const IconAccount = ({ size = 18, className }: IconProps) => (
-  <svg {...baseSvg(size)} className={className}>
-    <circle cx="12" cy="8.5" r="3.25" />
-    <path d="M5 19.5c1.4-3.2 4-4.75 7-4.75s5.6 1.55 7 4.75" />
   </svg>
 );
 const IconCart = ({ size = 18, className }: IconProps) => (
@@ -83,6 +78,7 @@ function StatusDot({ className = "" }: { className?: string }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { count, openCart, lastAddedAt } = useCart();
   const [pulse, setPulse] = useState(false);
   const initial = useRef(true);
@@ -163,15 +159,10 @@ export function Header() {
 
             <button
               aria-label="Search"
+              onClick={() => setSearchOpen(true)}
               className="p-2.5 rounded-[3px] hover:bg-mist transition-colors duration-200"
             >
               <IconSearch />
-            </button>
-            <button
-              aria-label="Account"
-              className="p-2.5 rounded-[3px] hover:bg-mist transition-colors duration-200 hidden sm:inline-flex"
-            >
-              <IconAccount />
             </button>
             <button
               aria-label="Cart"
@@ -231,6 +222,7 @@ export function Header() {
           </div>
         )}
       </header>
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { FileText, Download } from "lucide-react";
+import { downloadCoa } from "@/lib/coa";
 
 export const Route = createFileRoute("/lab-testing")({
   head: () => ({
@@ -58,7 +59,18 @@ function Page() {
               <span className="text-muted-foreground">{row[2]}</span>
               <span className="text-primary tabular-nums">{row[3]}</span>
               <span className="text-muted-foreground tabular-nums">{row[4]}</span>
-              <button className="inline-flex items-center gap-1.5 text-xs text-foreground/80 hover:text-primary border border-border px-3 py-1.5 rounded-md">
+              <button
+                onClick={() =>
+                  downloadCoa({
+                    lot: row[0],
+                    product: row[1],
+                    size: row[2],
+                    purity: row[3],
+                    testedOn: row[4],
+                  })
+                }
+                className="inline-flex items-center gap-1.5 text-xs text-foreground/80 hover:text-primary border border-border px-3 py-1.5 rounded-md"
+              >
                 <Download size={12} /> COA
               </button>
             </div>
