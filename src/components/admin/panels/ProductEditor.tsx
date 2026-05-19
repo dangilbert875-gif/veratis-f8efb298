@@ -14,6 +14,8 @@ import {
   upsertProduct,
   uploadAsset,
 } from "@/lib/catalog.functions";
+import { InternalNotes } from "../InternalNotes";
+import { ProductRelatedLinks } from "../RelatedLinks";
 
 type Props = {
   product: any | null;
