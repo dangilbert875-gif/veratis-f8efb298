@@ -99,10 +99,11 @@ export function VialImage({
             alt="VERATIS"
             draggable={false}
             style={{
-              height: size === "detail" ? "9%" : "7.5%",
-              width: "auto",
-              opacity: 0.88,
-              filter: "contrast(1.05)",
+              width: size === "detail" ? "58%" : "62%",
+              height: "auto",
+              opacity: 0.9,
+              filter: "contrast(1.04)",
+              mixBlendMode: "multiply",
             }}
             className="select-none"
           />
