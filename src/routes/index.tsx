@@ -292,6 +292,8 @@ function Home() {
         </div>
       </section>
 
+      <WhyVeratis />
+
       {/* Operational metrics — replaces testimonials */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid md:grid-cols-12 gap-12 md:gap-20">
