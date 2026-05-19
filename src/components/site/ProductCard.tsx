@@ -1,13 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import type { Product } from "@/data/products";
-import { batches } from "@/data/batches";
-
-function lotFor(slug: string) {
-  return batches.find((b) => b.slug === slug)?.lot ?? "PP-XXXX";
-}
+import { VialImage } from "./VialImage";
 
 export function ProductCard({ p }: { p: Product }) {
-  const lot = lotFor(p.slug);
+  const lot = p.lot;
   const available = p.inStock !== false;
   return (
     <Link
@@ -27,14 +23,16 @@ export function ProductCard({ p }: { p: Product }) {
         <span aria-hidden className="absolute bottom-0 right-0 w-3 h-px bg-ink/25" />
         <span aria-hidden className="absolute bottom-0 right-0 w-px h-3 bg-ink/25" />
 
-        <img
-          src={p.image}
-          alt={`${p.name} — ${p.size} lyophilized vial`}
-          loading="lazy"
-          width={1024}
-          height={1024}
-          className="w-full h-full object-cover transition duration-[900ms] ease-out group-hover:scale-[1.02]"
-        />
+        <div className="absolute inset-0 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
+          <VialImage
+            name={p.name.replace(/ VIAL$/i, "")}
+            dosage={p.dosage}
+            lot={lot}
+            purity={p.purity}
+            size="card"
+            alt={`${p.name} — lyophilized research vial`}
+          />
+        </div>
 
         {/* Specimen metadata strip — appears like a microscope slide caption */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between text-[9.5px] font-mono uppercase tracking-[0.16em] text-foreground/55">
