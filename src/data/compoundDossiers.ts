@@ -44,7 +44,7 @@ export type Dossier = {
 };
 
 const VERIFY_LINE =
-  "Every released lot of this compound is independently assayed by an ISO/IEC 17025:2017 accredited laboratory for identity (ESI-MS), purity (RP-HPLC), endotoxin (kinetic chromogenic LAL), and water content (Karl Fischer). The signed certificate is archived under the lot number printed on the vial and remains permanently resolvable through the VERATIS verification system.";
+  "Every released lot of this compound is independently assayed by an ISO/IEC 17025:2017 accredited laboratory for identity (ESI-MS), purity (RP-HPLC), and endotoxin (kinetic chromogenic LAL). The signed certificate is archived under the lot number printed on the vial and remains permanently resolvable through the VERATIS verification system.";
 
 const SOURCING_LINE_PEPTIDE =
   "Produced by solid-phase peptide synthesis using Fmoc chemistry on a resin support, followed by global deprotection, preparative reverse-phase HPLC purification, sequence verification by mass spectrometry, and controlled lyophilization into a nitrogen-sealed glass vial. Counter-ions and residual solvents are quantified separately from the area-percent purity figure.";
@@ -221,7 +221,7 @@ export const dossiers: Record<CompoundKey, Dossier> = {
     classification: "Lyophilized research blend of peptides studied in regenerative and dermal contexts",
     overview: [
       "GLOW 70 is a research-blend vial combining peptides whose individual literatures sit in adjacent regenerative and dermal research areas. It is intended for in-vitro investigators who want to study these compounds under a single reconstitution rather than in separate vials.",
-      "Each component of the blend is released against the same identity, purity, endotoxin, and water specifications as a single-compound lot.",
+      "Each component of the blend is released against the same identity, purity, and endotoxin specifications as a single-compound lot.",
     ],
     origin:
       "The composition is built on peptides individually well-represented in the regenerative-research literature. The blend itself is a manufacturing convenience for research workflows; it is not a clinical formulation.",
