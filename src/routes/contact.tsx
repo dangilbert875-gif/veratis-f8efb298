@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -16,6 +17,22 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
+  const [sent, setSent] = useState(false);
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const subject = encodeURIComponent(String(data.get("subject") ?? "VERATIS inquiry"));
+    const body = encodeURIComponent(
+      `Name: ${data.get("name") ?? ""}\nEmail: ${data.get("email") ?? ""}\n\n${data.get("message") ?? ""}`,
+    );
+    // Open the user's mail client as a graceful submission fallback.
+    window.location.href = `mailto:hello@veratisbio.com?subject=${subject}&body=${body}`;
+    setSent(true);
+    form.reset();
+  }
+
   return (
     <Layout>
       <PageHeader
@@ -25,25 +42,36 @@ function Contact() {
       />
       <section className="mx-auto max-w-6xl px-6 py-20 grid md:grid-cols-5 gap-12">
         <form
-          onSubmit={(e) => { e.preventDefault(); }}
+          onSubmit={onSubmit}
           className="md:col-span-3 space-y-5 bg-background border border-border rounded-xl p-8"
         >
           <div className="grid md:grid-cols-2 gap-5">
-            <Field label="Name" type="text" />
-            <Field label="Email" type="email" />
+            <Field label="Name" type="text" name="name" />
+            <Field label="Email" type="email" name="email" />
           </div>
-          <Field label="Subject" type="text" />
+          <Field label="Subject" type="text" name="subject" />
           <div>
             <label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Message</label>
             <textarea
+              name="message"
               required
               rows={6}
               className="mt-2 w-full border border-border bg-background rounded-md px-3 py-2.5 text-sm outline-none focus:border-primary"
             />
           </div>
-          <button className="bg-ink text-background px-6 py-3 rounded-md text-sm font-medium hover:bg-ink/90 transition">
-            Send message
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              type="submit"
+              className="bg-ink text-background px-6 py-3 rounded-md text-sm font-medium hover:bg-ink/90 transition"
+            >
+              Send message
+            </button>
+            {sent && (
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-primary">
+                Draft opened in your mail client
+              </p>
+            )}
+          </div>
         </form>
         <aside className="md:col-span-2 space-y-6 text-sm">
           {[
@@ -71,11 +99,12 @@ function Contact() {
   );
 }
 
-function Field({ label, type }: { label: string; type: string }) {
+function Field({ label, type, name }: { label: string; type: string; name: string }) {
   return (
     <div>
       <label className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{label}</label>
       <input
+        name={name}
         required
         type={type}
         className="mt-2 w-full border border-border bg-background rounded-md px-3 py-2.5 text-sm outline-none focus:border-primary"
