@@ -95,7 +95,7 @@ function ProductPage() {
               <span className="px-3 text-sm tabular-nums">1</span>
               <button className="px-4 py-3 text-foreground/70 hover:text-foreground">+</button>
             </div>
-            <button className="flex-1 bg-ink text-background rounded-md text-sm font-medium hover:bg-ink/90 transition">
+            <button className="flex-1 bg-ink text-background rounded-md text-sm font-medium px-6 py-3.5 hover:bg-ink/90 transition">
               Add to cart — ${p.price}
             </button>
           </div>
