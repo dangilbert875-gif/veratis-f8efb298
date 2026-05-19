@@ -57,8 +57,8 @@ function Home() {
           <div className="md:col-span-7">
             <LotTag lot="PP-2426" status="verified" linked />
             <h1 className="mt-7 text-5xl md:text-[5.25rem] text-ink leading-[1.02] tracking-[-0.02em]">
-              Third-party tested<br />
-              research peptides.
+              Third-party tested,<br />
+              research-grade peptides.
             </h1>
             <p className="mt-8 max-w-xl text-[1.0625rem] text-muted-foreground leading-[1.7]">
               Every batch undergoes independent HPLC and mass-spec analysis.
