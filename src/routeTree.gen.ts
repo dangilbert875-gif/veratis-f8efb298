@@ -17,12 +17,14 @@ import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as ResearchUseRouteImport } from './routes/research-use'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PaymentPolicyRouteImport } from './routes/payment-policy'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CoaArchiveRouteImport } from './routes/coa-archive'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
@@ -69,6 +71,11 @@ const PaymentPolicyRoute = PaymentPolicyRouteImport.update({
   path: '/payment-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LabTestingRoute = LabTestingRouteImport.update({
   id: '/lab-testing',
   path: '/lab-testing',
@@ -97,6 +104,11 @@ const CoaArchiveRoute = CoaArchiveRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -128,12 +140,14 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/login': typeof LoginRoute
   '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
   '/research-use': typeof ResearchUseRoute
@@ -149,12 +163,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/login': typeof LoginRoute
   '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
   '/research-use': typeof ResearchUseRoute
@@ -171,12 +187,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/blog': typeof BlogRouteWithChildren
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/login': typeof LoginRoute
   '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
   '/research-use': typeof ResearchUseRoute
@@ -194,12 +212,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/blog'
     | '/coa-archive'
     | '/contact'
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/login'
     | '/payment-policy'
     | '/privacy'
     | '/research-use'
@@ -215,12 +235,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/blog'
     | '/coa-archive'
     | '/contact'
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/login'
     | '/payment-policy'
     | '/privacy'
     | '/research-use'
@@ -236,12 +258,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/blog'
     | '/coa-archive'
     | '/contact'
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/login'
     | '/payment-policy'
     | '/privacy'
     | '/research-use'
@@ -258,12 +282,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   BlogRoute: typeof BlogRouteWithChildren
   CoaArchiveRoute: typeof CoaArchiveRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
+  LoginRoute: typeof LoginRoute
   PaymentPolicyRoute: typeof PaymentPolicyRoute
   PrivacyRoute: typeof PrivacyRoute
   ResearchUseRoute: typeof ResearchUseRoute
@@ -334,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaymentPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lab-testing': {
       id: '/lab-testing'
       path: '/lab-testing'
@@ -374,6 +407,13 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -427,12 +467,14 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   BlogRoute: BlogRouteWithChildren,
   CoaArchiveRoute: CoaArchiveRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
+  LoginRoute: LoginRoute,
   PaymentPolicyRoute: PaymentPolicyRoute,
   PrivacyRoute: PrivacyRoute,
   ResearchUseRoute: ResearchUseRoute,
@@ -447,3 +489,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
