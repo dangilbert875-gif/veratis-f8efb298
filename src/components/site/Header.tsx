@@ -87,36 +87,36 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      {/* Institutional certification bar — tighter, more deliberate */}
-      <div className="w-full bg-ink text-background/70 text-[10.5px] tracking-[0.22em] uppercase font-medium">
-        <div className="mx-auto max-w-7xl px-6 h-8 flex items-center justify-center gap-8">
-          <span className="inline-flex items-center gap-2 text-background/85">
+      {/* Institutional certification bar — calibration signage, not a banner */}
+      <div className="w-full bg-ink text-background/70 text-[10px] tracking-[0.24em] uppercase font-medium">
+        <div className="mx-auto max-w-7xl px-6 h-7 flex items-center justify-center gap-7">
+          <span className="inline-flex items-center gap-2 text-background/90">
             <StatusDot />
             <span>Third-party tested</span>
           </span>
-          <span aria-hidden className="hidden sm:inline-block h-2.5 w-px bg-background/15" />
+          <span aria-hidden className="hidden sm:inline-block h-2 w-px bg-background/15" />
           <span className="hidden sm:inline-flex items-center gap-2 text-background/80">
-            <IconShield size={11} className="text-primary/80" />
+            <IconShield size={10} className="text-primary/70" />
             <span>Batch verified · ISO 17025</span>
           </span>
-          <span aria-hidden className="hidden md:inline-block h-2.5 w-px bg-background/15" />
-          <span className="hidden md:inline-flex items-center gap-2 text-background/45 tracking-[0.22em]">
+          <span aria-hidden className="hidden md:inline-block h-2 w-px bg-background/15" />
+          <span className="hidden md:inline-flex items-center gap-2 text-background/40 tracking-[0.24em] text-[9.5px]">
             For research use
           </span>
         </div>
       </div>
 
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto max-w-7xl px-6 h-[68px] md:h-[76px] flex items-center justify-between gap-8">
-          <div className="flex items-center gap-12">
+        <div className="mx-auto max-w-7xl px-6 h-[64px] md:h-[72px] flex items-center justify-between gap-8">
+          <div className="flex items-center gap-14">
             <Link
               to="/"
               aria-label="VERATIS — home"
               className="shrink-0 block py-2 -my-2 transition-opacity duration-200 hover:opacity-80"
             >
-              <Logo height={28} className="md:h-[34px]" />
+              <Logo height={36} className="md:h-[44px]" />
             </Link>
-            <nav className="hidden lg:flex items-center gap-8 text-[12.5px] font-medium tracking-[0.02em] text-foreground/55">
+            <nav className="hidden lg:flex items-center gap-9 text-[12px] font-medium tracking-[0.04em] text-foreground/55">
               {nav.map((n) => (
                 <Link
                   key={n.to}
