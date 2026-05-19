@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
-import { batches, labPartner } from "@/data/batches";
+import { batches } from "@/data/batches";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   const lotCount = batches.length;
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
-  const lastLot = batches[0];
 
   return (
     <footer className="bg-ink text-background/80 mt-32">
@@ -60,38 +59,14 @@ export function Footer() {
           ["Testing standards", "/standards"],
           ["Lab partner", "/lab-testing"],
         ]} />
-        <FooterCol title="Operations" links={[
-          ["How to pay", "/how-to-pay"],
-          ["Shipping & returns", "/shipping-returns"],
-          ["FAQ", "/faq"],
-        ]} />
         <FooterCol title="Company" links={[
           ["About", "/about"],
           ["Education", "/blog"],
+          ["FAQ", "/faq"],
+          ["How to pay", "/how-to-pay"],
+          ["Shipping & returns", "/shipping-returns"],
           ["Contact", "/contact"],
         ]} />
-      </div>
-
-      {/* Operational metadata strip */}
-      <div className="border-t border-background/10">
-        <div className="mx-auto max-w-7xl px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/45">
-          <div>
-            <p className="text-background/35">Accreditation</p>
-            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.iso}</p>
-          </div>
-          <div>
-            <p className="text-background/35">Certification</p>
-            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.accreditation}</p>
-          </div>
-          <div>
-            <p className="text-background/35">Independent laboratory</p>
-            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.name} · {labPartner.city}</p>
-          </div>
-          <div>
-            <p className="text-background/35">Latest release</p>
-            <p className="mt-1 text-background/75 tabular-nums">{lastLot.lot} · {lastLot.testedOn}</p>
-          </div>
-        </div>
       </div>
 
       {/* Legal */}
