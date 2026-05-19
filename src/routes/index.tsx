@@ -53,10 +53,10 @@ function Home() {
     <Layout>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 pt-20 md:pt-28 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
+        <div className="mx-auto max-w-7xl px-6 pt-10 md:pt-14 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
           <div className="md:col-span-7">
             <LotTag lot="PP-2426" status="verified" linked />
-            <h1 className="mt-7 text-5xl md:text-[5.25rem] text-ink leading-[1.02] tracking-[-0.02em]">
+            <h1 className="mt-7 text-4xl md:text-[4.25rem] text-ink leading-[1.05] tracking-[-0.02em]">
               Third-party tested,<br />
               research-grade peptides.
             </h1>
