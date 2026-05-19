@@ -126,7 +126,13 @@ export function VialImage({
               hyphens: "manual",
             }}
           >
-            {displayName}
+            {displayName.includes(" / ")
+              ? displayName.split(" / ").map((part, i, arr) => (
+                  <span key={i} className="block">
+                    {part}
+                  </span>
+                ))
+              : displayName}
           </p>
           <p
             className="mt-[6%] font-mono text-ink/65 tabular-nums tracking-[0.18em]"
