@@ -88,11 +88,12 @@ export const archiveProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context as any;
+    const { supabase, userId } = authCtx(context);
     await assertAdmin(supabase, userId);
+    await softDelete(supabase, "products", data.id);
     const { error } = await supabase
       .from("products")
-      .update({ archived_at: new Date().toISOString(), status: "archived" })
+      .update({ status: "archived" })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -270,11 +271,12 @@ export const archiveLot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context as any;
+    const { supabase, userId } = authCtx(context);
     await assertAdmin(supabase, userId);
+    await softDelete(supabase, "product_lots", data.id);
     const { error } = await supabase
       .from("product_lots")
-      .update({ archived_at: new Date().toISOString(), active: false })
+      .update({ active: false })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
