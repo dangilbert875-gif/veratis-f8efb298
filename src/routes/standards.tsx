@@ -36,7 +36,6 @@ function Page() {
             ["Identity",        "Match reference",  "ESI mass spectrometry"],
             ["Purity",          "≥ 98.0%",          "RP-HPLC, 214 nm"],
             ["Related substances", "≤ 1.0% (single)", "RP-HPLC peak integration"],
-            ["Water content",   "≤ 5.0%",           "Karl Fischer titration"],
             ["Endotoxin",       "≤ 1.0 EU/mg",      "LAL chromogenic, USP <85>"],
             ["Appearance",      "White lyophilized cake / free of particulates", "Visual inspection"],
             ["Residual solvents", "Within ICH Q3C limits", "GC headspace"],

@@ -195,7 +195,6 @@ function ProductPage() {
               ["Identity", `${title}, confirmed by ESI-MS`],
               ["Purity (HPLC)", `${p.purity}`],
               ["Endotoxin", lot?.endotoxin ?? "< 0.5 EU/mg"],
-              ["Water content", lot?.water ?? "< 2.5%"],
               ["Form", "Lyophilized cake, nitrogen-sealed"],
               ["Storage", "–20 °C, protected from light"],
               ["Released", lot?.testedOn ?? "—"],

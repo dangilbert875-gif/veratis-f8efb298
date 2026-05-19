@@ -227,7 +227,7 @@ function Home() {
               Authenticate any vial,<br />in under five seconds.
             </h2>
             <p className="mt-6 text-background/70 leading-[1.75] max-w-md">
-              Enter the lot printed on the label. The archive returns the original certificate — purity, identity, endotoxin, water content — signed by an independent laboratory at the moment of release.
+              Enter the lot printed on the label. The archive returns the original certificate — purity, identity, endotoxin — signed by an independent laboratory at the moment of release.
             </p>
             <ul className="mt-8 space-y-3.5 text-[13px] text-background/80">
               {[
