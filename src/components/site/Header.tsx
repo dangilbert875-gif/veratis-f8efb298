@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, User, ShoppingBag, Menu, X, ShieldCheck, FlaskConical, BadgeCheck } from "lucide-react";
 import { useState } from "react";
 
 const nav = [
@@ -14,31 +14,31 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="w-full bg-ink text-background text-[12px] tracking-wide">
-        <div className="mx-auto max-w-7xl px-6 h-9 flex items-center justify-center gap-6">
-          <span className="opacity-90">Free shipping on US orders over $150</span>
-          <span className="hidden sm:inline opacity-50">·</span>
-          <span className="hidden sm:inline opacity-90">Every batch third-party tested</span>
+      <div className="w-full bg-ink text-background text-[11px] tracking-[0.14em] uppercase">
+        <div className="mx-auto max-w-7xl px-6 h-9 flex items-center justify-center gap-6 text-background/80">
+          <span className="inline-flex items-center gap-1.5"><BadgeCheck size={12} className="text-primary" strokeWidth={2} /> Third-party tested</span>
+          <span className="hidden sm:inline-flex items-center gap-1.5 opacity-90"><FlaskConical size={12} className="text-primary" strokeWidth={2} /> Batch verified</span>
+          <span className="hidden md:inline-flex items-center gap-1.5 opacity-90"><ShieldCheck size={12} className="text-primary" strokeWidth={2} /> Research use only</span>
         </div>
       </div>
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between gap-6">
-          <div className="flex items-center gap-10">
+        <div className="mx-auto max-w-7xl px-6 h-[72px] flex items-center justify-between gap-6">
+          <div className="flex items-center gap-12">
             <Link to="/" className="flex items-center gap-2 group">
               <span className="inline-block w-6 h-6 rounded-full border border-primary relative">
                 <span className="absolute inset-1.5 rounded-full bg-primary/80" />
               </span>
-              <span className="font-display text-xl tracking-tight text-ink">
+              <span className="font-display text-[1.35rem] tracking-[-0.01em] text-ink">
                 Pure Peptide
               </span>
             </Link>
-            <nav className="hidden md:flex items-center gap-7 text-sm">
+            <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium">
               {nav.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
-                  className="text-foreground/70 hover:text-foreground transition"
-                  activeProps={{ className: "text-foreground" }}
+                  className="text-foreground/60 hover:text-ink transition"
+                  activeProps={{ className: "text-ink" }}
                 >
                   {n.label}
                 </Link>

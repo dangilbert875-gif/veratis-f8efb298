@@ -4,7 +4,7 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { products, categories } from "@/data/products";
 import heroVial from "@/assets/hero-vial.jpg";
 import lab from "@/assets/lab.jpg";
-import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck } from "lucide-react";
+import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check } from "lucide-react";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
@@ -24,53 +24,91 @@ function Home() {
     <Layout>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 pt-16 md:pt-24 pb-20 md:pb-28 grid md:grid-cols-12 gap-12 items-center">
+        <div className="mx-auto max-w-7xl px-6 pt-20 md:pt-28 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
           <div className="md:col-span-7">
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-6">
-              Independently verified · Batch #PP-2426
-            </p>
-            <h1 className="text-5xl md:text-7xl text-ink leading-[1.02]">
-              Research peptides,<br />
-              measured to <em className="not-italic text-primary">parts-per-million</em>.
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+              Independently verified · Lot PP-2426
+            </div>
+            <h1 className="mt-7 text-5xl md:text-[5.25rem] text-ink leading-[1.02] tracking-[-0.02em]">
+              Third-party tested<br />
+              research peptides.
             </h1>
-            <p className="mt-7 max-w-xl text-lg text-muted-foreground leading-relaxed">
-              Every batch is HPLC and mass-spec analyzed by an independent ISO 17025 lab. Certificates of analysis are published with each lot — never hidden, never recycled.
+            <p className="mt-8 max-w-xl text-[1.0625rem] text-muted-foreground leading-[1.7]">
+              Every batch undergoes independent HPLC and mass-spec analysis.
+              Full certificates of analysis are published for every lot — signed, dated, public.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-10 flex flex-wrap gap-3">
               <Link
                 to="/shop"
-                className="inline-flex items-center gap-2 bg-ink text-background px-6 py-3.5 rounded-md text-sm font-medium hover:bg-ink/90 transition"
+                className="group inline-flex items-center gap-2.5 bg-ink text-background pl-6 pr-5 py-4 rounded-md text-[13px] font-medium tracking-wide hover:bg-ink/90 hover:-translate-y-px transition shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]"
               >
-                Shop Peptides <ArrowRight size={16} />
+                Shop peptides
+                <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
               </Link>
               <Link
                 to="/lab-testing"
-                className="inline-flex items-center gap-2 border border-border bg-background px-6 py-3.5 rounded-md text-sm font-medium hover:bg-mist transition"
+                className="group inline-flex items-center gap-2 border border-border bg-background px-6 py-4 rounded-md text-[13px] font-medium tracking-wide text-ink hover:border-ink/30 hover:bg-mist transition"
               >
-                View Lab Results
+                <ShieldCheck size={15} className="text-primary" strokeWidth={2} />
+                View lab results
               </Link>
             </div>
-            <dl className="mt-12 grid grid-cols-3 max-w-md gap-6 border-t border-border pt-8">
+            <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
               {[
-                ["99.4%", "Avg. purity"],
-                ["ISO 17025", "Lab partner"],
-                ["48 hr", "Order to ship"],
-              ].map(([v, k]) => (
-                <div key={k}>
-                  <dt className="text-2xl text-ink font-display">{v}</dt>
-                  <dd className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{k}</dd>
+                { icon: BadgeCheck, label: "ISO 17025 verified" },
+                { icon: FlaskConical, label: "Batch-level COAs" },
+                { icon: Snowflake, label: "Cold-chain shipping" },
+                { icon: Lock, label: "Secure checkout" },
+              ].map(({ icon: Icon, label }) => (
+                <li key={label} className="inline-flex items-center gap-1.5">
+                  <Icon size={13} className="text-primary" strokeWidth={1.75} />
+                  {label}
+                </li>
+              ))}
+            </ul>
+            <dl className="mt-14 grid grid-cols-3 max-w-lg divide-x divide-border border-t border-border pt-8">
+              {[
+                ["99.4%", "Average HPLC purity"],
+                ["ISO 17025", "Certified testing"],
+                ["48 hrs", "Ships within"],
+              ].map(([v, k], i) => (
+                <div key={k} className={i === 0 ? "pr-6" : "px-6"}>
+                  <dt className="text-[1.75rem] text-ink font-display leading-none tabular-nums">{v}</dt>
+                  <dd className="text-[11px] text-muted-foreground mt-2.5 uppercase tracking-[0.16em]">{k}</dd>
                 </div>
               ))}
             </dl>
           </div>
           <div className="md:col-span-5 relative">
-            <div className="aspect-[4/5] bg-mist rounded-xl overflow-hidden border border-border">
-              <img src={heroVial} alt="Pure Peptide vial" width={1536} height={1280} className="w-full h-full object-cover" />
+            <div className="aspect-[4/5] bg-mist rounded-2xl overflow-hidden border border-border shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
+              <img src={heroVial} alt="Pure Peptide BPC-157 lyophilized vial, Lot PP-2426" width={1024} height={1280} className="w-full h-full object-cover" />
             </div>
-            <div className="absolute -bottom-6 -left-6 bg-background border border-border rounded-lg p-4 shadow-sm hidden md:block max-w-[220px]">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Lot certificate</p>
-              <p className="mt-1 text-sm text-ink">BPC-157 · 5 mg</p>
-              <p className="mt-2 text-xs text-muted-foreground">HPLC 99.4% · MS verified · Endotoxin &lt; 0.5 EU/mg</p>
+            {/* Lot certificate card */}
+            <div className="absolute -bottom-8 -left-6 md:-left-10 bg-background border border-border rounded-xl p-5 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)] hidden md:block w-[290px]">
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Certificate of analysis</p>
+                <span className="inline-flex items-center gap-1 text-[10px] text-primary">
+                  <BadgeCheck size={12} strokeWidth={2} /> Lab verified
+                </span>
+              </div>
+              <p className="mt-2.5 font-display text-[15px] text-ink leading-tight">BPC-157 · 5 mg lyophilized</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">Lot PP-2426 · Tested 04 May 2026</p>
+              <dl className="mt-4 space-y-2 text-[12px]">
+                {[
+                  ["Purity (HPLC)", "99.42%"],
+                  ["Identity (MS)", "Confirmed"],
+                  ["Endotoxin", "< 0.5 EU/mg"],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <dt className="text-muted-foreground">{k}</dt>
+                    <dd className="text-ink tabular-nums inline-flex items-center gap-1">
+                      <Check size={11} className="text-primary" strokeWidth={2.5} />
+                      {v}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
         </div>
