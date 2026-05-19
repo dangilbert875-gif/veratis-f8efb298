@@ -25,12 +25,9 @@ export function Header() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto max-w-7xl px-6 h-[72px] flex items-center justify-between gap-6">
           <div className="flex items-center gap-10">
-            <Link to="/" className="flex items-center gap-2 group shrink-0">
-              <span className="inline-block w-6 h-6 rounded-full border border-primary relative">
-                <span className="absolute inset-1.5 rounded-full bg-primary/80" />
-              </span>
-              <span className="font-display text-[1.35rem] tracking-[-0.01em] text-ink">
-                Pure Peptide
+            <Link to="/" aria-label="Veratis — home" className="shrink-0 group">
+              <span className="font-display text-[1.4rem] md:text-[1.5rem] font-normal tracking-[0.34em] text-ink leading-none">
+                VERATIS
               </span>
             </Link>
             <nav className="hidden lg:flex items-center gap-7 text-[13px] font-medium">

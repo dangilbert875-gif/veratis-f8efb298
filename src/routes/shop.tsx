@@ -7,7 +7,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop Peptides — Pure Peptide" },
+      { title: "Shop Peptides — VERATIS" },
       { name: "description", content: "Browse research-grade peptides. Every batch HPLC and mass-spec verified." },
     ],
   }),

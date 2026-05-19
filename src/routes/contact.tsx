@@ -5,8 +5,8 @@ import { Mail, Phone, MapPin } from "lucide-react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Pure Peptide" },
-      { name: "description", content: "Get in touch with the Pure Peptide team. We reply within one business day." },
+      { title: "Contact — VERATIS" },
+      { name: "description", content: "Get in touch with the VERATIS team. We reply within one business day." },
     ],
   }),
   component: Contact,
@@ -44,7 +44,7 @@ function Contact() {
         </form>
         <aside className="md:col-span-2 space-y-6 text-sm">
           {[
-            [Mail, "Email", "support@purepeptide.co"],
+            [Mail, "Email", "hello@veratisbio.com"],
             [Phone, "Phone", "+1 (415) 555-0142"],
             [MapPin, "Lab", "1148 Mission St, Suite 220\nSan Francisco, CA 94103"],
           ].map(([Icon, label, value], i) => {

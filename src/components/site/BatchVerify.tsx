@@ -84,7 +84,7 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
         {state.kind === "idle" && !compact && (
           <div className="rounded-lg border border-dashed border-border bg-mist/40 px-5 py-6 text-center">
             <p className="text-xs text-muted-foreground">
-              Every Pure Peptide vial carries a unique lot printed on the label and on the outer carton tamper seal.
+              Every VERATIS vial carries a unique lot printed on the label and on the outer carton tamper seal.
             </p>
           </div>
         )}

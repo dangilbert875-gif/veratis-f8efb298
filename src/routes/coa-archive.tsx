@@ -7,10 +7,10 @@ import { useMemo, useState } from "react";
 export const Route = createFileRoute("/coa-archive")({
   head: () => ({
     meta: [
-      { title: "COA Archive — Pure Peptide" },
-      { name: "description", content: "Searchable archive of every certificate of analysis ever issued for a Pure Peptide lot. Public, permanent, never recycled." },
-      { property: "og:title", content: "COA Archive — Pure Peptide" },
-      { property: "og:description", content: "Searchable archive of every certificate of analysis ever issued for a Pure Peptide lot." },
+      { title: "COA Archive — VERATIS" },
+      { name: "description", content: "Searchable archive of every certificate of analysis ever issued for a VERATIS lot. Public, permanent, never recycled." },
+      { property: "og:title", content: "COA Archive — VERATIS" },
+      { property: "og:description", content: "Searchable archive of every certificate of analysis ever issued for a VERATIS lot." },
     ],
   }),
   component: Page,
@@ -42,7 +42,7 @@ function Page() {
       <PageHeader
         eyebrow="COA archive"
         title="Every lot, on the record."
-        lead={`Every certificate ever issued for a Pure Peptide lot is searchable below. Documents are signed by ${labPartner.name} and remain available for the life of the product.`}
+        lead={`Every certificate ever issued for a VERATIS lot is searchable below. Documents are signed by ${labPartner.name} and remain available for the life of the product.`}
       />
       <section className="mx-auto max-w-6xl px-6 -mt-8 pb-20">
         {/* Stats strip */}
