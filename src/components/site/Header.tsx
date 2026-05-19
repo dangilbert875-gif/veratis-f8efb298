@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { useCart } from "@/lib/cart";
+import { SearchOverlay } from "./SearchOverlay";
 
 const nav = [
   { to: "/shop", label: "Shop" },
@@ -83,6 +84,7 @@ function StatusDot({ className = "" }: { className?: string }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { count, openCart, lastAddedAt } = useCart();
   const [pulse, setPulse] = useState(false);
   const initial = useRef(true);
@@ -163,15 +165,10 @@ export function Header() {
 
             <button
               aria-label="Search"
+              onClick={() => setSearchOpen(true)}
               className="p-2.5 rounded-[3px] hover:bg-mist transition-colors duration-200"
             >
               <IconSearch />
-            </button>
-            <button
-              aria-label="Account"
-              className="p-2.5 rounded-[3px] hover:bg-mist transition-colors duration-200 hidden sm:inline-flex"
-            >
-              <IconAccount />
             </button>
             <button
               aria-label="Cart"
@@ -231,6 +228,7 @@ export function Header() {
           </div>
         )}
       </header>
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
