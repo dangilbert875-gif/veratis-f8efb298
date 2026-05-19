@@ -1,5 +1,13 @@
 import { products } from "./products";
 
+function prettyTitle(name: string) {
+  return name
+    .replace(/\s*\d[\d,]*\s*mg(\s*\/\s*\d[\d,]*\s*mg)?/gi, "")
+    .replace(/\s*VIAL\s*$/i, " Vial")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 export type Batch = {
   lot: string;
   product: string;
@@ -50,7 +58,7 @@ export const batches: Batch[] = products.map((p, i) => {
         : "White lyophilized cake";
   return {
     lot: p.lot,
-    product: p.name,
+    product: prettyTitle(p.name),
     slug: p.slug,
     size: p.size,
     purity,
