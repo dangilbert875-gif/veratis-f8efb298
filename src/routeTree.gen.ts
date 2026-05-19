@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as StandardsRouteImport } from './routes/standards'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
@@ -22,6 +21,7 @@ import { Route as CoaArchiveRouteImport } from './routes/coa-archive'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
@@ -38,11 +38,6 @@ const StandardsRoute = StandardsRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ShopRoute = ShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
@@ -90,10 +85,15 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopIndexRoute = ShopIndexRouteImport.update({
+  id: '/shop/',
+  path: '/shop/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopSlugRoute = ShopSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ShopRoute,
+  id: '/shop/$slug',
+  path: '/shop/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
@@ -111,12 +111,12 @@ export interface FileRoutesByFullPath {
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
-  '/shop': typeof ShopRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
+  '/shop/': typeof ShopIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,12 +128,12 @@ export interface FileRoutesByTo {
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
-  '/shop': typeof ShopRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
+  '/shop': typeof ShopIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,12 +146,12 @@ export interface FileRoutesById {
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
-  '/shop': typeof ShopRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
+  '/shop/': typeof ShopIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,12 +165,12 @@ export interface FileRouteTypes {
     | '/how-to-pay'
     | '/lab-testing'
     | '/shipping-returns'
-    | '/shop'
     | '/sitemap.xml'
     | '/standards'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
+    | '/shop/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -182,12 +182,12 @@ export interface FileRouteTypes {
     | '/how-to-pay'
     | '/lab-testing'
     | '/shipping-returns'
-    | '/shop'
     | '/sitemap.xml'
     | '/standards'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
+    | '/shop'
   id:
     | '__root__'
     | '/'
@@ -199,12 +199,12 @@ export interface FileRouteTypes {
     | '/how-to-pay'
     | '/lab-testing'
     | '/shipping-returns'
-    | '/shop'
     | '/sitemap.xml'
     | '/standards'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
+    | '/shop/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -217,10 +217,11 @@ export interface RootRouteChildren {
   HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
-  ShopRoute: typeof ShopRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StandardsRoute: typeof StandardsRoute
   VerifyRoute: typeof VerifyRoute
+  ShopSlugRoute: typeof ShopSlugRoute
+  ShopIndexRoute: typeof ShopIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -244,13 +245,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/shop': {
-      id: '/shop'
-      path: '/shop'
-      fullPath: '/shop'
-      preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/shipping-returns': {
@@ -316,12 +310,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/': {
+      id: '/shop/'
+      path: '/shop'
+      fullPath: '/shop/'
+      preLoaderRoute: typeof ShopIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop/$slug': {
       id: '/shop/$slug'
-      path: '/$slug'
+      path: '/shop/$slug'
       fullPath: '/shop/$slug'
       preLoaderRoute: typeof ShopSlugRouteImport
-      parentRoute: typeof ShopRoute
+      parentRoute: typeof rootRouteImport
     }
     '/blog/$slug': {
       id: '/blog/$slug'
@@ -343,16 +344,6 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
-interface ShopRouteChildren {
-  ShopSlugRoute: typeof ShopSlugRoute
-}
-
-const ShopRouteChildren: ShopRouteChildren = {
-  ShopSlugRoute: ShopSlugRoute,
-}
-
-const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -363,11 +354,22 @@ const rootRouteChildren: RootRouteChildren = {
   HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
-  ShopRoute: ShopRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StandardsRoute: StandardsRoute,
   VerifyRoute: VerifyRoute,
+  ShopSlugRoute: ShopSlugRoute,
+  ShopIndexRoute: ShopIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
