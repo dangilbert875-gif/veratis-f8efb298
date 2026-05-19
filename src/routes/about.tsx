@@ -5,8 +5,8 @@ import lab from "@/assets/lab.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Pure Peptide" },
-      { name: "description", content: "Pure Peptide manufactures research-grade peptides with verified purity and full documentation." },
+      { title: "About — VERATIS" },
+      { name: "description", content: "VERATIS manufactures research-grade peptides with verified purity and full documentation." },
     ],
   }),
   component: About,
@@ -18,7 +18,7 @@ function About() {
       <PageHeader
         eyebrow="About"
         title="A laboratory, not a marketplace."
-        lead="Pure Peptide was founded by chemists who were tired of suppliers shipping mystery vials. We do one thing — and we document it."
+        lead="VERATIS was founded by chemists who were tired of suppliers shipping mystery vials. We do one thing — and we document it."
       />
       <section className="mx-auto max-w-5xl px-6 py-20 grid md:grid-cols-5 gap-12">
         <div className="md:col-span-3">

@@ -5,7 +5,7 @@ import { FileText, Download } from "lucide-react";
 export const Route = createFileRoute("/lab-testing")({
   head: () => ({
     meta: [
-      { title: "Lab Testing & COA — Pure Peptide" },
+      { title: "Lab Testing & COA — VERATIS" },
       { name: "description", content: "Every batch is HPLC and mass-spec verified by an independent ISO 17025 lab. Browse certificates of analysis." },
     ],
   }),

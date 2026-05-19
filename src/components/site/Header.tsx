@@ -30,7 +30,7 @@ export function Header() {
                 <span className="absolute inset-1.5 rounded-full bg-primary/80" />
               </span>
               <span className="font-display text-[1.35rem] tracking-[-0.01em] text-ink">
-                Pure Peptide
+                VERATIS
               </span>
             </Link>
             <nav className="hidden lg:flex items-center gap-7 text-[13px] font-medium">

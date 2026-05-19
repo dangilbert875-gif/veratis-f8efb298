@@ -5,7 +5,7 @@ import lab from "@/assets/lab.jpg";
 export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
-      { title: "Education — Pure Peptide" },
+      { title: "Education — VERATIS" },
       { name: "description", content: "Reference articles on peptide handling, storage, reconstitution, and laboratory best practice." },
     ],
   }),

@@ -4,7 +4,7 @@ import { Layout, PageHeader } from "@/components/site/Layout";
 export const Route = createFileRoute("/shipping-returns")({
   head: () => ({
     meta: [
-      { title: "Shipping & Returns — Pure Peptide" },
+      { title: "Shipping & Returns — VERATIS" },
       { name: "description", content: "Shipping rates, transit times, and our straightforward return policy." },
     ],
   }),
@@ -41,7 +41,7 @@ function Page() {
           <p>Unopened vials may be returned within 14 days of delivery for a full refund (less shipping). If any product fails our published specifications, contact us within 30 days for a replacement or refund — including return shipping.</p>
         </Section>
         <Section title="Damaged or lost shipments">
-          <p>If your package arrives damaged or is lost in transit, email <span className="text-primary">support@purepeptide.co</span> within 7 days of the expected delivery date and we will resolve it immediately.</p>
+          <p>If your package arrives damaged or is lost in transit, email <span className="text-primary">hello@veratisbio.com</span> within 7 days of the expected delivery date and we will resolve it immediately.</p>
         </Section>
         <p className="text-xs text-muted-foreground italic pt-6 border-t border-border">
           Products are intended for research purposes only and are not intended to diagnose, treat, cure, or prevent any disease.

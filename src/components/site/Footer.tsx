@@ -9,7 +9,7 @@ export function Footer() {
             <span className="inline-block w-6 h-6 rounded-full border border-primary relative">
               <span className="absolute inset-1.5 rounded-full bg-primary/80" />
             </span>
-            <span className="font-display text-xl tracking-tight text-ink">Pure Peptide</span>
+            <span className="font-display text-xl tracking-tight text-ink">VERATIS</span>
           </div>
           <p className="mt-4 text-sm text-muted-foreground max-w-xs">
             Research-grade peptides with verified purity and full batch documentation.
@@ -48,10 +48,10 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="mx-auto max-w-7xl px-6 py-8 text-[11px] leading-relaxed text-muted-foreground space-y-3">
           <p className="max-w-4xl">
-            Disclaimer: Products are intended for research purposes only and are not intended to diagnose, treat, cure, or prevent any disease. All products sold by Pure Peptide are for in-vitro laboratory and research use. Not for human or veterinary consumption.
+            Disclaimer: Products are intended for research purposes only and are not intended to diagnose, treat, cure, or prevent any disease. All products sold by VERATIS are for in-vitro laboratory and research use. Not for human or veterinary consumption.
           </p>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p>© {new Date().getFullYear()} Pure Peptide Laboratories. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Veratis. All rights reserved.</p>
             <p>Made with care in the USA.</p>
           </div>
         </div>

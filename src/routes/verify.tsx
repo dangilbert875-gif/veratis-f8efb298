@@ -7,10 +7,10 @@ import { ShieldCheck, QrCode, FileText, ArrowRight } from "lucide-react";
 export const Route = createFileRoute("/verify")({
   head: () => ({
     meta: [
-      { title: "Verify Batch — Pure Peptide" },
-      { name: "description", content: "Authenticate any Pure Peptide vial by its lot number. Retrieve the original certificate of analysis signed by an independent ISO 17025 laboratory." },
-      { property: "og:title", content: "Verify Batch — Pure Peptide" },
-      { property: "og:description", content: "Authenticate any Pure Peptide vial by its lot number." },
+      { title: "Verify Batch — VERATIS" },
+      { name: "description", content: "Authenticate any VERATIS vial by its lot number. Retrieve the original certificate of analysis signed by an independent ISO 17025 laboratory." },
+      { property: "og:title", content: "Verify Batch — VERATIS" },
+      { property: "og:description", content: "Authenticate any VERATIS vial by its lot number." },
     ],
   }),
   component: Page,
@@ -22,7 +22,7 @@ function Page() {
       <PageHeader
         eyebrow="Verify batch"
         title="Authenticate your vial."
-        lead="Every Pure Peptide vial leaves our facility with a unique lot identifier printed on the label and on the outer carton tamper seal. Enter that lot to retrieve the original certificate, signed and dated by an independent ISO 17025 laboratory."
+        lead="Every VERATIS vial leaves our facility with a unique lot identifier printed on the label and on the outer carton tamper seal. Enter that lot to retrieve the original certificate, signed and dated by an independent ISO 17025 laboratory."
       />
       <section className="mx-auto max-w-3xl px-6 -mt-10 md:-mt-14 pb-20">
         <BatchVerify />
@@ -48,7 +48,7 @@ function Page() {
         <p className="text-xs uppercase tracking-[0.22em] text-primary">If your lot is not found</p>
         <h2 className="mt-3 text-2xl md:text-3xl text-ink">Counterfeits exist. We help you check.</h2>
         <p className="mt-4 text-muted-foreground leading-relaxed">
-          If a lot does not resolve, the vial was not produced by Pure Peptide — or it was tampered with after dispatch. Send us a photo of the label and we will help you trace it.
+          If a lot does not resolve, the vial was not produced by VERATIS — or it was tampered with after dispatch. Send us a photo of the label and we will help you trace it.
         </p>
         <Link to="/contact" className="mt-7 inline-flex items-center gap-2 bg-ink text-background px-6 py-3.5 rounded-md text-sm font-medium hover:bg-ink/90 transition">
           Report a suspicious vial <ArrowRight size={15} />

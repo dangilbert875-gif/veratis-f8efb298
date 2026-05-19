@@ -13,7 +13,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Pure Peptide — Research-Grade Peptides, Third-Party Tested" },
+      { title: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
       { name: "description", content: "Premium research peptides with verified purity, third-party COAs, and discreet fast shipping." },
     ],
   }),
@@ -83,7 +83,7 @@ function Home() {
           </div>
           <div className="md:col-span-5 relative">
             <div className="aspect-[4/5] bg-mist rounded-2xl overflow-hidden border border-border shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
-              <img src={heroVial} alt="Pure Peptide BPC-157 lyophilized vial, Lot PP-2426" width={1024} height={1280} className="w-full h-full object-cover" />
+              <img src={heroVial} alt="VERATIS BPC-157 lyophilized vial, Lot PP-2426" width={1024} height={1280} className="w-full h-full object-cover" />
             </div>
             {/* Lot certificate card */}
             <div className="absolute -bottom-8 -left-6 md:-left-10 bg-background border border-border rounded-xl p-5 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)] hidden md:block w-[290px]">
@@ -124,11 +124,11 @@ function Home() {
         </div>
       </section>
 
-      {/* Why Pure Peptide Exists — brand philosophy */}
+      {/* Why VERATIS Exists — brand philosophy */}
       <section className="mx-auto max-w-7xl px-6 pt-24 pb-8">
         <div className="grid md:grid-cols-12 gap-12 md:gap-16">
           <div className="md:col-span-5">
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why Pure Peptide exists</p>
+            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why VERATIS exists</p>
             <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
               The industry's quietest standard.
             </h2>
@@ -138,7 +138,7 @@ function Home() {
               Most peptide suppliers recycle a single certificate across dozens of lots, redact the laboratory name, or publish nothing at all. We were chemists before we were a company, and we found that unacceptable.
             </p>
             <p className="mt-5 text-[1.0625rem] text-foreground/80 leading-[1.75]">
-              Pure Peptide exists to operate on the opposite premise — that the document a researcher receives must correspond, exactly, to the vial in their hand. Every lot. Every time. Verifiable by anyone.
+              VERATIS exists to operate on the opposite premise — that the document a researcher receives must correspond, exactly, to the vial in their hand. Every lot. Every time. Verifiable by anyone.
             </p>
             <ul className="mt-10 grid sm:grid-cols-2 gap-x-8 gap-y-5">
               {[
@@ -176,7 +176,7 @@ function Home() {
       {/* Why */}
       <section className="border-y border-border bg-mist/40">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why Pure Peptide</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why VERATIS</p>
           <h2 className="text-3xl md:text-4xl text-ink max-w-2xl">A standard, not a marketing line.</h2>
           <div className="grid md:grid-cols-4 gap-px bg-border mt-12 rounded-lg overflow-hidden border border-border">
             {[
@@ -318,7 +318,7 @@ function Home() {
           {[
             { q: "The COAs match what I measure in-house. That's all I ask for in a supplier — and it's surprisingly rare.", a: "Dr. M. Reyes", r: "Research Chemist" },
             { q: "Packaging is impeccable. Cold packs still cold on day two. Lots arrive intact and identical batch-to-batch.", a: "L. Andersen", r: "Lab Manager" },
-            { q: "Documentation is the difference. Pure Peptide ships paperwork I can actually file against my own audits.", a: "J. Park, PhD", r: "Biotech Research" },
+            { q: "Documentation is the difference. VERATIS ships paperwork I can actually file against my own audits.", a: "J. Park, PhD", r: "Biotech Research" },
           ].map((t) => (
             <figure key={t.a} className="border border-border rounded-lg p-7 bg-background">
               <div className="flex gap-1 text-primary mb-5">
@@ -365,7 +365,7 @@ function Home() {
 }
 
 const faqs = [
-  { q: "Are your peptides for human use?", a: "No. All products sold by Pure Peptide are intended strictly for in-vitro laboratory and research use." },
+  { q: "Are your peptides for human use?", a: "No. All products sold by VERATIS are intended strictly for in-vitro laboratory and research use." },
   { q: "How are products tested?", a: "Every batch is tested by an independent ISO 17025 accredited laboratory using HPLC and mass spectrometry. The COA is linked to the exact lot you receive." },
   { q: "How quickly do orders ship?", a: "Orders place before 2pm ET ship the same business day. Most orders are dispatched within 48 hours, with cold-pack insulation included automatically." },
   { q: "What is your return policy?", a: "Unopened vials may be returned within 14 days. If a lot fails our published specifications, we replace or refund — no questions asked." },
