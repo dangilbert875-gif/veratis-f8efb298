@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { Dossier } from "@/data/compoundDossiers";
 import { products } from "@/data/products";
 import { siblingSlugsForKey, dossierForSlug } from "@/data/compoundDossiers";
+import { PepPediaReference } from "@/components/site/PepPediaReference";
 
 /**
  * Editorial scientific dossier surfaced inside every product detail page.
@@ -103,6 +104,10 @@ export function CompoundDossier({
 
         <Section eyebrow="Handling" heading="Storage & handling">
           <p>{dossier.storage}</p>
+        </Section>
+
+        <Section eyebrow="External reference" heading="Further reading">
+          <PepPediaReference query={dossier.displayName} />
         </Section>
 
         {/* Sibling sizes — other SKUs of the same compound */}

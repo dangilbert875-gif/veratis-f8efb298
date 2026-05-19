@@ -6,6 +6,7 @@ import { products } from "@/data/products";
 import { findBatch } from "@/data/batches";
 import { Figure } from "@/components/site/ArticleVisuals";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
+import { PepPediaReference } from "@/components/site/PepPediaReference";
 
 export const Route = createFileRoute("/blog/$slug")({
   head: ({ params }) => {
@@ -278,6 +279,10 @@ function ArticlePage() {
               <li key={i}>{r}</li>
             ))}
           </ol>
+        </section>
+
+        <section className="mt-10">
+          <PepPediaReference query={article.title} />
         </section>
         </article>
 

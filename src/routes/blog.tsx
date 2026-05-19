@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { articles, categories, type ArticleCategory } from "@/data/articles";
 import { Search } from "lucide-react";
+import { PepPediaReference } from "@/components/site/PepPediaReference";
 
 export const Route = createFileRoute("/blog")({
   head: () => ({
@@ -150,6 +151,10 @@ function Blog() {
             ))}
           </div>
         )}
+
+        <div className="mt-20 pt-10 border-t border-border max-w-2xl">
+          <PepPediaReference />
+        </div>
       </section>
     </Layout>
   );
