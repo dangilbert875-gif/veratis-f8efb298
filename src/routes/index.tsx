@@ -56,7 +56,7 @@ function Home() {
         <div className="mx-auto max-w-7xl px-6 pt-10 md:pt-14 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
           <div className="md:col-span-7">
             <LotTag lot="PP-2426" status="verified" linked />
-            <h1 className="mt-7 text-4xl text-ink leading-[1.05] tracking-[-0.02em] text-left font-extrabold md:text-4xl">
+            <h1 className="mt-7 text-4xl text-ink leading-[1.05] tracking-[-0.02em] text-left font-extrabold md:text-[3.5rem]">
               Third-party tested,<br />
               research-grade peptides.
             </h1>
