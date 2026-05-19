@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
-import { findArticle, relatedArticles, articles } from "@/data/articles";
+import { findArticle, relatedArticles, articles, type Article } from "@/data/articles";
 import { products } from "@/data/products";
 import { findBatch } from "@/data/batches";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -52,7 +52,7 @@ function formatDate(iso: string) {
 }
 
 function ArticlePage() {
-  const { article } = Route.useLoaderData();
+  const { article } = Route.useLoaderData() as { article: Article };
   const related = relatedArticles(article.slug, article.category);
   const compounds = (article.relatedCompounds ?? [])
     .map((s) => products.find((p) => p.slug === s))
