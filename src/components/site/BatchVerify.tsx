@@ -47,19 +47,19 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
       className={
         compact
           ? ""
-          : "rounded-[4px] border border-background/10 bg-background/[0.03] p-7 md:p-9 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_30px_80px_-50px_rgba(0,0,0,0.6)]"
+          : "rounded-[4px] border border-background/12 bg-background/[0.04] p-7 md:p-9 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_40px_90px_-50px_rgba(0,0,0,0.55)] backdrop-blur-[2px]"
       }
     >
       {!compact && (
-        <div className="mb-7 flex items-center justify-between gap-4 text-[10.5px] font-mono uppercase tracking-[0.18em] text-background/55">
+        <div className="mb-7 flex items-center justify-between gap-4 text-[10.5px] font-mono uppercase tracking-[0.18em] text-background/65">
           <span className="inline-flex items-center gap-2">
             <span className="relative inline-flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+              <span className="absolute inline-flex h-full w-full rounded-full bg-primary/40 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary/80" />
             </span>
             Archive online
           </span>
-          <span className="hidden sm:inline tabular-nums">
+          <span className="hidden sm:inline tabular-nums text-background/55">
             {stats.count} lots · {stats.avg}% mean · median lookup {stats.medianResponse}
           </span>
         </div>
@@ -67,31 +67,31 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
 
       {!compact ? (
         <>
-          <label className="block text-[10px] font-mono uppercase tracking-[0.24em] text-background/50 mb-2">
+          <label className="block text-[10px] font-mono uppercase tracking-[0.24em] text-background/65 mb-2.5">
             Lot identifier
           </label>
           <form onSubmit={submit} className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-background/40" />
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-background/50" />
               <input
                 value={lot}
                 onChange={(e) => setLot(e.target.value.toUpperCase())}
-                placeholder="PP-XXXX"
+                placeholder="Enter lot identifier (ex: PP-2608)"
                 aria-label="Lot number"
-                className="w-full h-14 pl-11 pr-4 rounded-[3px] border border-background/15 bg-background/[0.04] font-mono text-[15px] tabular-nums tracking-[0.08em] text-background placeholder:text-background/30 outline-none focus:border-primary/70 focus:ring-1 focus:ring-primary/50 focus:bg-background/[0.06] transition shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                className="w-full h-14 pl-11 pr-4 rounded-[3px] border border-background/18 bg-background/[0.05] font-mono text-[15px] tabular-nums tracking-[0.08em] text-background placeholder:text-background/35 placeholder:tracking-normal placeholder:font-sans placeholder:text-[13px] outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 focus:bg-background/[0.07] transition-all duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
               />
             </div>
             <button
               type="submit"
               disabled={state.kind === "loading"}
-              className="inline-flex items-center justify-center gap-2.5 h-14 px-7 rounded-[3px] bg-primary text-primary-foreground text-[11.5px] font-medium uppercase tracking-[0.16em] hover:bg-primary/90 disabled:opacity-60 transition shadow-[0_1px_0_rgba(255,255,255,0.08)_inset]"
+              className="inline-flex items-center justify-center gap-2.5 h-14 px-7 rounded-[3px] bg-background text-ink text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-background/90 disabled:opacity-60 transition-all duration-200 shadow-[0_1px_0_rgba(255,255,255,0.1)_inset]"
             >
               {state.kind === "loading" ? <Loader2 size={14} className="animate-spin" /> : <BadgeCheck size={14} />}
               Verify
             </button>
           </form>
-          <div className="mt-3 flex items-center justify-between text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/45">
-            <button type="button" onClick={trySample} className="hover:text-primary transition">
+          <div className="mt-3.5 flex items-center justify-between text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/55">
+            <button type="button" onClick={trySample} className="hover:text-background transition">
               Try sample · {SAMPLE_LOT}
             </button>
             <span className="hidden sm:inline">Anonymous lookup</span>
