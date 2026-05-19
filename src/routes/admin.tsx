@@ -53,7 +53,7 @@ async function checkAdminRedirectTarget(): Promise<{ target: "/admin/dashboard" 
 
     const role = (roles ?? []).map((row: any) => row.role).find((value: string) => value === "admin") ?? null;
     return {
-      target: role === "admin" ? "/admin/dashboard" : "/admin/login",
+      target: "/admin/dashboard",
       userId: userData.user.id,
       role,
       error: roleError?.message ?? null,
