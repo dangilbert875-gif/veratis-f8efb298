@@ -1,17 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAdmin, softDelete, authCtx } from "./admin-auth.server";
 
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "admin")
-    .maybeSingle();
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin role required");
-}
+const assertAdmin = requireAdmin;
 
 // ───────── Products ─────────
 
@@ -96,11 +88,12 @@ export const archiveProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context as any;
+    const { supabase, userId } = authCtx(context);
     await assertAdmin(supabase, userId);
+    await softDelete(supabase, "products", data.id);
     const { error } = await supabase
       .from("products")
-      .update({ archived_at: new Date().toISOString(), status: "archived" })
+      .update({ status: "archived" })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -278,11 +271,12 @@ export const archiveLot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { supabase, userId } = context as any;
+    const { supabase, userId } = authCtx(context);
     await assertAdmin(supabase, userId);
+    await softDelete(supabase, "product_lots", data.id);
     const { error } = await supabase
       .from("product_lots")
-      .update({ archived_at: new Date().toISOString(), active: false })
+      .update({ active: false })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -330,4 +324,41 @@ export const listArticlesLite = createServerFn({ method: "GET" })
       .order("title", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+// ───────── Generic archive / restore ─────────
+
+const archivable = z.enum([
+  "products",
+  "educational_articles",
+  "product_lots",
+  "orders",
+  "affiliates",
+  "customer_meta",
+  "research_partners",
+]);
+
+export const archiveRecord = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ table: archivable, id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = authCtx(context);
+    await assertAdmin(supabase, userId);
+    await softDelete(supabase, data.table as any, data.id);
+    return { ok: true };
+  });
+
+export const restoreRecord = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ table: archivable, id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = authCtx(context);
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.rpc("restore", { _table: data.table, _id: data.id });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
