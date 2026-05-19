@@ -257,7 +257,6 @@ function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) 
               ["Purity (HPLC)", <PurityCounter key="p" value={batch.purity} />],
               ["Identity (MS)", batch.identity],
               ["Endotoxin", batch.endotoxin],
-              ["Water content", batch.water],
               ["Tested", batch.testedOn],
               ["Best before", batch.expiresOn],
             ].map(([k, v]) => (
@@ -305,7 +304,6 @@ function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) 
             ["Purity (HPLC)", `${batch.purity.toFixed(2)}%`],
             ["Identity (MS)", batch.identity],
             ["Endotoxin", batch.endotoxin],
-            ["Water content", batch.water],
             ["Tested", batch.testedOn],
             ["Best before", batch.expiresOn],
           ].map(([k, v]) => (

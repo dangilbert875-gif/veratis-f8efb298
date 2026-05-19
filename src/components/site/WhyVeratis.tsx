@@ -5,7 +5,7 @@ const rows: { topic: string; typical: string; veratis: string }[] = [
   { topic: "Testing laboratory",      typical: "Unnamed or in-house",                veratis: "Independent ISO/IEC 17025:2017 accredited lab" },
   { topic: "Archive permanence",      typical: "COA disappears on relabel",         veratis: "Permanent record, append-only, public lookup" },
   { topic: "Lot traceability",        typical: "No lot on vial or carton",          veratis: "Serialized lot on vial, carton, and tamper seal" },
-  { topic: "Endotoxin & water",       typical: "Not reported",                      veratis: "Published per lot — LAL + Karl Fischer" },
+  { topic: "Endotoxin",               typical: "Not reported",                      veratis: "Published per lot — LAL kinetic chromogenic" },
   { topic: "Release procedure",       typical: "Single sign-off, undocumented",     veratis: "Two-analyst sign-off against published spec" },
 ];
 
