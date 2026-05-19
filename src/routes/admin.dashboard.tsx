@@ -160,7 +160,17 @@ function AdminDashboardPage() {
     };
   }, [navigate]);
 
-  if (state.kind === "ready") return <AdminDashboard viewer={state.viewer} debug={state.debug} />;
+  if (state.kind === "ready") {
+    const showDebug =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("debug") === "1";
+    return (
+      <AdminDashboard
+        viewer={state.viewer}
+        debug={showDebug ? state.debug : undefined}
+      />
+    );
+  }
 
   if (state.kind === "denied") {
     return <AdminAccessDenied reason={state.reason} debug={state.debug} />;
