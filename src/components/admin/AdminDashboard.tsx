@@ -12,7 +12,15 @@ import { CustomersPanel } from "./panels/CustomersPanel";
 import { CoaUploadsPanel } from "./panels/CoaUploadsPanel";
 import { PartnersPanel } from "./panels/PartnersPanel";
 
-type Viewer = { email: string | null; fullName: string | null; userId: string };
+export type AdminDebugState = {
+  userId: string | null;
+  sessionExists: boolean;
+  profileRole: string | null;
+  routeStatus: string;
+  lastAuthError: string | null;
+};
+
+export type Viewer = { email: string | null; fullName: string | null; userId: string };
 
 const sections = [
   { id: "overview", label: "Overview" },
@@ -29,9 +37,16 @@ const sections = [
 
 type SectionId = (typeof sections)[number]["id"];
 
-export function AdminDashboard({ viewer }: { viewer: Viewer }) {
+export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: AdminDebugState }) {
   const [active, setActive] = useState<SectionId>("overview");
   const navigate = useNavigate();
+
+  const signOut = async () => {
+    console.info("[Admin Auth] Sign out requested", { userId: viewer.userId });
+    const { error } = await supabase.auth.signOut();
+    if (error) console.error("[Admin Auth] Sign out failed", error);
+    navigate({ to: "/admin/login", replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-background text-ink flex">
@@ -60,10 +75,8 @@ export function AdminDashboard({ viewer }: { viewer: Viewer }) {
         <div className="px-6 py-5 border-t border-ink/10 text-[11px] text-foreground/60">
           <div className="truncate">{viewer.email}</div>
           <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate({ to: "/admin/login" });
-            }}
+            type="button"
+            onClick={signOut}
             className="mt-2 text-[10px] tracking-[0.2em] uppercase text-foreground/50 hover:text-ink"
           >
             Sign out
@@ -94,6 +107,7 @@ export function AdminDashboard({ viewer }: { viewer: Viewer }) {
           </select>
         </header>
         <div className="p-6 md:p-10">
+          {debug && <AdminAuthDebugPanel debug={debug} />}
           {active === "overview" && <OverviewPanel />}
           {active === "orders" && <OrdersPanel />}
           {active === "referrals" && <ReferralsPanel />}
