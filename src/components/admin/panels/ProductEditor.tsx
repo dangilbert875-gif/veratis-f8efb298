@@ -19,6 +19,7 @@ type Props = {
   product: any | null;
   onClose: () => void;
   onSaved: () => void;
+  onNavigate?: (s: any) => void;
 };
 
 const empty = {
@@ -48,7 +49,7 @@ const empty = {
   related_article_ids: [] as string[],
 };
 
-export function ProductEditor({ product, onClose, onSaved }: Props) {
+export function ProductEditor({ product, onClose, onSaved, onNavigate }: Props) {
   const save = useServerFn(upsertProduct);
   const upload = useServerFn(uploadAsset);
   const listProducts = useServerFn(listProductsLite);
@@ -350,6 +351,17 @@ export function ProductEditor({ product, onClose, onSaved }: Props) {
               </Field>
             </div>
           </Section>
+
+          {product?.id && (
+            <>
+              <Section title="Linked records">
+                <ProductRelatedLinks productId={product.id} onNavigate={onNavigate} />
+              </Section>
+              <Section title="Operational notes">
+                <InternalNotes entityType="product" entityId={product.id} />
+              </Section>
+            </>
+          )}
         </div>
       </div>
     </div>
