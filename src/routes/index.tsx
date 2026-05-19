@@ -6,6 +6,8 @@ import heroVial from "@/assets/hero-vial.jpg";
 import lab from "@/assets/lab.jpg";
 import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive } from "lucide-react";
 import { BatchVerify } from "@/components/site/BatchVerify";
+import { LotTag, ArchiveIndexStrip } from "@/components/site/LotTag";
+import { batches, labPartner } from "@/data/batches";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
@@ -21,16 +23,16 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const recentLots = batches.slice(0, 8).map((b) => b.lot);
+  const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
+
   return (
     <Layout>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-6 pt-20 md:pt-28 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
           <div className="md:col-span-7">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-              Independently verified · Lot PP-2426
-            </div>
+            <LotTag lot="PP-2426" status="verified" linked />
             <h1 className="mt-7 text-5xl md:text-[5.25rem] text-ink leading-[1.02] tracking-[-0.02em]">
               Third-party tested<br />
               research peptides.
@@ -63,7 +65,7 @@ function Home() {
                 { icon: Lock, label: "Secure checkout" },
               ].map(({ icon: Icon, label }) => (
                 <li key={label} className="inline-flex items-center gap-1.5">
-                  <Icon size={13} className="text-primary" strokeWidth={1.75} />
+                  <Icon size={13} className="text-ink/70" strokeWidth={1.75} />
                   {label}
                 </li>
               ))}
@@ -113,22 +115,14 @@ function Home() {
             </div>
           </div>
         </div>
-        <div className="border-y border-border bg-mist/50">
-          <div className="mx-auto max-w-7xl px-6 py-5 flex flex-wrap items-center justify-between gap-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-            <span>Featured in</span>
-            <span>Journal of Peptide Science</span>
-            <span>Lab Insights</span>
-            <span>Bench Quarterly</span>
-            <span>Research Monthly</span>
-          </div>
-        </div>
+        <ArchiveIndexStrip lots={recentLots} />
       </section>
 
       {/* Why VERATIS Exists — brand philosophy */}
       <section className="mx-auto max-w-7xl px-6 pt-24 pb-8">
         <div className="grid md:grid-cols-12 gap-12 md:gap-16">
           <div className="md:col-span-5">
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why VERATIS exists</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Why VERATIS exists</p>
             <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
               The industry's quietest standard.
             </h2>
@@ -147,7 +141,7 @@ function Home() {
                 ["Documented purity standards", "≥ 98% purity, < 1.0 EU/mg endotoxin — published, not implied."],
                 ["Never recycled, never redacted", "Each certificate is signed, dated, and tied to a single production lot."],
               ].map(([k, v]) => (
-                <li key={k} className="border-l-2 border-primary/70 pl-4">
+                <li key={k} className="border-l border-ink/30 pl-4">
                   <p className="text-[13px] text-ink font-medium">{k}</p>
                   <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed">{v}</p>
                 </li>
@@ -161,7 +155,7 @@ function Home() {
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Featured</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Featured</p>
             <h2 className="text-3xl md:text-4xl text-ink">Best-selling peptides</h2>
           </div>
           <Link to="/shop" className="text-sm text-foreground/70 hover:text-foreground inline-flex items-center gap-1">
@@ -176,7 +170,7 @@ function Home() {
       {/* Why */}
       <section className="border-y border-border bg-mist/40">
         <div className="mx-auto max-w-7xl px-6 py-24">
-          <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why VERATIS</p>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Why VERATIS</p>
           <h2 className="text-3xl md:text-4xl text-ink max-w-2xl">A standard, not a marketing line.</h2>
           <div className="grid md:grid-cols-4 gap-px bg-border mt-12 rounded-lg overflow-hidden border border-border">
             {[
@@ -186,7 +180,7 @@ function Home() {
               { icon: Lock, title: "Secure checkout", text: "Encrypted payments, discreet packaging, no markers." },
             ].map(({ icon: Icon, title, text }) => (
               <div key={title} className="bg-background p-8">
-                <Icon size={22} className="text-primary" strokeWidth={1.5} />
+                <Icon size={22} className="text-ink/80" strokeWidth={1.5} />
                 <h3 className="mt-5 text-lg text-ink">{title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{text}</p>
               </div>
@@ -198,7 +192,7 @@ function Home() {
       {/* Our Testing Process */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Our testing process</p>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Our testing process</p>
           <h2 className="text-3xl md:text-4xl text-ink">Four checkpoints. One verdict.</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">
             Every lot moves through the same sequence before it leaves our facility. If a single step fails specification, the batch is rejected — never blended, never released.
@@ -212,8 +206,8 @@ function Home() {
             { icon: PackageCheck, step: "04", title: "Cold-chain pack", text: "Vials are sealed under nitrogen, vacuum-stoppered, and dispatched with insulated cold packs." },
           ].map(({ icon: Icon, step, title, text }) => (
             <li key={step} className="bg-background p-8 relative">
-              <span className="text-xs tabular-nums tracking-[0.2em] text-muted-foreground">{step}</span>
-              <Icon size={22} className="text-primary mt-4" strokeWidth={1.5} />
+              <span className="font-mono text-[11px] tabular-nums tracking-[0.2em] text-foreground/45">{step}</span>
+              <Icon size={22} className="text-ink/80 mt-4" strokeWidth={1.5} />
               <h3 className="mt-4 text-lg text-ink">{title}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{text}</p>
             </li>
@@ -223,9 +217,9 @@ function Home() {
 
       {/* COA Preview */}
       <section className="border-y border-border bg-ink text-background">
-        <div className="mx-auto max-w-7xl px-6 py-24 grid md:grid-cols-12 gap-12 lg:gap-16 items-start">
-          <div className="md:col-span-5">
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Signature feature</p>
+        <div className="mx-auto max-w-7xl px-6 py-28 md:py-36 grid md:grid-cols-12 gap-12 lg:gap-20 items-start">
+          <div className="md:col-span-5 md:pr-4">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary mb-4">— Signature system</p>
             <h2 className="text-3xl md:text-[2.5rem] text-background leading-[1.1] tracking-[-0.02em]">
               Authenticate any vial,<br />in under five seconds.
             </h2>
@@ -252,6 +246,20 @@ function Home() {
                 Testing standards <ArrowRight size={13} />
               </Link>
             </div>
+            <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-4 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/40">
+              <div>
+                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">{batches.length}</p>
+                <p className="mt-1">Lots archived</p>
+              </div>
+              <div>
+                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">{avgPurity}%</p>
+                <p className="mt-1">Mean purity</p>
+              </div>
+              <div>
+                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">100%</p>
+                <p className="mt-1">YTD pass rate</p>
+              </div>
+            </div>
           </div>
           <div className="md:col-span-7">
             <BatchVerify />
@@ -263,8 +271,8 @@ function Home() {
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Browse</p>
-            <h2 className="text-3xl md:text-4xl text-ink">Shop by category</h2>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Research areas</p>
+            <h2 className="text-3xl md:text-4xl text-ink">By research category</h2>
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -272,11 +280,13 @@ function Home() {
             <Link
               key={c.slug}
               to="/shop"
-              className="group relative bg-mist border border-border rounded-lg p-8 hover:border-primary/60 transition"
+              className="group relative bg-mist border border-border rounded-lg p-8 hover:border-ink/40 transition"
             >
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{c.count} products</p>
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55 tabular-nums">
+                {String(c.count).padStart(2, "0")} compounds
+              </p>
               <h3 className="mt-2 text-2xl text-ink">{c.name}</h3>
-              <ArrowRight size={18} className="absolute bottom-6 right-6 text-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition" />
+              <ArrowRight size={18} className="absolute bottom-6 right-6 text-foreground/40 group-hover:text-ink group-hover:translate-x-1 transition" />
             </Link>
           ))}
         </div>
@@ -289,7 +299,7 @@ function Home() {
             <img src={lab} alt="Independent laboratory" loading="lazy" width={1536} height={1024} className="w-full h-full object-cover" />
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Education</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Education</p>
             <h2 className="text-3xl md:text-4xl text-ink">From synthesis to your bench.</h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
               We control three things obsessively: peptide identity, purity, and stability. Below is the short version of how we deliver that, every time.
@@ -300,7 +310,7 @@ function Home() {
                 ["Storage", "Lyophilized under nitrogen, kept at –20 °C, shipped insulated. Stability tested at 30, 60, and 90 days."],
                 ["Testing", "Every lot is HPLC and MS verified by an independent ISO 17025 laboratory. COAs published per batch."],
               ].map(([k, v]) => (
-                <li key={k} className="border-l-2 border-primary pl-5">
+                <li key={k} className="border-l border-ink/30 pl-5">
                   <p className="text-sm uppercase tracking-[0.18em] text-ink/80">{k}</p>
                   <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">{v}</p>
                 </li>
@@ -310,36 +320,54 @@ function Home() {
         </div>
       </section>
 
-      {/* Reviews */}
+      {/* Operational metrics — replaces testimonials */}
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Reviews</p>
-        <h2 className="text-3xl md:text-4xl text-ink max-w-2xl">Trusted by researchers and clinicians.</h2>
-        <div className="grid md:grid-cols-3 gap-6 mt-12">
-          {[
-            { q: "The COAs match what I measure in-house. That's all I ask for in a supplier — and it's surprisingly rare.", a: "Dr. M. Reyes", r: "Research Chemist" },
-            { q: "Packaging is impeccable. Cold packs still cold on day two. Lots arrive intact and identical batch-to-batch.", a: "L. Andersen", r: "Lab Manager" },
-            { q: "Documentation is the difference. VERATIS ships paperwork I can actually file against my own audits.", a: "J. Park, PhD", r: "Biotech Research" },
-          ].map((t) => (
-            <figure key={t.a} className="border border-border rounded-lg p-7 bg-background">
-              <div className="flex gap-1 text-primary mb-5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i} className="text-sm">★</span>
-                ))}
-              </div>
-              <blockquote className="text-base text-ink leading-relaxed">"{t.q}"</blockquote>
-              <figcaption className="mt-6 text-sm">
-                <span className="text-ink">{t.a}</span>
-                <span className="text-muted-foreground"> · {t.r}</span>
-              </figcaption>
-            </figure>
-          ))}
+        <div className="grid md:grid-cols-12 gap-12 md:gap-20">
+          <div className="md:col-span-5">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Operational record</p>
+            <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
+              Measured in lots,<br />not in slogans.
+            </h2>
+            <p className="mt-6 text-muted-foreground leading-[1.75] max-w-md">
+              The clearest signal of a serious peptide operation is its archive. Below is ours — every figure derived from production data, independently assayed, publicly retrievable.
+            </p>
+            <Link to="/coa-archive" className="mt-7 inline-flex items-center gap-2 text-[13px] text-ink border border-border rounded-md px-5 py-3 hover:border-ink/40 transition">
+              <Archive size={14} /> Browse the archive
+            </Link>
+          </div>
+          <div className="md:col-span-7">
+            <dl className="grid grid-cols-2 border-t border-border">
+              {[
+                [`${batches.length}`, "Lots on permanent record"],
+                [`${avgPurity}%`, "Mean HPLC purity, all lots"],
+                ["100%", "Pass rate year-to-date"],
+                ["≥ 98%", "Minimum release specification"],
+                ["< 0.5 EU/mg", "Endotoxin ceiling"],
+                ["48 hrs", "Median dispatch time"],
+                [labPartner.iso, "Lab partner accreditation"],
+                [labPartner.city, "Independent assay location"],
+              ].map(([v, k], i) => (
+                <div
+                  key={k}
+                  className={[
+                    "py-7 px-1",
+                    i % 2 === 0 ? "pr-6 border-r border-border" : "pl-6",
+                    i >= 2 ? "border-t border-border" : "",
+                  ].join(" ")}
+                >
+                  <dt className="font-display text-[1.75rem] md:text-[2rem] text-ink leading-none tabular-nums tracking-[-0.01em]">{v}</dt>
+                  <dd className="mt-3 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">{k}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
 
       {/* FAQ */}
       <section className="border-t border-border bg-mist/40">
         <div className="mx-auto max-w-4xl px-6 py-24">
-          <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3 text-center">FAQ</p>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3 text-center">— FAQ</p>
           <h2 className="text-3xl md:text-4xl text-ink text-center">Common questions</h2>
           <Accordion type="single" collapsible className="mt-12">
             {faqs.map((f, i) => (
