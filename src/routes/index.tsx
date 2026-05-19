@@ -4,7 +4,8 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { products, categories } from "@/data/products";
 import heroVial from "@/assets/hero-vial.jpg";
 import lab from "@/assets/lab.jpg";
-import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check } from "lucide-react";
+import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, EyeOff, Eye, Archive } from "lucide-react";
+import { BatchVerify } from "@/components/site/BatchVerify";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
