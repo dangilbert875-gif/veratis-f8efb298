@@ -9,17 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as StandardsRouteImport } from './routes/standards'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CoaArchiveRouteImport } from './routes/coa-archive'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StandardsRoute = StandardsRouteImport.update({
+  id: '/standards',
+  path: '/standards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -50,6 +63,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoaArchiveRoute = CoaArchiveRouteImport.update({
+  id: '/coa-archive',
+  path: '/coa-archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -75,24 +93,30 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
+  '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/standards': typeof StandardsRoute
+  '/verify': typeof VerifyRoute
   '/shop/$slug': typeof ShopSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
+  '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/standards': typeof StandardsRoute
+  '/verify': typeof VerifyRoute
   '/shop/$slug': typeof ShopSlugRoute
 }
 export interface FileRoutesById {
@@ -100,12 +124,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
+  '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/standards': typeof StandardsRoute
+  '/verify': typeof VerifyRoute
   '/shop/$slug': typeof ShopSlugRoute
 }
 export interface FileRouteTypes {
@@ -114,36 +141,45 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/blog'
+    | '/coa-archive'
     | '/contact'
     | '/faq'
     | '/lab-testing'
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/standards'
+    | '/verify'
     | '/shop/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/blog'
+    | '/coa-archive'
     | '/contact'
     | '/faq'
     | '/lab-testing'
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/standards'
+    | '/verify'
     | '/shop/$slug'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/blog'
+    | '/coa-archive'
     | '/contact'
     | '/faq'
     | '/lab-testing'
     | '/shipping-returns'
     | '/shop'
     | '/sitemap.xml'
+    | '/standards'
+    | '/verify'
     | '/shop/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -151,16 +187,33 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRoute
+  CoaArchiveRoute: typeof CoaArchiveRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   LabTestingRoute: typeof LabTestingRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StandardsRoute: typeof StandardsRoute
+  VerifyRoute: typeof VerifyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/standards': {
+      id: '/standards'
+      path: '/standards'
+      fullPath: '/standards'
+      preLoaderRoute: typeof StandardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -201,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/coa-archive': {
+      id: '/coa-archive'
+      path: '/coa-archive'
+      fullPath: '/coa-archive'
+      preLoaderRoute: typeof CoaArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -248,13 +308,26 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRoute,
+  CoaArchiveRoute: CoaArchiveRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   LabTestingRoute: LabTestingRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StandardsRoute: StandardsRoute,
+  VerifyRoute: VerifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
