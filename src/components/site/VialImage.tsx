@@ -1,4 +1,5 @@
 import vialMaster from "@/assets/vial-master.jpg";
+import { logoUrl } from "@/components/site/Logo";
 
 type Size = "card" | "detail";
 
@@ -93,12 +94,19 @@ export function VialImage({
       <div style={labelStyle} className="flex flex-col justify-between">
         {/* Top: VERATIS wordmark + teal hairline */}
         <div className="flex flex-col items-center" style={{ paddingTop: "7%" }}>
-          <span
-            className="font-medium text-ink/85"
-            style={{ fontSize: metaSize, letterSpacing: "0.32em" }}
-          >
-            VERATIS
-          </span>
+          <img
+            src={logoUrl}
+            alt="VERATIS"
+            draggable={false}
+            style={{
+              width: size === "detail" ? "58%" : "62%",
+              height: "auto",
+              opacity: 0.9,
+              filter: "contrast(1.04)",
+              mixBlendMode: "multiply",
+            }}
+            className="select-none"
+          />
           <span
             aria-hidden
             className="mt-[3%] block"
