@@ -36,7 +36,7 @@ export const products: Product[] = [
   },
   {
     slug: "bpc-tb-500-blend",
-    name: "BPC/TB-500 Blend 10mg/10mg VIAL",
+    name: "BPC-157 / TB-500 10mg/10mg VIAL",
     dosage: "10MG / 10MG",
     category: "Tissue Recovery",
     classification: "Dual-compound recovery blend",
@@ -52,7 +52,7 @@ export const products: Product[] = [
   },
   {
     slug: "tb-500-fragment-12mg",
-    name: "TB-500 (Fragment) 12mg VIAL",
+    name: "TB-500 12mg VIAL",
     dosage: "12MG",
     category: "Tissue Recovery",
     classification: "Thymosin Beta-4 active fragment",
