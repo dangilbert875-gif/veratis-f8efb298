@@ -5,7 +5,7 @@ import { products, categories } from "@/data/products";
 import { batches, labPartner } from "@/data/batches";
 import { useState } from "react";
 
-export const Route = createFileRoute("/shop")({
+export const Route = createFileRoute("/shop/")({
   head: () => ({
     meta: [
       { title: "Shop Peptides — VERATIS" },
