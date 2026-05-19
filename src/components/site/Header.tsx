@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { useCart } from "@/lib/cart";
 
@@ -83,7 +83,16 @@ function StatusDot({ className = "" }: { className?: string }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const { count, openCart } = useCart();
+  const { count, openCart, lastAddedAt } = useCart();
+  const [pulse, setPulse] = useState(false);
+  const initial = useRef(true);
+  useEffect(() => {
+    if (initial.current) { initial.current = false; return; }
+    if (!lastAddedAt) return;
+    setPulse(true);
+    const t = setTimeout(() => setPulse(false), 650);
+    return () => clearTimeout(t);
+  }, [lastAddedAt]);
   return (
     <>
       {/* Institutional certification bar — calibration signage, not a banner */}
@@ -167,11 +176,16 @@ export function Header() {
             <button
               aria-label="Cart"
               onClick={openCart}
-              className="p-2.5 rounded-[3px] hover:bg-mist transition-colors duration-200 relative"
+              className="p-2.5 rounded-[3px] hover:bg-mist active:scale-95 transition-all duration-200 relative"
             >
-              <IconCart />
+              <span className={pulse ? "inline-block animate-[wiggle_0.55s_ease-out]" : "inline-block"}>
+                <IconCart />
+              </span>
               {count > 0 && (
-                <span className="absolute top-1 right-1 text-[9px] font-medium tabular-nums bg-ink text-background rounded-full min-w-[15px] h-[15px] px-1 inline-flex items-center justify-center">
+                <span
+                  key={count}
+                  className="absolute top-1 right-1 text-[9px] font-medium tabular-nums bg-ink text-background rounded-full min-w-[15px] h-[15px] px-1 inline-flex items-center justify-center animate-in zoom-in-50 fade-in duration-300"
+                >
                   {count}
                 </span>
               )}
