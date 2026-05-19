@@ -23,8 +23,16 @@ function AdminLoginPage() {
   const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
+    logSupabaseConnectionStatus();
     supabase.auth.getSession().then(({ data }) => {
+      console.info("[Admin Auth] Existing session check", {
+        hasSession: Boolean(data.session),
+        userId: data.session?.user?.id ?? null,
+        email: data.session?.user?.email ?? null,
+      });
       if (data.session) navigate({ to: "/admin" });
+    }).catch((err) => {
+      console.error("[Admin Auth] Session check failed", sanitizeAuthError(err));
     });
   }, [navigate]);
 
@@ -35,10 +43,17 @@ function AdminLoginPage() {
     setLoading(true);
     try {
       if (mode === "signin") {
+        const normalizedEmail = email.trim().toLowerCase();
+        console.info("[Admin Auth] signInWithPassword request", {
+          email: normalizedEmail,
+          passwordProvided: Boolean(password),
+          passwordLength: password.length,
+        });
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.trim().toLowerCase(),
+          email: normalizedEmail,
           password,
         });
+        console.info("[Admin Auth] signInWithPassword response", sanitizeAuthResponse(data, error));
         if (error) throw error;
         // Verify admin role before redirecting
         if (data.user) {
@@ -46,6 +61,11 @@ function AdminLoginPage() {
             .from("user_roles")
             .select("role")
             .eq("user_id", data.user.id);
+          console.info("[Admin Auth] Admin role verification response", {
+            userId: data.user.id,
+            roles: (roles ?? []).map((r: any) => r.role),
+            error: roleErr ? sanitizeAuthError(roleErr) : null,
+          });
           if (roleErr) throw new Error("Could not verify account role. " + roleErr.message);
           const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
           if (!isAdmin) {
@@ -54,11 +74,17 @@ function AdminLoginPage() {
           }
         }
       } else {
+        console.info("[Admin Auth] signUp request", {
+          email: email.trim().toLowerCase(),
+          passwordProvided: Boolean(password),
+          passwordLength: password.length,
+        });
         const { error } = await supabase.auth.signUp({
           email: email.trim().toLowerCase(),
           password,
           options: { emailRedirectTo: window.location.origin + "/admin" },
         });
+        console.info("[Admin Auth] signUp response", { error: error ? sanitizeAuthError(error) : null });
         if (error) throw error;
         setInfo("Account created. If email confirmation is required, check your inbox before signing in.");
         setMode("signin");
@@ -67,6 +93,7 @@ function AdminLoginPage() {
       }
       navigate({ to: "/admin" });
     } catch (err: any) {
+      console.error("[Admin Auth] Authentication flow failed", sanitizeAuthError(err));
       setError(mapAuthError(err));
     } finally {
       setLoading(false);
