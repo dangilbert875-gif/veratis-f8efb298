@@ -13,6 +13,38 @@ export const Route = createFileRoute("/blog/$slug")({
     const a = articles.find((x) => x.slug === params.slug);
     if (!a) return { meta: [{ title: "Article — VERATIS" }] };
     const origin = "https://pure-peptide-labs.lovable.app";
+    const scripts: Array<{ type: string; children: string }> = [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "TechArticle",
+          headline: a.title,
+          description: a.deck,
+          datePublished: a.publishedOn,
+          dateModified: a.updatedOn,
+          author: { "@type": "Organization", name: a.author },
+          publisher: { "@type": "Organization", name: "VERATIS" },
+          articleSection: a.category,
+          inLanguage: "en",
+          mainEntityOfPage: `${origin}/blog/${a.slug}`,
+        }),
+      },
+    ];
+    if (a.faq && a.faq.length > 0) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: a.faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }),
+      });
+    }
     return {
       meta: [
         { title: `${a.title} — VERATIS Reference` },
@@ -29,24 +61,7 @@ export const Route = createFileRoute("/blog/$slug")({
       links: [
         { rel: "canonical", href: `${origin}/blog/${a.slug}` },
       ],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "TechArticle",
-            headline: a.title,
-            description: a.deck,
-            datePublished: a.publishedOn,
-            dateModified: a.updatedOn,
-            author: { "@type": "Organization", name: a.author },
-            publisher: { "@type": "Organization", name: "VERATIS" },
-            articleSection: a.category,
-            inLanguage: "en",
-            mainEntityOfPage: `${origin}/blog/${a.slug}`,
-          }),
-        },
-      ],
+      scripts,
     };
   },
   loader: ({ params }) => {
