@@ -69,7 +69,7 @@ export function ProductCard({ p }: { p: Product }) {
             <h3 className="mt-2.5 text-[15px] text-ink font-display tracking-tight leading-[1.25] min-h-[2.5em] line-clamp-2">
               {title}
             </h3>
-            <p className="mt-1 text-[11.5px] text-muted-foreground font-mono tabular-nums">
+            <p className="mt-1 text-[11.5px] text-muted-foreground font-mono tabular-nums whitespace-nowrap">
               {sizeFor(p.size)} · lyophilized
             </p>
           </div>
