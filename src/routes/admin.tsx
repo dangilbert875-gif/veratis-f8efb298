@@ -27,18 +27,18 @@ function AdminPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const sessionResult = await withTimeout(supabase.auth.getSession(), 8000, "Supabase session check timed out");
-      const { data, error } = sessionResult;
-      if (error) {
-        if (!cancelled) setState({ kind: "denied", reason: `Supabase query failed: ${error.message}` });
-        return;
-      }
-      if (!data.session) {
-        if (!cancelled) setState({ kind: "denied", reason: "No active session. Redirecting to admin login." });
-        navigate({ to: "/admin/login" });
-        return;
-      }
       try {
+        const sessionResult = await withTimeout(supabase.auth.getSession(), 8000, "Supabase session check timed out");
+        const { data, error } = sessionResult;
+        if (error) {
+          if (!cancelled) setState({ kind: "denied", reason: `Supabase query failed: ${error.message}` });
+          return;
+        }
+        if (!data.session) {
+          if (!cancelled) setState({ kind: "denied", reason: "No active session. Redirecting to admin login." });
+          navigate({ to: "/admin/login" });
+          return;
+        }
         const viewer = await withTimeout(checkAdminAccess(), 10000, "Admin role validation timed out");
         if (cancelled) return;
         if (!viewer.isAdmin) {
