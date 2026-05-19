@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart";
 function titleFor(name: string) {
   return name
     .replace(/\s*\d[\d,]*\s*mg(\s*\/\s*\d[\d,]*\s*mg)?/gi, "")
-    .replace(/\s*VIAL\s*$/i, " Vial")
+    .replace(/\s*VIAL\s*$/i, "")
     .replace(/\s{2,}/g, " ")
     .trim();
 }
