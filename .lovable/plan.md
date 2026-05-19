@@ -1,86 +1,59 @@
-# VERATIS Admin Control Panel — Build Plan
+# Phase 2.5 — Operational UX & Workflow
 
-This is a large, multi-phase build. Implementing all 13 sections in one shot would produce thousands of lines across 40+ files and likely break the existing admin in transit. I'll deliver in 5 sequential phases — each shippable, each leaves `/admin` working — and confirm with you before moving to the next.
+Scope is 17 sections — too large to land in one safe pass without regressions. Proposing **4 sub-phases**, each independently shippable, preserving the existing VERATIS monochrome aesthetic. No public storefront changes.
 
-## Aesthetic guardrails (apply to every phase)
-- Reuse existing `src/components/admin/ui.tsx` primitives, the current sidebar, mono palette, hairline borders, restrained type.
-- No new dashboard chart libraries with default styles — use minimal SVG/CSS for sparklines and bars.
-- No emoji, no gradients, no colored status pills beyond the existing muted variants.
-- All toasts via existing `sonner`.
+## Sub-phase A — Shell & Foundation (ship first)
 
----
+1. **Admin shell upgrade** (`src/routes/admin.tsx`)
+   - Persistent top bar with global command bar trigger (⌘K).
+   - Subtle status token system added to `src/styles.css`: `--state-success`, `--state-warning`, `--state-danger`, `--state-archived` (all muted/desaturated).
+2. **Global Command Bar** (§1)
+   - `cmdk` palette; fuzzy search over products, orders, customers, articles, lots, affiliates, research partners.
+   - Quick actions: new product, upload COA, publish article, create affiliate, create customer note, create order.
+   - Recent searches + recently viewed (localStorage).
+3. **Dashboard prioritization + Quick Actions + Alerts** (§2, §13, §14)
+   - Reorder dashboard: Orders → Verification/COAs → Inventory → Customers → secondary.
+   - Quick-action row at top.
+   - Alerts strip: low inventory, expired lots, pending payouts, failed uploads.
+4. **Improved empty states** (§5) across all existing panels.
 
-## Phase 1 — Schema, storage, RLS foundation (backend only)
+## Sub-phase B — Activity, Audit, Relationships
 
-One migration adding everything later phases need, so we don't migrate twice.
+5. **Operational activity feed** (§3) — reads `audit_logs` + `verification_logs` + `article_views`, filterable.
+6. **Audit log viewer** (§15) — dedicated panel with before/after diff (already captured by `log_audit_change`).
+7. **Relational linking** (§6) — show linked entities on product/customer/article/COA detail drawers; all clickable.
+8. **Internal notes** (§8) — new `internal_notes` table (polymorphic: entity_type + entity_id), with pinning + markdown.
 
-Tables added/extended (all with `created_at`, `updated_at`, `archived_at`, `created_by`):
-- `products`: add `short_description`, `full_description`, `molecular_class`, `storage_guidance`, `lyophilized`, `featured_image`, `gallery_images jsonb`, `compare_at_price`, `inventory_count`, `low_stock_threshold`, `tags text[]`, `seo_title`, `seo_description`, `meta_keywords`, `status` (draft/published/archived/out_of_stock), `sort_order`, `related_product_ids uuid[]`, `related_article_ids uuid[]`.
-- `product_lots`: add `identity_method`, `lab_partner`, `lcms_url`, `hplc_url`, `raw_data jsonb`, `notes`, `active boolean`.
-- `educational_articles`: add `author`, `publish_at`, `tags text[]`, `peptide_tags text[]`, `citations jsonb`, `related_product_ids uuid[]`, `related_article_ids uuid[]`, `external_links jsonb`, `view_count`, `status` (draft/published/archived).
-- `orders`: add `transaction_hash`, `risk_flag`, `internal_notes`, `invoice_number`. Extend status enum (`pending|awaiting_payment|paid|packed|shipped|delivered|refunded|cancelled`).
-- `customers_meta` (new, FK profiles.id): `tags text[]`, `state` (active/vip/research_partner/suspended/flagged), `admin_notes`, `total_spend`, `last_order_at`, `referral_source`.
-- `research_partners` (new): institution, category, status (applied/approved/rejected/suspended), nda_accepted_at, verification_docs jsonb, pricing_tier, account_manager_id, notes.
-- `affiliates`: add `payout_address`, `payout_preference`, `status`, `pending_payout`, `paid_payout_total`, `clicks`, `conversions`.
-- `referral_clicks` (new): affiliate_id, ip_hash, referrer, landed_at, converted_order_id.
-- `audit_logs` (new): actor_id, action, entity_type, entity_id, diff jsonb, ip.
-- `article_views` (new, append-only): article_id, viewed_at, ip_hash.
-- `verification_logs` already exists — reuse.
+## Sub-phase C — Tables, Bulk, Exports
 
-Storage buckets (private + admin RLS, signed URLs for COA PDFs; public for product/article images):
-- `product-images` (public)
-- `article-images` (public)
-- `coa-pdfs` (private)
-- `chromatograms` (private)
-- `raw-lab-data` (private)
+9. **Table UX** (§12) — reusable `<DataTable>` with pagination, sticky headers, sorting, inline search, page size; applied to products/orders/customers/articles/lots.
+10. **Bulk actions** (§7) — checkbox selection + bulk publish/archive/tag/ship/export.
+11. **CSV/JSON exports + backup history** (§11) — server function streaming exports; `export_history` table.
 
-RLS pattern: public read on `products`/`product_lots`/`educational_articles` filtered by `status='published'`; everything else admin-write via `has_role(auth.uid(),'admin')`. Customer/affiliate self-read where applicable.
+## Sub-phase D — Roles, Media, Polish
 
-Triggers: `touch_updated_at` on every new table; soft-delete helper `archive_row(table, id)`; `audit_log_change` trigger on products, orders, articles, lots.
-
-## Phase 2 — Products & COA/Verification
-
-- Rewrite `ProductsPanel` with: searchable table, status filter, drag-sort (`@dnd-kit/sortable`), inline visibility/featured toggles, duplicate action, bulk archive.
-- New `ProductEditor` drawer (full schema) with image upload to `product-images`, gallery manager, lot picker, related-product/article pickers.
-- Rewrite `CoaUploadsPanel`: COA upload (PDF → `coa-pdfs`), chromatogram upload, lot editor with all new fields, active/inactive toggle, search, recent verification activity feed (from `verification_logs`).
-- Public `/verify/[lot]` page renders dynamically from `product_lots` (uses existing route — wire to DB).
-
-## Phase 3 — Education CMS & Orders
-
-- `ArticlesPanel`: list with status filter, draft/scheduled/published tabs.
-- `ArticleEditor`: title/slug/author, markdown body (`@uiw/react-md-editor` with theme override to match aesthetic), featured image upload, scheduled `publish_at`, tags, citations editor (repeating rows), related products/articles, SEO fields, analytics readout (views, top referrers).
-- `OrdersPanel`: list with state filter, search by order#/email/tx hash, detail drawer with status timeline, tracking#, internal notes, risk flag, manual state transitions, invoice generation (HTML → print PDF), refund action.
-- Dashboard metrics block (revenue, AOV, pending count, refund rate).
-
-## Phase 4 — Affiliates, Customers, Research Partners
-
-- `PartnersPanel` (affiliates): list, code editor, commission %, payout address, status toggle, click/conversion counters, leaderboard view.
-- `PayoutsPanel`: pending/paid tabs, mark-paid action with tx hash.
-- `ReferralsPanel`: per-code analytics (clicks, conversions, revenue, conversion rate sparkline).
-- `CustomersPanel`: profile drawer (orders, total spend, tags, notes, state, affiliate link, risk indicators).
-- New `ResearchPartnersPanel`: application queue → approve/reject, pricing tier assignment, NDA tracking, partner profile with docs.
-
-## Phase 5 — Overview analytics, audit log, admin UX polish
-
-- `OverviewPanel`: live metrics (revenue 7/30d, orders, conversions, top products, inventory alerts, recent verifications) with minimal sparklines.
-- `ArchivePanel` → audit log viewer (filter by actor/entity/action).
-- Global admin search (`⌘K`) across products, orders, articles, customers.
-- Bulk actions, pagination, confirmation modals via existing `AlertDialog`, mobile breakpoint pass on every panel.
-
----
+12. **Expanded admin roles** (§10) — extend `app_role` enum: `super_admin`, `operations`, `fulfillment`, `editor`, `affiliate_manager`, `research_manager`. Role-permission matrix + management UI. Existing `admin` maps to `super_admin`.
+13. **Centralized media library** (§9) — unified browser over `product-images`, `article-images`, `coa-pdfs`, `chromatograms`, `raw-lab-data` with tagging table.
+14. **Performance polish** (§16) — skeletons, optimistic updates via TanStack Query, debounced search.
 
 ## Technical notes
-- All admin data fetching via `createServerFn` + `requireSupabaseAuth` (no admin client in components).
-- File uploads go through signed-upload server fns for private buckets, direct from client for public buckets.
-- Drag-sort uses one new dep: `@dnd-kit/core` + `@dnd-kit/sortable`.
-- Markdown editor: `@uiw/react-md-editor` (lightweight, themable).
-- No new chart library — hand-rolled SVG sparklines/bars to stay on-aesthetic.
-- Audit log written via DB trigger so it can't be bypassed from app code.
 
-## What I need from you before starting
-1. **Confirm phased delivery** (5 phases, each shippable) vs. all-at-once. Phased is strongly recommended — single-shot will produce a thousand-line patch I can't verify properly.
-2. **Markdown editor approval**: OK with `@uiw/react-md-editor`, or do you prefer a pure-textarea approach with a tiny custom toolbar?
-3. **Storage privacy**: COAs as private (signed URLs, 1h expiry) or public (anyone with the URL can view)? Verification page works either way; private is more controlled.
-4. **Audit logging scope**: log every admin write (recommended), or only sensitive ops (orders, payouts, role changes)?
+- New tables (Sub-phase B/C/D):
+  - `internal_notes(id, entity_type, entity_id, author_id, body_md, pinned, created_at, updated_at)`
+  - `export_history(id, kind, format, generated_by, row_count, file_path, created_at)`
+  - `media_tags(asset_path, bucket, tags[], uploaded_by, created_at)`
+- Enum extension for roles requires careful migration (Postgres `ALTER TYPE ... ADD VALUE`, non-transactional).
+- Activity feed driven entirely by existing `audit_logs` — no schema change needed.
+- All new UI components reuse `src/components/admin/ui.tsx` primitives.
 
-Reply with answers (or just "proceed with defaults") and I'll start Phase 1.
+## What I will NOT do
+
+- Touch public storefront, marketing pages, branding.
+- Add bright SaaS colors, charts, or animations beyond subtle transitions.
+- Introduce dashboards-with-graphs aesthetic.
+
+## Recommended execution order
+
+Ship **Sub-phase A** now (shell + command bar + dashboard reorg + alerts + empty states). This is the highest leverage and unblocks everything else visually. After your approval of A, I continue with B, C, D in sequence.
+
+Reply **"proceed with A"** (or specify a different sub-phase / subset) to start.
