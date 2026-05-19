@@ -36,12 +36,6 @@ const IconSearch = ({ size = 18, className }: IconProps) => (
     <path d="m20 20-4.6-4.6" />
   </svg>
 );
-const IconAccount = ({ size = 18, className }: IconProps) => (
-  <svg {...baseSvg(size)} className={className}>
-    <circle cx="12" cy="8.5" r="3.25" />
-    <path d="M5 19.5c1.4-3.2 4-4.75 7-4.75s5.6 1.55 7 4.75" />
-  </svg>
-);
 const IconCart = ({ size = 18, className }: IconProps) => (
   <svg {...baseSvg(size)} className={className}>
     <path d="M4 5h2.2l1.6 11.2a1.5 1.5 0 0 0 1.5 1.3h8a1.5 1.5 0 0 0 1.5-1.2L20.5 8H7" />
