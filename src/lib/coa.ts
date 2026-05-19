@@ -1,7 +1,6 @@
-import type { Batch } from "@/data/batches";
 import { labPartner } from "@/data/batches";
 
-type CoaInput = Partial<Batch> & {
+type CoaInput = {
   lot: string;
   product: string;
   size?: string;
