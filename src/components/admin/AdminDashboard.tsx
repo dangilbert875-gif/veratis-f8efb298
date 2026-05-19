@@ -218,6 +218,8 @@ function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
 function titleFor(id: SectionId): string {
   switch (id) {
     case "overview": return "Operational overview";
+    case "activity": return "Operational activity";
+    case "audit": return "Audit log";
     case "orders": return "Order management";
     case "referrals": return "Research-partner referrals";
     case "payouts": return "Partner payouts";
