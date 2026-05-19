@@ -10,6 +10,8 @@ import {
 
 import appCss from "../styles.css?url";
 import { AgeGate } from "@/components/site/AgeGate";
+import { CartProvider } from "@/lib/cart";
+import { CartDrawer } from "@/components/site/CartDrawer";
 
 function NotFoundComponent() {
   return (
@@ -125,9 +127,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AgeGate>
-        <Outlet />
-      </AgeGate>
+      <CartProvider>
+        <AgeGate>
+          <Outlet />
+        </AgeGate>
+        <CartDrawer />
+      </CartProvider>
     </QueryClientProvider>
   );
 }

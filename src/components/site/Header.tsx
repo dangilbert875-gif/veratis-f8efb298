@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Logo } from "./Logo";
+import { useCart } from "@/lib/cart";
 
 const nav = [
   { to: "/shop", label: "Shop" },
@@ -82,6 +83,7 @@ function StatusDot({ className = "" }: { className?: string }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const { count, openCart } = useCart();
   return (
     <>
       {/* Institutional certification bar — calibration signage, not a banner */}
@@ -164,12 +166,15 @@ export function Header() {
             </button>
             <button
               aria-label="Cart"
+              onClick={openCart}
               className="p-2.5 rounded-[3px] hover:bg-mist transition-colors duration-200 relative"
             >
               <IconCart />
-              <span className="absolute top-1 right-1 text-[9px] font-medium tabular-nums bg-ink text-background rounded-full min-w-[15px] h-[15px] px-1 inline-flex items-center justify-center">
-                0
-              </span>
+              {count > 0 && (
+                <span className="absolute top-1 right-1 text-[9px] font-medium tabular-nums bg-ink text-background rounded-full min-w-[15px] h-[15px] px-1 inline-flex items-center justify-center">
+                  {count}
+                </span>
+              )}
             </button>
             <button
               aria-label={open ? "Close menu" : "Open menu"}
