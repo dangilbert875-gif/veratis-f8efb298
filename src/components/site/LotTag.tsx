@@ -17,7 +17,7 @@ export function LotTag({ lot, status, className = "", linked = false }: Props) {
   const dot =
     status === "verified" ? "bg-primary"
     : status === "released" ? "bg-ink/70"
-    : status === "archived" ? "bg-foreground/35"
+    : status === "archived" ? "bg-foreground/60"
     : "";
 
   const content = (
@@ -32,7 +32,7 @@ export function LotTag({ lot, status, className = "", linked = false }: Props) {
       ].join(" ")}
     >
       {dot && <span className={`inline-block h-1 w-1 rounded-full ${dot}`} aria-hidden />}
-      <span className="text-foreground/45">LOT</span>
+      <span className="text-foreground/65">LOT</span>
       <span>{lot}</span>
     </span>
   );
@@ -63,7 +63,7 @@ export function ArchiveIndexStrip({
         className,
       ].join(" ")}
     >
-      <div className="mx-auto max-w-7xl px-6 h-9 flex items-center gap-6 text-[10.5px] font-mono tabular-nums tracking-[0.14em] text-foreground/45">
+      <div className="mx-auto max-w-7xl px-6 h-9 flex items-center gap-6 text-[10.5px] font-mono tabular-nums tracking-[0.14em] text-foreground/65">
         <span className="uppercase text-foreground/55 shrink-0">Archive index</span>
         <span className="flex-1 truncate">
           {lots.map((l, i) => (

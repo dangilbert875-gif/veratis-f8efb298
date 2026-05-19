@@ -205,7 +205,7 @@ function Home() {
             { icon: PackageCheck, step: "04", title: "Cold-chain pack", text: "Vials are sealed under nitrogen, vacuum-stoppered, and dispatched with insulated cold packs." },
           ].map(({ icon: Icon, step, title, text }) => (
             <li key={step} className="bg-background p-8 relative">
-              <span className="font-mono text-[11px] tabular-nums tracking-[0.2em] text-foreground/45">{step}</span>
+              <span className="font-mono text-[11px] tabular-nums tracking-[0.2em] text-foreground/65">{step}</span>
               <Icon size={22} className="text-ink/80 mt-4" strokeWidth={1.5} />
               <h3 className="mt-4 text-lg text-ink">{title}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{text}</p>
