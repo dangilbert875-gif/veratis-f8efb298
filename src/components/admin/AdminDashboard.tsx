@@ -12,6 +12,8 @@ import { CustomersPanel } from "./panels/CustomersPanel";
 import { CoaUploadsPanel } from "./panels/CoaUploadsPanel";
 import { PartnersPanel } from "./panels/PartnersPanel";
 import { CommandBar } from "./CommandBar";
+import { ActivityPanel } from "./panels/ActivityPanel";
+import { AuditLogPanel } from "./panels/AuditLogPanel";
 
 export type AdminDebugState = {
   userId: string | null;
@@ -30,6 +32,7 @@ const sectionGroups = [
     heading: "Primary",
     items: [
       { id: "overview", label: "Overview" },
+      { id: "activity", label: "Activity" },
       { id: "orders", label: "Orders" },
       { id: "coa", label: "COA Uploads" },
       { id: "archive", label: "Verification Archive" },
@@ -44,12 +47,15 @@ const sectionGroups = [
       { id: "referrals", label: "Referrals" },
       { id: "partners", label: "Research Partners" },
       { id: "payouts", label: "Payouts" },
+      { id: "audit", label: "Audit Log" },
     ],
   },
 ] as const;
 
 export type SectionId =
   | "overview"
+  | "activity"
+  | "audit"
   | "products"
   | "orders"
   | "archive"
@@ -173,6 +179,8 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
         <div className="p-6 md:p-10">
           {debug && <AdminAuthDebugPanel debug={debug} />}
           {active === "overview" && <OverviewPanel onNavigate={setActive} />}
+          {active === "activity" && <ActivityPanel />}
+          {active === "audit" && <AuditLogPanel />}
           {active === "orders" && <OrdersPanel />}
           {active === "referrals" && <ReferralsPanel />}
           {active === "payouts" && <PayoutsPanel />}
