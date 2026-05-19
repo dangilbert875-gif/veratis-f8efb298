@@ -33,6 +33,7 @@
   --color-ring: var(--ring);
   --color-mist: var(--mist);
   --color-ink: var(--ink);
+  --color-archive: var(--archive);
 }
 
 :root {
@@ -59,6 +60,9 @@
   --border: oklch(0.915 0.006 220);
   --input: oklch(0.915 0.006 220);
   --ring: oklch(0.56 0.07 210);
+  /* Deep charcoal-navy surface for archive / verification terminals.
+     Lifted off pure black so the page reads as pharmaceutical, not cyber. */
+  --archive: oklch(0.18 0.014 245);
 }
 
 .dark {
@@ -120,4 +124,23 @@
 @keyframes shimmer {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(400%); }
+}
+
+/* Subtle layered surface used by the verification terminal.
+   A vignette + faint diagonal sheen + monochrome grain — no neon. */
+.archive-surface {
+  background-color: var(--archive);
+  background-image:
+    radial-gradient(ellipse 90% 60% at 50% -10%, oklch(1 0 0 / 0.05), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 110%, oklch(1 0 0 / 0.025), transparent 65%),
+    linear-gradient(180deg, oklch(1 0 0 / 0.015), transparent 35%);
+}
+.archive-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
