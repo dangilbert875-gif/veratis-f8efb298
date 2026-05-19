@@ -296,6 +296,27 @@ function ArticlePage() {
           </ol>
         </section>
 
+        {/* FAQ — emitted when the article carries Q&A entries; pairs with FAQPage JSON-LD */}
+        {article.faq && article.faq.length > 0 && (
+          <section className="mt-16 pt-8 border-t border-border">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-6">
+              Frequently asked
+            </p>
+            <dl className="divide-y divide-border border-y border-border">
+              {article.faq.map((f, i) => (
+                <div key={i} className="py-5">
+                  <dt className="text-[15px] text-ink font-display tracking-[-0.005em] leading-[1.4]">
+                    {f.q}
+                  </dt>
+                  <dd className="mt-3 text-[14.5px] leading-[1.75] text-foreground/80">
+                    {f.a}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
+
         <div className="mt-12">
           <ReferencedSources
             heading="Referenced sources"
@@ -303,6 +324,19 @@ function ArticlePage() {
             sources={[pepPediaSource(article.title)]}
           />
         </div>
+
+        {/* Restrained scientific disclaimer — sits below the curated sources, in-flow */}
+        <aside className="mt-12 pt-6 border-t border-border">
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">
+            Scientific disclaimer
+          </p>
+          <p className="text-[12.5px] leading-[1.75] text-foreground/65 max-w-2xl">
+            This material is provided for educational and research-reference purposes only.
+            VERATIS does not provide medical advice. Products referenced on this page are
+            supplied for in-vitro laboratory and research applications and are not intended
+            for human or veterinary consumption.
+          </p>
+        </aside>
         </article>
 
         {/* Sticky TOC sidebar */}
