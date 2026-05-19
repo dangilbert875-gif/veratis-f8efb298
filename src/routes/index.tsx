@@ -3,14 +3,10 @@ import { Layout } from "@/components/site/Layout";
 import { ProductCard } from "@/components/site/ProductCard";
 import { products, categories } from "@/data/products";
 import heroVial from "@/assets/hero-vial.jpg";
-import lab from "@/assets/lab.jpg";
-import { FlaskConical, ShieldCheck, Truck, Lock, ArrowRight, Plus, Minus, FileText, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive } from "lucide-react";
+import { FlaskConical, ShieldCheck, Lock, ArrowRight, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive } from "lucide-react";
 import { BatchVerify } from "@/components/site/BatchVerify";
 import { LotTag, ArchiveIndexStrip } from "@/components/site/LotTag";
 import { batches, labPartner } from "@/data/batches";
-import {
-  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
-} from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/")({
   head: () => ({
