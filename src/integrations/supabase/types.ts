@@ -296,6 +296,39 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_notes: {
+        Row: {
+          author_id: string | null
+          body_md: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          pinned: boolean
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body_md?: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          pinned?: boolean
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body_md?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          pinned?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
