@@ -230,7 +230,7 @@ function mapAuthError(err: any): string {
     return "Email not confirmed. Check your inbox for the verification link before signing in.";
   }
   if (code === "user_not_found" || /user not found/i.test(raw)) {
-    return "No account exists for that email. Use ‘Need credentials?’ to create one.";
+    return "No account exists for that email. Confirm the admin user exists in authentication.";
   }
   if (code === "invalid_credentials" || /invalid login credentials/i.test(raw)) {
     return "Email or password is incorrect. If you just created the account, confirm your email first; otherwise reset your password.";
