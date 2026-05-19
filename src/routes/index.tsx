@@ -163,28 +163,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Why */}
-      <section className="border-y border-border bg-mist/40">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Why VERATIS</p>
-          <h2 className="text-3xl md:text-4xl text-ink max-w-2xl">A standard, not a marketing line.</h2>
-          <div className="grid md:grid-cols-4 gap-px bg-border mt-12 rounded-lg overflow-hidden border border-border">
-            {[
-              { icon: FlaskConical, title: "Third-party tested", text: "ISO 17025 accredited laboratory, every batch." },
-              { icon: ShieldCheck, title: "Verified purity", text: "HPLC + mass spec. Average 99%+ across catalog." },
-              { icon: Truck, title: "Cold-chain shipping", text: "Insulated, tracked, dispatched within 48 hours." },
-              { icon: Lock, title: "Secure checkout", text: "Encrypted payments, discreet packaging, no markers." },
-            ].map(({ icon: Icon, title, text }) => (
-              <div key={title} className="bg-background p-8">
-                <Icon size={22} className="text-ink/80" strokeWidth={1.5} />
-                <h3 className="mt-5 text-lg text-ink">{title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Our Testing Process */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="max-w-2xl">
