@@ -2,6 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
 import { products } from "@/data/products";
 import { ProductCard } from "@/components/site/ProductCard";
+import { batches, labPartner } from "@/data/batches";
+import { LotTag } from "@/components/site/LotTag";
 import { Check, ShieldCheck, FlaskConical, Truck, FileText, Snowflake, HelpCircle } from "lucide-react";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
@@ -52,77 +54,112 @@ export const Route = createFileRoute("/shop/$slug")({
 
 function ProductPage() {
   const { product: p } = Route.useLoaderData();
+  const lot = batches.find((b) => b.slug === p.slug);
+  const lotId = lot?.lot ?? "PP-XXXX";
   const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
   const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-6 pt-10 pb-6 text-xs text-muted-foreground">
-        <Link to="/" className="hover:text-foreground">Home</Link> /{" "}
-        <Link to="/shop" className="hover:text-foreground">Shop</Link> /{" "}
-        <span className="text-foreground">{p.name}</span>
+      <div className="mx-auto max-w-7xl px-6 pt-10 pb-6 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50">
+        <Link to="/" className="hover:text-ink transition">Home</Link>
+        <span className="mx-2 text-foreground/25">/</span>
+        <Link to="/shop" className="hover:text-ink transition">Catalog</Link>
+        <span className="mx-2 text-foreground/25">/</span>
+        <span className="text-ink">{p.name}</span>
       </div>
-      <section className="mx-auto max-w-7xl px-6 pb-20 grid md:grid-cols-2 gap-12 lg:gap-20">
-        <div>
-          <div className="aspect-square bg-mist rounded-xl overflow-hidden border border-border">
-            <img src={p.image} alt={p.name} width={1024} height={1024} className="w-full h-full object-cover" />
-          </div>
-          <div className="grid grid-cols-4 gap-3 mt-3">
-            {[p.image, p.image, p.image, p.image].map((src, i) => (
-              <div key={i} className="aspect-square bg-mist rounded-md border border-border overflow-hidden opacity-70">
-                <img src={src} alt="" width={256} height={256} className="w-full h-full object-cover" loading="lazy" />
-              </div>
+
+      <section className="mx-auto max-w-7xl px-6 pb-20 grid md:grid-cols-12 gap-12 lg:gap-20">
+        {/* Specimen frame with registration ticks + spec footer */}
+        <div className="md:col-span-7">
+          <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border">
+            {[
+              "top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0",
+            ].map((pos) => (
+              <span key={pos} className={`absolute ${pos} w-4 h-px bg-ink/30`} aria-hidden />
             ))}
+            <img src={p.image} alt={`${p.name} — ${p.size} lyophilized vial`} width={1024} height={1024} className="w-full h-full object-cover" />
+            <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/55">
+              <span>Specimen · {p.name}</span>
+              <span className="tabular-nums">LOT {lotId}</span>
+            </div>
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/50">
+              <span>{p.size} · Lyophilized · {p.purity} HPLC</span>
+              <span>Format A · 1:1</span>
+            </div>
           </div>
         </div>
-        <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-primary">{p.category}</p>
-          <h1 className="mt-3 text-4xl md:text-5xl text-ink">{p.name}</h1>
-          <p className="mt-4 text-muted-foreground">{p.short}</p>
-          <div className="mt-7 flex items-baseline gap-3">
-            <span className="text-3xl text-ink tabular-nums">${p.price}</span>
-            <span className="text-sm text-muted-foreground">/ {p.size} vial</span>
+
+        <div className="md:col-span-5">
+          <div className="flex items-center gap-3">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">{p.category}</p>
+            <span className="h-px w-6 bg-foreground/20" />
+            <LotTag lot={lotId} status="verified" linked />
           </div>
-          <div className="mt-3 inline-flex items-center gap-2 text-xs text-primary">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" /> In stock — ships within 48 hrs
+          <h1 className="mt-5 text-4xl md:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.022em]">{p.name}</h1>
+          <p className="mt-5 text-[15px] text-muted-foreground leading-relaxed">{p.short}</p>
+
+          <div className="mt-9 flex items-baseline gap-3 pb-6 border-b border-border">
+            <span className="font-display text-[2.25rem] text-ink tabular-nums leading-none">${p.price}</span>
+            <span className="text-[12px] font-mono uppercase tracking-[0.16em] text-foreground/55">/ {p.size} vial</span>
           </div>
-          <div className="mt-7 border border-border rounded-lg divide-y divide-border">
+
+          {/* Specification block — reads like a lab document, not a product card */}
+          <dl className="mt-7 border border-border rounded-[3px] divide-y divide-border bg-background">
             {[
-              ["Purity", `${p.purity} (HPLC)`],
-              ["Form", "Lyophilized powder"],
-              ["Storage", "–20 °C, sealed under nitrogen"],
-              ["Lot", "PP-2426"],
+              ["Identity", `${p.name}, confirmed by ESI-MS`],
+              ["Purity (HPLC)", `${p.purity}`],
+              ["Endotoxin", lot?.endotoxin ?? "< 0.5 EU/mg"],
+              ["Water content", lot?.water ?? "< 2.5%"],
+              ["Form", "Lyophilized cake, nitrogen-sealed"],
+              ["Storage", "–20 °C, protected from light"],
+              ["Released", lot?.testedOn ?? "—"],
+              ["Best before", lot?.expiresOn ?? "—"],
+              ["Lot", lotId],
+              ["Assayed by", `${labPartner.name} · ${labPartner.iso}`],
             ].map(([k, v]) => (
-              <div key={k} className="flex justify-between text-sm px-4 py-3">
-                <span className="text-muted-foreground">{k}</span>
-                <span className="text-ink">{v}</span>
+              <div key={k} className="grid grid-cols-[140px_1fr] gap-4 text-[12.5px] px-5 py-3">
+                <dt className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 self-center">{k}</dt>
+                <dd className="text-ink tabular-nums">{v}</dd>
               </div>
             ))}
-          </div>
+          </dl>
+
           <div className="mt-7 flex gap-3">
-            <div className="flex items-center border border-border rounded-md">
-              <button className="px-4 py-3 text-foreground/70 hover:text-foreground">−</button>
+            <div className="flex items-center border border-border rounded-[3px]">
+              <button className="px-4 py-3 text-foreground/70 hover:text-ink transition">−</button>
               <span className="px-3 text-sm tabular-nums">1</span>
-              <button className="px-4 py-3 text-foreground/70 hover:text-foreground">+</button>
+              <button className="px-4 py-3 text-foreground/70 hover:text-ink transition">+</button>
             </div>
-            <button className="flex-1 bg-ink text-background rounded-md text-sm font-medium px-6 py-3.5 hover:bg-ink/90 transition">
-              Add to cart — ${p.price}
+            <button className="flex-1 bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.16em] px-6 py-3.5 hover:bg-ink/90 transition">
+              Add to cart · ${p.price}
             </button>
           </div>
-          <Link to="/lab-testing" className="mt-4 inline-flex items-center gap-2 text-sm text-primary hover:underline">
-            <FileText size={14} /> Download COA for lot PP-2426
-          </Link>
-          <ul className="mt-8 grid grid-cols-2 gap-4 text-sm">
+
+          <div className="mt-5 flex items-center justify-between text-[11px] text-muted-foreground">
+            <Link to="/verify" className="inline-flex items-center gap-2 text-ink hover:text-primary transition">
+              <FileText size={13} /> Retrieve COA for lot {lotId}
+            </Link>
+            <span className="inline-flex items-center gap-2 font-mono uppercase tracking-[0.16em] text-foreground/50">
+              <span className="relative inline-flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+              </span>
+              In stock
+            </span>
+          </div>
+
+          <ul className="mt-8 pt-6 border-t border-border grid grid-cols-2 gap-x-6 gap-y-3 text-[12px]">
             {[
-              [ShieldCheck, "ISO 17025 tested"],
-              [FlaskConical, `${p.purity} verified purity`],
-              [Truck, "Cold-chain shipping"],
-              [Check, "Sealed lyophilized vial"],
+              [ShieldCheck, "ISO 17025 verified"],
+              [FlaskConical, `${p.purity} HPLC purity`],
+              [Truck, "Cold-chain dispatch · 48 hrs"],
+              [Check, "Nitrogen-sealed vial"],
             ].map(([Icon, label], i) => {
               const I = Icon as typeof ShieldCheck;
               return (
-                <li key={i} className="flex items-center gap-2 text-foreground/80">
-                  <I size={16} className="text-primary" /> {label as string}
+                <li key={i} className="flex items-center gap-2 text-foreground/75">
+                  <I size={14} className="text-ink/70" strokeWidth={1.5} /> {label as string}
                 </li>
               );
             })}
@@ -131,7 +168,8 @@ function ProductPage() {
       </section>
       <section className="border-t border-border bg-mist/40">
         <div className="mx-auto max-w-4xl px-6 py-20">
-          <h2 className="text-2xl text-ink">About this peptide</h2>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Compound notes</p>
+          <h2 className="text-2xl md:text-3xl text-ink">About {p.name}</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">{p.description}</p>
           <p className="mt-5 text-xs text-muted-foreground italic">
             For in-vitro laboratory research use only. Not for human or veterinary consumption.
@@ -167,7 +205,7 @@ function ProductPage() {
             <AccordionItem key={title} value={title} className="border-border">
               <AccordionTrigger className="text-left text-base text-ink hover:no-underline py-5">
                 <span className="flex items-center gap-3">
-                  <Icon size={18} className="text-primary" strokeWidth={1.5} />
+                  <Icon size={18} className="text-ink/70" strokeWidth={1.5} />
                   {title}
                 </span>
               </AccordionTrigger>
@@ -185,14 +223,14 @@ function ProductPage() {
           <div className="mx-auto max-w-7xl px-6 py-20">
             <div className="flex items-end justify-between mb-10">
               <div>
-                <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Related</p>
-                <h2 className="text-2xl md:text-3xl text-ink">You may also be researching</h2>
+                <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Related compounds</p>
+                <h2 className="text-2xl md:text-3xl text-ink">In the same research area</h2>
               </div>
               <Link to="/shop" className="text-sm text-foreground/70 hover:text-foreground">
                 Shop all →
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
               {relatedList.map((rp) => <ProductCard key={rp.slug} p={rp} />)}
             </div>
           </div>
