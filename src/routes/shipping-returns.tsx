@@ -5,9 +5,9 @@ export const Route = createFileRoute("/shipping-returns")({
   head: () => ({
     meta: [
       { title: "Shipping & Returns — VERATIS" },
-      { name: "description", content: "Shipping rates, transit times, and our straightforward return policy." },
+      { name: "description", content: "Shipping rates, transit times, and our straightforward return policy. Currently shipping within the continental United States only." },
       { property: "og:title", content: "Shipping & Returns — VERATIS" },
-      { property: "og:description", content: "Cold-chain insulated dispatch within 48 hours. Free US shipping over $150. 14-day return window on unopened vials." },
+      { property: "og:description", content: "Cold-chain insulated dispatch within 48 hours within the continental US. Free shipping over $150. 14-day return window on unopened vials." },
       { property: "og:url", content: "https://pure-peptide-labs.lovable.app/shipping-returns" },
     ],
   }),
@@ -22,13 +22,15 @@ function Page() {
         <Section title="Processing & dispatch">
           <p>Orders placed before 2pm ET ship the same business day. All orders are dispatched within 48 hours from our temperature-controlled facility.</p>
         </Section>
+        <Section title="Where we ship">
+          <p>VERATIS currently ships only within the <span className="text-ink">continental United States</span> (the lower 48 states). We do not ship to Alaska, Hawaii, US territories, APO/FPO addresses, or internationally at this time. Expanded coverage will be announced as additional cold-chain corridors are validated.</p>
+        </Section>
         <Section title="Shipping rates">
           <ul className="divide-y divide-border border border-border rounded-lg overflow-hidden">
             {[
-              ["Domestic standard (3–5 days)", "$9.50"],
-              ["Domestic express (1–2 days)", "$24"],
-              ["Free shipping on US orders", "$150+"],
-              ["International tracked", "From $32"],
+              ["Continental US standard (3–5 days)", "$9.50"],
+              ["Continental US express (1–2 days)", "$24"],
+              ["Free shipping on continental US orders", "$150+"],
             ].map(([k, v]) => (
               <li key={k} className="flex justify-between text-sm px-4 py-3 bg-background">
                 <span className="text-muted-foreground">{k}</span>

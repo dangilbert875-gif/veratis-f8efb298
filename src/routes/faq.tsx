@@ -17,7 +17,7 @@ const sections = [
     title: "Shipping",
     items: [
       ["When will my order ship?", "Orders placed before 2pm ET ship the same business day. All orders are dispatched within 48 hours."],
-      ["Do you ship internationally?", "We currently ship to the US, Canada, UK, EU, and Australia. International orders include tracked, insured delivery."],
+      ["Do you ship internationally?", "Not at this time. We currently ship only within the continental United States (lower 48). We do not ship to Alaska, Hawaii, US territories, or internationally."],
       ["How is packaging protected?", "Every order ships in an insulated mailer with cold packs sized for the transit window. Packaging is plain and unmarked."],
     ] as [string, string][],
   },
