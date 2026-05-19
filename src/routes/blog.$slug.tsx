@@ -6,7 +6,7 @@ import { products } from "@/data/products";
 import { findBatch } from "@/data/batches";
 import { Figure } from "@/components/site/ArticleVisuals";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
-import { PepPediaReference } from "@/components/site/PepPediaReference";
+import { ReferencedSources, pepPediaSource } from "@/components/site/ReferencedSources";
 
 export const Route = createFileRoute("/blog/$slug")({
   head: ({ params }) => {
@@ -281,9 +281,13 @@ function ArticlePage() {
           </ol>
         </section>
 
-        <section className="mt-10">
-          <PepPediaReference query={article.title} />
-        </section>
+        <div className="mt-12">
+          <ReferencedSources
+            heading="Referenced sources"
+            intro="Independently maintained references that may extend the reading above. Curated, not exhaustive."
+            sources={[pepPediaSource(article.title)]}
+          />
+        </div>
         </article>
 
         {/* Sticky TOC sidebar */}
