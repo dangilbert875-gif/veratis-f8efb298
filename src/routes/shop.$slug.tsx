@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/accordion";
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
+import { CompoundDossier } from "@/components/site/CompoundDossier";
+import { dossierForSlug } from "@/data/compoundDossiers";
 
 export const Route = createFileRoute("/shop/$slug")({
   loader: ({ params }) => {
@@ -39,6 +41,14 @@ export const Route = createFileRoute("/shop/$slug")({
           { property: "og:type", content: "product" },
           { property: "og:url", content: `https://pure-peptide-labs.lovable.app/shop/${loaderData.product.slug}` },
           { property: "og:image", content: loaderData.product.image },
+          ...(dossierForSlug(loaderData.product.slug)?.keywords?.length
+            ? [
+                {
+                  name: "keywords",
+                  content: dossierForSlug(loaderData.product.slug)!.keywords.join(", "),
+                },
+              ]
+            : []),
         ]
       : [],
     scripts: loaderData
@@ -65,6 +75,22 @@ export const Route = createFileRoute("/shop/$slug")({
               },
             }),
           },
+          ...(dossierForSlug(loaderData.product.slug)?.faq?.length
+            ? [
+                {
+                  type: "application/ld+json",
+                  children: JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "FAQPage",
+                    mainEntity: dossierForSlug(loaderData.product.slug)!.faq.map((q) => ({
+                      "@type": "Question",
+                      name: q.q,
+                      acceptedAnswer: { "@type": "Answer", text: q.a },
+                    })),
+                  }),
+                },
+              ]
+            : []),
         ]
       : [],
   }),
@@ -105,6 +131,7 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();
   const available = p.inStock !== false;
+  const dossier = dossierForSlug(p.slug);
   const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
   const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
@@ -240,16 +267,20 @@ function ProductPage() {
           </ul>
         </div>
       </section>
-      <section className="border-t border-border bg-mist/40">
-        <div className="mx-auto max-w-4xl px-6 py-20">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Compound notes</p>
-          <h2 className="text-2xl md:text-3xl text-ink">About {p.name}</h2>
-          <p className="mt-5 text-muted-foreground leading-relaxed">{p.description}</p>
-          <p className="mt-5 text-xs text-muted-foreground italic">
-            For in-vitro laboratory research use only. Not for human or veterinary consumption.
-          </p>
-        </div>
-      </section>
+      {dossier ? (
+        <CompoundDossier dossier={dossier} currentSlug={p.slug} />
+      ) : (
+        <section className="border-t border-border bg-mist/40">
+          <div className="mx-auto max-w-4xl px-6 py-20">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Compound notes</p>
+            <h2 className="text-2xl md:text-3xl text-ink">About {p.name}</h2>
+            <p className="mt-5 text-muted-foreground leading-relaxed">{p.description}</p>
+            <p className="mt-5 text-xs text-muted-foreground italic">
+              For in-vitro laboratory research use only. Not for human or veterinary consumption.
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Details accordion */}
       <section className="mx-auto max-w-4xl px-6 py-20">
