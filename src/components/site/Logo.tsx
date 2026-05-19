@@ -18,7 +18,7 @@ export function Logo({ className = "", height, alt = "VERATIS" }: Props) {
       src={logoUrl}
       alt={alt}
       style={height ? { height } : undefined}
-      className={`w-auto select-none ${className}`}
+      className={`select-none ${className}`}
       draggable={false}
     />
   );

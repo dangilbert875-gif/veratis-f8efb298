@@ -106,17 +106,17 @@ export function Header() {
         </div>
       </div>
 
-      <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto max-w-7xl px-6 h-[180px] md:h-[240px] flex items-center justify-between gap-8">
-          <div className="flex items-center gap-14">
+      <header className="sticky top-0 z-40 border-b border-border bg-background/88 backdrop-blur supports-[backdrop-filter]:bg-background/74">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8 h-[68px] md:h-[76px] lg:h-[82px] flex items-center justify-between gap-6 lg:gap-10">
+          <div className="min-w-0 flex items-center gap-8 xl:gap-12">
             <Link
               to="/"
               aria-label="VERATIS — home"
-              className="shrink-0 block py-2 -my-2 transition-opacity duration-200 hover:opacity-80"
+              className="shrink-0 block transition-opacity duration-200 hover:opacity-80"
             >
-              <Logo className="h-48 md:h-64" />
+              <Logo className="h-auto w-[124px] sm:w-[142px] lg:w-[164px] xl:w-[176px]" />
             </Link>
-            <nav className="hidden lg:flex items-center gap-9 text-[12px] font-medium tracking-[0.04em] text-foreground/55">
+            <nav className="hidden xl:flex items-center gap-7 2xl:gap-9 text-[12px] font-medium tracking-[0.04em] text-foreground/55 whitespace-nowrap">
               {nav.map((n) => (
                 <Link
                   key={n.to}
@@ -143,7 +143,7 @@ export function Header() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-1 text-foreground/65">
+          <div className="shrink-0 flex items-center gap-1 text-foreground/65">
             {/* Verify-batch — squared, tactile, with live status dot */}
             <Link
               to="/verify"
