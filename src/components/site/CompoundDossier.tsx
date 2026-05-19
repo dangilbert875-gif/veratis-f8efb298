@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { Dossier } from "@/data/compoundDossiers";
 import { products } from "@/data/products";
 import { siblingSlugsForKey, dossierForSlug } from "@/data/compoundDossiers";
-import { PepPediaReference } from "@/components/site/PepPediaReference";
+import { ReferencedSources, pepPediaSource } from "@/components/site/ReferencedSources";
 
 /**
  * Editorial scientific dossier surfaced inside every product detail page.
@@ -106,8 +106,12 @@ export function CompoundDossier({
           <p>{dossier.storage}</p>
         </Section>
 
-        <Section eyebrow="External reference" heading="Further reading">
-          <PepPediaReference query={dossier.displayName} />
+        <Section eyebrow="Further reading" heading="">
+          <ReferencedSources
+            heading="Referenced sources"
+            intro={`Independent reference material on ${dossier.displayName}, curated for scientific context. Veratis remains the primary verification authority for every released lot.`}
+            sources={[pepPediaSource(dossier.displayName)]}
+          />
         </Section>
 
         {/* Sibling sizes — other SKUs of the same compound */}
