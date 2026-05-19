@@ -55,7 +55,7 @@ export function ProductCard({ p }: { p: Product }) {
         </div>
         <div className="text-right shrink-0">
           <p className="text-[15px] text-ink font-medium tabular-nums">${p.price}</p>
-          <p className={`mt-0.5 text-[10px] font-mono uppercase tracking-[0.16em] ${available ? "text-foreground/45" : "text-foreground/35"}`}>
+          <p className={`mt-0.5 text-[10px] font-mono uppercase tracking-[0.16em] ${available ? "text-foreground/65" : "text-foreground/60"}`}>
             {available ? "Available" : "Reserved"}
           </p>
         </div>

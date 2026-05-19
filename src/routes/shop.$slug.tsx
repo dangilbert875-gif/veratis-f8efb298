@@ -93,9 +93,9 @@ function ProductPage() {
     <Layout>
       <div className="mx-auto max-w-7xl px-6 pt-10 pb-6 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50">
         <Link to="/" className="hover:text-ink transition">Home</Link>
-        <span className="mx-2 text-foreground/25">/</span>
+        <span className="mx-2 text-foreground/55">/</span>
         <Link to="/shop" className="hover:text-ink transition">Catalog</Link>
-        <span className="mx-2 text-foreground/25">/</span>
+        <span className="mx-2 text-foreground/55">/</span>
         <span className="text-ink">{p.name}</span>
       </div>
 

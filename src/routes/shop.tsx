@@ -34,19 +34,19 @@ function ShopPage() {
       <section className="border-y border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
           <div className="flex items-center gap-3">
-            <span className="text-foreground/35">Compounds</span>
+            <span className="text-foreground/60">Compounds</span>
             <span className="text-ink tabular-nums">{String(products.length).padStart(2, "0")}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-foreground/35">Lots on record</span>
+            <span className="text-foreground/60">Lots on record</span>
             <span className="text-ink tabular-nums">{batches.length}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-foreground/35">Mean purity</span>
+            <span className="text-foreground/60">Mean purity</span>
             <span className="text-ink tabular-nums">{avgPurity}%</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-foreground/35">Assayed by</span>
+            <span className="text-foreground/60">Assayed by</span>
             <span className="text-ink normal-case tracking-[0.04em]">{labPartner.name}</span>
           </div>
         </div>
@@ -55,7 +55,7 @@ function ShopPage() {
       <section className="mx-auto max-w-7xl px-6 py-20">
         {/* Filter rail — editorial chips, not pills */}
         <div className="flex flex-wrap items-baseline gap-x-6 gap-y-3 mb-14 pb-6 border-b border-border">
-          <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/45 mr-2">— Filter</span>
+          <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65 mr-2">— Filter</span>
           {["All", ...categories.map((c) => c.name)].map((c) => {
             const active = filter === c;
             return (
