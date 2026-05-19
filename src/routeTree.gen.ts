@@ -14,6 +14,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StandardsRouteImport } from './routes/standards'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
+import { Route as ResearchUseRouteImport } from './routes/research-use'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
@@ -50,6 +51,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
   id: '/shipping-returns',
   path: '/shipping-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchUseRoute = ResearchUseRouteImport.update({
+  id: '/research-use',
+  path: '/research-use',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/privacy': typeof PrivacyRoute
+  '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/privacy': typeof PrivacyRoute
+  '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/privacy': typeof PrivacyRoute
+  '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/how-to-pay'
     | '/lab-testing'
     | '/privacy'
+    | '/research-use'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/how-to-pay'
     | '/lab-testing'
     | '/privacy'
+    | '/research-use'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/how-to-pay'
     | '/lab-testing'
     | '/privacy'
+    | '/research-use'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
@@ -241,6 +253,7 @@ export interface RootRouteChildren {
   HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResearchUseRoute: typeof ResearchUseRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StandardsRoute: typeof StandardsRoute
@@ -285,6 +298,13 @@ declare module '@tanstack/react-router' {
       path: '/shipping-returns'
       fullPath: '/shipping-returns'
       preLoaderRoute: typeof ShippingReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research-use': {
+      id: '/research-use'
+      path: '/research-use'
+      fullPath: '/research-use'
+      preLoaderRoute: typeof ResearchUseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -394,6 +414,7 @@ const rootRouteChildren: RootRouteChildren = {
   HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
   PrivacyRoute: PrivacyRoute,
+  ResearchUseRoute: ResearchUseRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StandardsRoute: StandardsRoute,
