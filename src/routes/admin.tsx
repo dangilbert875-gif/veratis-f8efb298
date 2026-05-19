@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { getViewerContext } from "@/lib/admin.functions";
+import { resolveAdminAccess } from "@/lib/admin-auth.functions";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 
 export const Route = createFileRoute("/admin")({
@@ -17,26 +17,32 @@ export const Route = createFileRoute("/admin")({
 
 function AdminPage() {
   const navigate = useNavigate();
-  const fetchViewer = useServerFn(getViewerContext);
+  const checkAdminAccess = useServerFn(resolveAdminAccess);
   const [state, setState] = useState<
     | { kind: "loading" }
     | { kind: "denied"; reason: string }
-    | { kind: "ready"; viewer: Awaited<ReturnType<typeof getViewerContext>> }
+    | { kind: "ready"; viewer: Awaited<ReturnType<typeof resolveAdminAccess>> }
   >({ kind: "loading" });
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        navigate({ to: "/admin/login" });
-        return;
-      }
       try {
-        const viewer = await fetchViewer();
+        const sessionResult = await withTimeout(supabase.auth.getSession(), 8000, "Supabase session check timed out");
+        const { data, error } = sessionResult;
+        if (error) {
+          if (!cancelled) setState({ kind: "denied", reason: `Supabase query failed: ${error.message}` });
+          return;
+        }
+        if (!data.session) {
+          if (!cancelled) setState({ kind: "denied", reason: "No active session. Redirecting to admin login." });
+          navigate({ to: "/admin/login" });
+          return;
+        }
+        const viewer = await withTimeout(checkAdminAccess(), 10000, "Admin role validation timed out");
         if (cancelled) return;
         if (!viewer.isAdmin) {
-          setState({ kind: "denied", reason: "This account does not have admin privileges." });
+          setState({ kind: "denied", reason: "Access denied — admin role required." });
           return;
         }
         setState({ kind: "ready", viewer });
@@ -48,7 +54,7 @@ function AdminPage() {
     return () => {
       cancelled = true;
     };
-  }, [fetchViewer, navigate]);
+  }, [checkAdminAccess, navigate]);
 
   if (state.kind === "loading") {
     return (
@@ -80,4 +86,20 @@ function AdminPage() {
   }
 
   return <AdminDashboard viewer={state.viewer} />;
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
 }
