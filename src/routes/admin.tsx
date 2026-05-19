@@ -26,20 +26,18 @@ function AdminPage() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    let redirectTimer: number | undefined;
+
+    const validate = async (session: any, source: string) => {
+      console.info("[Admin Guard] validating session", {
+        source,
+        hasSession: Boolean(session),
+        userId: session?.user?.id ?? null,
+        email: session?.user?.email ?? null,
+      });
       try {
-        const sessionResult = await withTimeout(supabase.auth.getSession(), 8000, "Supabase session check timed out");
-        const { data, error } = sessionResult;
-        if (error) {
-          if (!cancelled) setState({ kind: "denied", reason: `Supabase query failed: ${error.message}` });
-          return;
-        }
-        if (!data.session) {
-          if (!cancelled) setState({ kind: "denied", reason: "No active session. Redirecting to admin login." });
-          navigate({ to: "/admin/login" });
-          return;
-        }
         const viewer = await withTimeout(checkAdminAccess(), 10000, "Admin role validation timed out");
+        console.info("[Admin Guard] role check result", { viewer });
         if (cancelled) return;
         if (!viewer.isAdmin) {
           setState({ kind: "denied", reason: "Access denied — admin role required." });
@@ -48,11 +46,62 @@ function AdminPage() {
         setState({ kind: "ready", viewer });
       } catch (err: any) {
         if (cancelled) return;
+        console.error("[Admin Guard] role check failed", err);
+        setState({ kind: "denied", reason: err?.message ?? "Access check failed" });
+      }
+    };
+
+    // Subscribe FIRST so we don't miss any auth event that fires during init.
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      console.info("[Admin Guard] onAuthStateChange", { event, hasSession: Boolean(session), userId: session?.user?.id ?? null });
+      if (cancelled) return;
+      if (session) {
+        if (redirectTimer) {
+          window.clearTimeout(redirectTimer);
+          redirectTimer = undefined;
+        }
+        setState({ kind: "loading" });
+        validate(session, `onAuthStateChange:${event}`);
+      } else if (event === "SIGNED_OUT") {
+        navigate({ to: "/admin/login" });
+      }
+    });
+
+    (async () => {
+      try {
+        const { data, error } = await withTimeout(
+          supabase.auth.getSession(),
+          8000,
+          "Supabase session check timed out",
+        );
+        if (cancelled) return;
+        if (error) {
+          setState({ kind: "denied", reason: `Supabase query failed: ${error.message}` });
+          return;
+        }
+        if (data.session) {
+          await validate(data.session, "getSession");
+          return;
+        }
+        // No session yet — give onAuthStateChange a brief window to deliver
+        // a restored session before redirecting to login.
+        console.info("[Admin Guard] getSession returned no session; waiting briefly for restore");
+        redirectTimer = window.setTimeout(() => {
+          if (cancelled) return;
+          console.warn("[Admin Guard] no session after wait; redirecting to /admin/login");
+          setState({ kind: "denied", reason: "No active session. Redirecting to admin login." });
+          navigate({ to: "/admin/login" });
+        }, 1500);
+      } catch (err: any) {
+        if (cancelled) return;
         setState({ kind: "denied", reason: err?.message ?? "Access check failed" });
       }
     })();
+
     return () => {
       cancelled = true;
+      if (redirectTimer) window.clearTimeout(redirectTimer);
+      sub.subscription.unsubscribe();
     };
   }, [checkAdminAccess, navigate]);
 
