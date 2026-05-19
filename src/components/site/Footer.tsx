@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
-import { batches, labPartner } from "@/data/batches";
+import { batches } from "@/data/batches";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 
 export function Footer() {
   const lotCount = batches.length;
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
-  const lastLot = batches[0];
 
   return (
     <footer className="bg-ink text-background/80 mt-32">
@@ -37,7 +36,7 @@ export function Footer() {
 
       {/* Body: 4 columns + brand block */}
       <div className="mx-auto max-w-7xl px-6 pt-20 pb-16 grid grid-cols-2 md:grid-cols-12 gap-y-12 gap-x-10">
-        <div className="col-span-2 md:col-span-4">
+        <div className="col-span-2 md:col-span-6">
           <Logo className="h-auto w-[140px] opacity-90" />
           <p className="mt-6 text-[13px] text-background/55 leading-[1.75] max-w-xs">
             A verification platform for research peptides. Every lot independently assayed, signed, archived, and publicly retrievable.
@@ -60,38 +59,14 @@ export function Footer() {
           ["Testing standards", "/standards"],
           ["Lab partner", "/lab-testing"],
         ]} />
-        <FooterCol title="Operations" links={[
-          ["How to pay", "/how-to-pay"],
-          ["Shipping & returns", "/shipping-returns"],
-          ["FAQ", "/faq"],
-        ]} />
         <FooterCol title="Company" links={[
           ["About", "/about"],
           ["Education", "/blog"],
+          ["FAQ", "/faq"],
+          ["How to pay", "/how-to-pay"],
+          ["Shipping & returns", "/shipping-returns"],
           ["Contact", "/contact"],
         ]} />
-      </div>
-
-      {/* Operational metadata strip */}
-      <div className="border-t border-background/10">
-        <div className="mx-auto max-w-7xl px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/45">
-          <div>
-            <p className="text-background/35">Accreditation</p>
-            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.iso}</p>
-          </div>
-          <div>
-            <p className="text-background/35">Certification</p>
-            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.accreditation}</p>
-          </div>
-          <div>
-            <p className="text-background/35">Independent laboratory</p>
-            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.name} · {labPartner.city}</p>
-          </div>
-          <div>
-            <p className="text-background/35">Latest release</p>
-            <p className="mt-1 text-background/75 tabular-nums">{lastLot.lot} · {lastLot.testedOn}</p>
-          </div>
-        </div>
       </div>
 
       {/* Legal */}

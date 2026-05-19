@@ -4,10 +4,7 @@ import { Logo } from "./Logo";
 
 const nav = [
   { to: "/shop", label: "Shop" },
-  { to: "/verify", label: "Verify Batch" },
   { to: "/coa-archive", label: "COA Archive" },
-  { to: "/standards", label: "Standards" },
-  { to: "/how-to-pay", label: "How To Pay" },
   { to: "/blog", label: "Education" },
   { to: "/about", label: "About" },
 ] as const;
