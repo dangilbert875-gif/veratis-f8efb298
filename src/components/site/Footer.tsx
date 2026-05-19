@@ -1,13 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import { Logo } from "./Logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border bg-mist mt-24">
       <div className="mx-auto max-w-7xl px-6 py-16 grid grid-cols-2 md:grid-cols-5 gap-10">
         <div className="col-span-2">
-          <span className="font-display text-[1.4rem] tracking-[0.34em] text-ink leading-none block">
-            VERATIS
-          </span>
+          <Logo height={26} />
           <p className="mt-5 text-sm text-muted-foreground max-w-xs leading-relaxed">
             Research-grade peptides with verified purity and full batch documentation.
           </p>
