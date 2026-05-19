@@ -37,8 +37,8 @@ export function Header() {
                 <Link
                   key={n.to}
                   to={n.to}
-                  className="text-foreground/60 hover:text-ink transition"
-                  activeProps={{ className: "text-ink" }}
+                  className="relative text-foreground/60 hover:text-ink transition-colors duration-200 after:content-[''] after:absolute after:left-0 after:-bottom-1.5 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 hover:after:scale-x-100"
+                  activeProps={{ className: "text-ink after:scale-x-100" }}
                 >
                   {n.label}
                 </Link>
