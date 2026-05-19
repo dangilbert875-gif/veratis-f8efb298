@@ -20,6 +20,8 @@ import { Check, ShieldCheck, FlaskConical, Truck, FileText, Snowflake, HelpCircl
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
+import { useState } from "react";
+import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/shop/$slug")({
   loader: ({ params }) => {
@@ -100,6 +102,9 @@ function ProductPage() {
   const lotId = lot?.lot ?? p.lot;
   const title = titleFor(p.name);
   const sizeLabel = sizeFor(p.size);
+  const [qty, setQty] = useState(1);
+  const { addItem } = useCart();
+  const available = p.inStock !== false;
   const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
   const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
@@ -180,12 +185,28 @@ function ProductPage() {
 
           <div className="mt-7 flex gap-3">
             <div className="flex items-center border border-border rounded-[3px]">
-              <button className="px-4 py-3 text-foreground/70 hover:text-ink transition">−</button>
-              <span className="px-3 text-sm tabular-nums">1</span>
-              <button className="px-4 py-3 text-foreground/70 hover:text-ink transition">+</button>
+              <button
+                onClick={() => setQty((q) => Math.max(1, q - 1))}
+                aria-label="Decrease quantity"
+                className="px-4 py-3 text-foreground/70 hover:text-ink transition"
+              >
+                −
+              </button>
+              <span className="px-3 text-sm tabular-nums">{qty}</span>
+              <button
+                onClick={() => setQty((q) => q + 1)}
+                aria-label="Increase quantity"
+                className="px-4 py-3 text-foreground/70 hover:text-ink transition"
+              >
+                +
+              </button>
             </div>
-            <button className="flex-1 bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.16em] px-6 py-3.5 hover:bg-ink/90 transition">
-              Add to cart · ${p.price}
+            <button
+              onClick={() => available && addItem(p, qty)}
+              disabled={!available}
+              className="flex-1 bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.16em] px-6 py-3.5 hover:bg-ink/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {available ? `Add to Cart · $${(p.price * qty).toFixed(0)}` : "Reserved"}
             </button>
           </div>
 
