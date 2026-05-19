@@ -224,3 +224,85 @@ function mapAuthError(err: any): string {
   }
   return raw || "Authentication failed. Please try again.";
 }
+
+function logSupabaseConnectionStatus() {
+  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+  const publicKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
+  const projectRefFromUrl = parseProjectRefFromUrl(url);
+  const projectRefFromKey = parseProjectRefFromJwt(publicKey);
+
+  console.info("[Admin Auth] Supabase connection status", {
+    urlConfigured: Boolean(url),
+    urlHost: getUrlHost(url),
+    publicKeyConfigured: Boolean(publicKey),
+    projectRefFromUrl,
+    projectRefFromKey,
+    projectRefsMatch: Boolean(projectRefFromUrl && projectRefFromKey && projectRefFromUrl === projectRefFromKey),
+  });
+
+  if (!url || !publicKey) return;
+
+  fetch(`${url.replace(/\/$/, "")}/auth/v1/settings`, {
+    headers: { apikey: publicKey },
+  })
+    .then(async (response) => {
+      const payload = await response.json().catch(() => null);
+      console.info("[Admin Auth] Auth settings response", {
+        status: response.status,
+        ok: response.ok,
+        emailPasswordEnabled: Boolean(payload?.external?.email),
+        signupDisabled: Boolean(payload?.disable_signup),
+        emailAutoConfirm: Boolean(payload?.mailer_autoconfirm),
+      });
+    })
+    .catch((err) => {
+      console.error("[Admin Auth] Auth settings request failed", sanitizeAuthError(err));
+    });
+}
+
+function sanitizeAuthResponse(data: any, error: any) {
+  return {
+    hasUser: Boolean(data?.user),
+    userId: data?.user?.id ?? null,
+    email: data?.user?.email ?? null,
+    emailConfirmedAt: data?.user?.email_confirmed_at ?? null,
+    sessionPresent: Boolean(data?.session),
+    accessTokenPresent: Boolean(data?.session?.access_token),
+    refreshTokenPresent: Boolean(data?.session?.refresh_token),
+    expiresAt: data?.session?.expires_at ?? null,
+    error: error ? sanitizeAuthError(error) : null,
+  };
+}
+
+function sanitizeAuthError(err: any) {
+  return {
+    name: err?.name ?? null,
+    message: err?.message ?? String(err ?? ""),
+    status: err?.status ?? null,
+    code: err?.code ?? err?.error_code ?? null,
+  };
+}
+
+function parseProjectRefFromUrl(url: string | undefined) {
+  const host = getUrlHost(url);
+  return host?.endsWith(".supabase.co") ? host.split(".")[0] : null;
+}
+
+function getUrlHost(url: string | undefined) {
+  if (!url) return null;
+  try {
+    return new URL(url).host;
+  } catch {
+    return null;
+  }
+}
+
+function parseProjectRefFromJwt(token: string | undefined) {
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1] ?? ""));
+    return typeof payload?.ref === "string" ? payload.ref : null;
+  } catch {
+    return null;
+  }
+}
