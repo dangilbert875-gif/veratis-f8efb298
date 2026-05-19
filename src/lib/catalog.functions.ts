@@ -325,3 +325,40 @@ export const listArticlesLite = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
+// ───────── Generic archive / restore ─────────
+
+const archivable = z.enum([
+  "products",
+  "educational_articles",
+  "product_lots",
+  "orders",
+  "affiliates",
+  "customer_meta",
+  "research_partners",
+]);
+
+export const archiveRecord = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ table: archivable, id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = authCtx(context);
+    await assertAdmin(supabase, userId);
+    await softDelete(supabase, data.table as any, data.id);
+    return { ok: true };
+  });
+
+export const restoreRecord = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ table: archivable, id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = authCtx(context);
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.rpc("restore", { _table: data.table, _id: data.id });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
