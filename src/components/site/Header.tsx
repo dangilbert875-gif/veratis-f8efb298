@@ -107,14 +107,14 @@ export function Header() {
       </div>
 
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto max-w-7xl px-6 h-[76px] md:h-[92px] flex items-center justify-between gap-8">
+        <div className="mx-auto max-w-7xl px-6 h-[180px] md:h-[240px] flex items-center justify-between gap-8">
           <div className="flex items-center gap-14">
             <Link
               to="/"
               aria-label="VERATIS — home"
               className="shrink-0 block py-2 -my-2 transition-opacity duration-200 hover:opacity-80"
             >
-              <Logo className="h-12 md:h-16" />
+              <Logo className="h-48 md:h-64" />
             </Link>
             <nav className="hidden lg:flex items-center gap-9 text-[12px] font-medium tracking-[0.04em] text-foreground/55">
               {nav.map((n) => (
