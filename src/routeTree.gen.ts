@@ -10,9 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StandardsRouteImport } from './routes/standards'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
+import { Route as ResearchUseRouteImport } from './routes/research-use'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PaymentPolicyRouteImport } from './routes/payment-policy'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -30,6 +34,11 @@ const VerifyRoute = VerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StandardsRoute = StandardsRouteImport.update({
   id: '/standards',
   path: '/standards',
@@ -43,6 +52,21 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
   id: '/shipping-returns',
   path: '/shipping-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResearchUseRoute = ResearchUseRouteImport.update({
+  id: '/research-use',
+  path: '/research-use',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentPolicyRoute = PaymentPolicyRouteImport.update({
+  id: '/payment-policy',
+  path: '/payment-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LabTestingRoute = LabTestingRouteImport.update({
@@ -110,9 +134,13 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/payment-policy': typeof PaymentPolicyRoute
+  '/privacy': typeof PrivacyRoute
+  '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -127,9 +155,13 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/payment-policy': typeof PaymentPolicyRoute
+  '/privacy': typeof PrivacyRoute
+  '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -145,9 +177,13 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/payment-policy': typeof PaymentPolicyRoute
+  '/privacy': typeof PrivacyRoute
+  '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -164,9 +200,13 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/payment-policy'
+    | '/privacy'
+    | '/research-use'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
+    | '/terms'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -181,9 +221,13 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/payment-policy'
+    | '/privacy'
+    | '/research-use'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
+    | '/terms'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -198,9 +242,13 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/payment-policy'
+    | '/privacy'
+    | '/research-use'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
+    | '/terms'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -216,9 +264,13 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
+  PaymentPolicyRoute: typeof PaymentPolicyRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ResearchUseRoute: typeof ResearchUseRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StandardsRoute: typeof StandardsRoute
+  TermsRoute: typeof TermsRoute
   VerifyRoute: typeof VerifyRoute
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
@@ -231,6 +283,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/standards': {
@@ -252,6 +311,27 @@ declare module '@tanstack/react-router' {
       path: '/shipping-returns'
       fullPath: '/shipping-returns'
       preLoaderRoute: typeof ShippingReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/research-use': {
+      id: '/research-use'
+      path: '/research-use'
+      fullPath: '/research-use'
+      preLoaderRoute: typeof ResearchUseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-policy': {
+      id: '/payment-policy'
+      path: '/payment-policy'
+      fullPath: '/payment-policy'
+      preLoaderRoute: typeof PaymentPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lab-testing': {
@@ -353,9 +433,13 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
+  PaymentPolicyRoute: PaymentPolicyRoute,
+  PrivacyRoute: PrivacyRoute,
+  ResearchUseRoute: ResearchUseRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StandardsRoute: StandardsRoute,
+  TermsRoute: TermsRoute,
   VerifyRoute: VerifyRoute,
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
