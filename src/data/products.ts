@@ -19,7 +19,7 @@ export const products: Product[] = [
   {
     slug: "bpc-157",
     name: "BPC-157",
-    category: "Recovery",
+    category: "Tissue Recovery",
     size: "5 mg",
     price: 49,
     purity: "99.4%",
@@ -31,7 +31,7 @@ export const products: Product[] = [
   {
     slug: "tb-500",
     name: "TB-500",
-    category: "Recovery",
+    category: "Tissue Recovery",
     size: "5 mg",
     price: 64,
     purity: "99.1%",
@@ -43,7 +43,7 @@ export const products: Product[] = [
   {
     slug: "ghk-cu",
     name: "GHK-Cu",
-    category: "Skin & Hair",
+    category: "Cellular Longevity",
     size: "50 mg",
     price: 39,
     purity: "99.6%",
@@ -55,7 +55,7 @@ export const products: Product[] = [
   {
     slug: "epitalon",
     name: "Epitalon",
-    category: "Longevity",
+    category: "Cellular Longevity",
     size: "10 mg",
     price: 42,
     purity: "99.2%",
@@ -67,7 +67,7 @@ export const products: Product[] = [
   {
     slug: "semax",
     name: "Semax",
-    category: "Cognition",
+    category: "Neuro Research",
     size: "30 mg",
     price: 55,
     purity: "99.0%",
@@ -79,7 +79,7 @@ export const products: Product[] = [
   {
     slug: "selank",
     name: "Selank",
-    category: "Cognition",
+    category: "Neuro Research",
     size: "10 mg",
     price: 48,
     purity: "99.3%",
@@ -91,7 +91,7 @@ export const products: Product[] = [
   {
     slug: "ipamorelin",
     name: "Ipamorelin",
-    category: "Performance",
+    category: "Performance Research",
     size: "5 mg",
     price: 52,
     purity: "99.5%",
@@ -103,7 +103,7 @@ export const products: Product[] = [
   {
     slug: "melanotan-ii",
     name: "Melanotan II",
-    category: "Skin & Hair",
+    category: "Cellular Longevity",
     size: "10 mg",
     price: 36,
     purity: "99.1%",
@@ -115,10 +115,10 @@ export const products: Product[] = [
 ];
 
 export const categories = [
-  { name: "Recovery", slug: "recovery", count: 6 },
-  { name: "Performance", slug: "performance", count: 5 },
-  { name: "Cognition", slug: "cognition", count: 4 },
-  { name: "Skin & Hair", slug: "skin-hair", count: 7 },
-  { name: "Longevity", slug: "longevity", count: 3 },
-  { name: "Stacks & Bundles", slug: "stacks", count: 8 },
+  { name: "Tissue Recovery", slug: "tissue-recovery", count: 6 },
+  { name: "Performance Research", slug: "performance-research", count: 5 },
+  { name: "Neuro Research", slug: "neuro-research", count: 4 },
+  { name: "Cellular Longevity", slug: "cellular-longevity", count: 7 },
+  { name: "Metabolic Support", slug: "metabolic-support", count: 3 },
+  { name: "Longevity Protocols", slug: "longevity-protocols", count: 8 },
 ];

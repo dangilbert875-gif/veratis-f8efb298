@@ -1,58 +1,108 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
+import { batches, labPartner } from "@/data/batches";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 
 export function Footer() {
+  const lotCount = batches.length;
+  const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
+  const lastLot = batches[0];
+
   return (
-    <footer className="border-t border-border bg-mist mt-24">
-      <div className="mx-auto max-w-7xl px-6 py-16 grid grid-cols-2 md:grid-cols-5 gap-10">
-        <div className="col-span-2">
-          <Logo height={26} />
-          <p className="mt-5 text-sm text-muted-foreground max-w-xs leading-relaxed">
-            Research-grade peptides with verified purity and full batch documentation.
-          </p>
-          <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground/80">
-            VeratisBio.com
-          </p>
-          <form className="mt-6 flex max-w-sm border border-border rounded-md overflow-hidden bg-background">
-            <input
-              type="email"
-              required
-              placeholder="Email address"
-              className="flex-1 px-3 py-2.5 text-sm bg-transparent outline-none"
-            />
-            <button type="submit" className="px-4 text-sm font-medium bg-ink text-background hover:bg-ink/90 transition">
-              Subscribe
-            </button>
-          </form>
+    <footer className="bg-ink text-background/80 mt-32">
+      {/* Top: institutional verification rail */}
+      <div className="border-b border-background/10">
+        <div className="mx-auto max-w-7xl px-6 py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div className="flex items-center gap-3 text-[10.5px] font-mono uppercase tracking-[0.2em] text-background/55">
+            <ShieldCheck size={14} className="text-primary" strokeWidth={1.5} />
+            <span>Verification archive</span>
+            <span className="text-background/20">·</span>
+            <span className="tabular-nums">{lotCount} lots</span>
+            <span className="text-background/20">·</span>
+            <span className="tabular-nums">{avgPurity}% mean purity</span>
+          </div>
+          <Link
+            to="/verify"
+            className="group inline-flex items-center justify-between gap-3 h-11 pl-4 pr-2 rounded-[3px] border border-background/15 bg-background/[0.04] hover:border-primary/60 transition w-full md:w-[340px]"
+          >
+            <span className="font-mono text-[12px] tabular-nums tracking-[0.08em] text-background/55">
+              PP-XXXX
+            </span>
+            <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[2px] bg-primary text-primary-foreground text-[10.5px] font-medium uppercase tracking-[0.16em]">
+              Verify <ArrowRight size={11} />
+            </span>
+          </Link>
         </div>
-        <FooterCol title="Shop" links={[
-          ["Shop all", "/shop"],
-          ["Recovery", "/shop"],
-          ["Cognition", "/shop"],
-          ["Stacks", "/shop"],
+      </div>
+
+      {/* Body: 4 columns + brand block */}
+      <div className="mx-auto max-w-7xl px-6 pt-20 pb-16 grid grid-cols-2 md:grid-cols-12 gap-y-12 gap-x-10">
+        <div className="col-span-2 md:col-span-4">
+          <Logo className="h-auto w-[140px] opacity-90" />
+          <p className="mt-6 text-[13px] text-background/55 leading-[1.75] max-w-xs">
+            A verification platform for research peptides. Every lot independently assayed, signed, archived, and publicly retrievable.
+          </p>
+          <p className="mt-6 text-[10.5px] font-mono uppercase tracking-[0.2em] text-background/40">
+            Veratisbio.com
+          </p>
+        </div>
+
+        <FooterCol title="Catalog" links={[
+          ["All peptides", "/shop"],
+          ["Tissue recovery", "/shop"],
+          ["Neuro research", "/shop"],
+          ["Cellular longevity", "/shop"],
+          ["Performance research", "/shop"],
         ]} />
-        <FooterCol title="Trust" links={[
-          ["Verify batch", "/verify"],
+        <FooterCol title="Verification" links={[
+          ["Verify a batch", "/verify"],
           ["COA archive", "/coa-archive"],
           ["Testing standards", "/standards"],
+          ["Lab partner", "/lab-testing"],
+        ]} />
+        <FooterCol title="Operations" links={[
           ["How to pay", "/how-to-pay"],
-          ["Shipping & Returns", "/shipping-returns"],
+          ["Shipping & returns", "/shipping-returns"],
+          ["FAQ", "/faq"],
         ]} />
         <FooterCol title="Company" links={[
           ["About", "/about"],
           ["Education", "/blog"],
-          ["FAQ", "/faq"],
           ["Contact", "/contact"],
         ]} />
       </div>
-      <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-6 py-8 text-[11px] leading-relaxed text-muted-foreground space-y-3">
+
+      {/* Operational metadata strip */}
+      <div className="border-t border-background/10">
+        <div className="mx-auto max-w-7xl px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/45">
+          <div>
+            <p className="text-background/35">Accreditation</p>
+            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.iso}</p>
+          </div>
+          <div>
+            <p className="text-background/35">Certification</p>
+            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.accreditation}</p>
+          </div>
+          <div>
+            <p className="text-background/35">Independent laboratory</p>
+            <p className="mt-1 text-background/75 normal-case tracking-[0.04em]">{labPartner.name} · {labPartner.city}</p>
+          </div>
+          <div>
+            <p className="text-background/35">Latest release</p>
+            <p className="mt-1 text-background/75 tabular-nums">{lastLot.lot} · {lastLot.testedOn}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Legal */}
+      <div className="border-t border-background/10">
+        <div className="mx-auto max-w-7xl px-6 py-8 text-[11px] leading-relaxed text-background/45 space-y-4">
           <p className="max-w-4xl">
-            Disclaimer: Products are intended for research purposes only and are not intended to diagnose, treat, cure, or prevent any disease. All products sold by VERATIS are for in-vitro laboratory and research use. Not for human or veterinary consumption.
+            For research use only. Products are intended for in-vitro laboratory and research applications and are not intended to diagnose, treat, cure, or prevent any disease. Not for human or veterinary consumption.
           </p>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p>© {new Date().getFullYear()} Veratis · VeratisBio.com · All rights reserved.</p>
-            <p>Made with care in the USA.</p>
+          <div className="flex flex-wrap items-center justify-between gap-3 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/35">
+            <p>© {new Date().getFullYear()} Veratis · All rights reserved</p>
+            <p>Documented · Verified · Archived</p>
           </div>
         </div>
       </div>
@@ -62,12 +112,12 @@ export function Footer() {
 
 function FooterCol({ title, links }: { title: string; links: [string, string][] }) {
   return (
-    <div>
-      <h4 className="text-xs uppercase tracking-[0.18em] text-ink/70 font-sans font-semibold mb-4">{title}</h4>
-      <ul className="space-y-2.5 text-sm">
+    <div className="md:col-span-2">
+      <h4 className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-background/40 mb-5">{title}</h4>
+      <ul className="space-y-3 text-[13px]">
         {links.map(([label, to]) => (
           <li key={label}>
-            <Link to={to} className="text-foreground/75 hover:text-foreground transition">{label}</Link>
+            <Link to={to} className="text-background/75 hover:text-background transition">{label}</Link>
           </li>
         ))}
       </ul>
