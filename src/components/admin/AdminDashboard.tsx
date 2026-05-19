@@ -58,7 +58,7 @@ export function AdminDashboard({ viewer }: { viewer: Viewer }) {
           <button
             onClick={async () => {
               await supabase.auth.signOut();
-              navigate({ to: "/login" });
+              navigate({ to: "/admin/login" });
             }}
             className="mt-2 text-[10px] tracking-[0.2em] uppercase text-foreground/50 hover:text-ink"
           >
