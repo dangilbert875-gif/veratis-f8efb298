@@ -36,7 +36,7 @@ export function Footer() {
 
       {/* Body: 4 columns + brand block */}
       <div className="mx-auto max-w-7xl px-6 pt-20 pb-16 grid grid-cols-2 md:grid-cols-12 gap-y-12 gap-x-10">
-        <div className="col-span-2 md:col-span-4">
+        <div className="col-span-2 md:col-span-6">
           <Logo className="h-auto w-[140px] opacity-90" />
           <p className="mt-6 text-[13px] text-background/55 leading-[1.75] max-w-xs">
             A verification platform for research peptides. Every lot independently assayed, signed, archived, and publicly retrievable.
