@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
+import { Route as HowToPayRouteImport } from './routes/how-to-pay'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CoaArchiveRouteImport } from './routes/coa-archive'
@@ -51,6 +52,11 @@ const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
 const LabTestingRoute = LabTestingRouteImport.update({
   id: '/lab-testing',
   path: '/lab-testing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowToPayRoute = HowToPayRouteImport.update({
+  id: '/how-to-pay',
+  path: '/how-to-pay',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRouteWithChildren
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRouteWithChildren
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/shop': typeof ShopRouteWithChildren
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/coa-archive'
     | '/contact'
     | '/faq'
+    | '/how-to-pay'
     | '/lab-testing'
     | '/shipping-returns'
     | '/shop'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/coa-archive'
     | '/contact'
     | '/faq'
+    | '/how-to-pay'
     | '/lab-testing'
     | '/shipping-returns'
     | '/shop'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/coa-archive'
     | '/contact'
     | '/faq'
+    | '/how-to-pay'
     | '/lab-testing'
     | '/shipping-returns'
     | '/shop'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   CoaArchiveRoute: typeof CoaArchiveRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   ShopRoute: typeof ShopRouteWithChildren
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/lab-testing'
       fullPath: '/lab-testing'
       preLoaderRoute: typeof LabTestingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-to-pay': {
+      id: '/how-to-pay'
+      path: '/how-to-pay'
+      fullPath: '/how-to-pay'
+      preLoaderRoute: typeof HowToPayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -311,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   CoaArchiveRoute: CoaArchiveRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   ShopRoute: ShopRouteWithChildren,

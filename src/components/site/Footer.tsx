@@ -35,6 +35,7 @@ export function Footer() {
           ["Verify batch", "/verify"],
           ["COA archive", "/coa-archive"],
           ["Testing standards", "/standards"],
+          ["How to pay", "/how-to-pay"],
           ["Shipping & Returns", "/shipping-returns"],
         ]} />
         <FooterCol title="Company" links={[
