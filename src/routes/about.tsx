@@ -7,6 +7,9 @@ export const Route = createFileRoute("/about")({
     meta: [
       { title: "About — VERATIS" },
       { name: "description", content: "VERATIS manufactures research-grade peptides with verified purity and full documentation." },
+      { property: "og:title", content: "About — VERATIS" },
+      { property: "og:description", content: "Founded by analytical chemists. Every lot is third-party HPLC and mass-spec verified before release." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/about" },
     ],
   }),
   component: About,

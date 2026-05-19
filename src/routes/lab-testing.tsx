@@ -7,6 +7,9 @@ export const Route = createFileRoute("/lab-testing")({
     meta: [
       { title: "Lab Testing & COA — VERATIS" },
       { name: "description", content: "Every batch is HPLC and mass-spec verified by an independent ISO 17025 lab. Browse certificates of analysis." },
+      { property: "og:title", content: "Lab Testing & COA — VERATIS" },
+      { property: "og:description", content: "Independent ISO 17025 HPLC and mass-spec verification on every lot, with signed certificates of analysis." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/lab-testing" },
     ],
   }),
   component: Page,

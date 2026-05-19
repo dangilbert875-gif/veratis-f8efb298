@@ -7,6 +7,9 @@ export const Route = createFileRoute("/blog")({
     meta: [
       { title: "Education — VERATIS" },
       { name: "description", content: "Reference articles on peptide handling, storage, reconstitution, and laboratory best practice." },
+      { property: "og:title", content: "Education — Reference library for peptide handling" },
+      { property: "og:description", content: "Practical, peer-reviewed-style notes on HPLC purity, reconstitution protocols, cold storage, and reading a COA." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/blog" },
     ],
   }),
   component: Blog,

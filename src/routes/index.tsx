@@ -13,6 +13,31 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
       { name: "description", content: "Premium research peptides with verified purity, third-party COAs, and discreet fast shipping." },
+      { property: "og:title", content: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
+      { property: "og:description", content: "Independently HPLC and mass-spec verified peptides. Public certificates of analysis for every lot." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "VERATIS",
+          url: "https://pure-peptide-labs.lovable.app/",
+          description:
+            "Research-grade peptides with independent ISO 17025 HPLC and mass-spec verification and public certificates of analysis.",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "VERATIS",
+          url: "https://pure-peptide-labs.lovable.app/",
+        }),
+      },
     ],
   }),
   component: Home,
