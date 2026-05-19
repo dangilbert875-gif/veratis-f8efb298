@@ -52,18 +52,48 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     ]);
 
     const orderRows = orders.data ?? [];
+    const paidLike = (o: any) =>
+      ["paid", "shipped", "delivered"].includes(o.status);
+    const now = Date.now();
+    const within = (o: any, fromDaysAgo: number, toDaysAgo = 0) => {
+      const t = new Date(o.created_at).getTime();
+      return t > now - fromDaysAgo * 86400000 && t <= now - toDaysAgo * 86400000;
+    };
+
     const revenue30d = orderRows
-      .filter((o: any) =>
-        ["paid", "shipped", "delivered"].includes(o.status) &&
-        new Date(o.created_at).getTime() > Date.now() - 30 * 86400000,
-      )
+      .filter((o: any) => paidLike(o) && within(o, 30))
       .reduce((s: number, o: any) => s + Number(o.total_usd ?? 0), 0);
+    const revenuePrev30d = orderRows
+      .filter((o: any) => paidLike(o) && within(o, 60, 30))
+      .reduce((s: number, o: any) => s + Number(o.total_usd ?? 0), 0);
+    const orders7d = orderRows.filter((o: any) => within(o, 7)).length;
+    const ordersPrev7d = orderRows.filter((o: any) => within(o, 14, 7)).length;
+
+    // 14-day daily order count series for sparkline (oldest → newest)
+    const series14: number[] = Array.from({ length: 14 }, (_, i) => {
+      const dayIdx = 13 - i; // 13 = 13 days ago, 0 = today
+      return orderRows.filter((o: any) => {
+        const t = new Date(o.created_at).getTime();
+        const start = now - (dayIdx + 1) * 86400000;
+        const end = now - dayIdx * 86400000;
+        return t > start && t <= end;
+      }).length;
+    });
+
+    const profileRows = profiles.data ?? [];
+    const newCustomers30d = profileRows.filter(
+      (p: any) => new Date(p.created_at).getTime() > now - 30 * 86400000,
+    ).length;
 
     return {
       orders: {
         total: orderRows.length,
         pending: orderRows.filter((o: any) => o.status === "pending" || o.status === "awaiting_payment").length,
         revenue30d,
+        revenuePrev30d,
+        orders7d,
+        ordersPrev7d,
+        series14,
       },
       referrals: {
         total: (referrals.data ?? []).length,
@@ -78,7 +108,8 @@ export const getAdminOverview = createServerFn({ method: "GET" })
           .filter((p: any) => p.status !== "sent" && p.status !== "cancelled")
           .reduce((s: number, p: any) => s + Number(p.amount_usd ?? 0), 0),
       },
-      customers: { total: (profiles.data ?? []).length },
+      customers: { total: profileRows.length, new30d: newCustomers30d },
+      generatedAt: new Date().toISOString(),
     };
   });
 
