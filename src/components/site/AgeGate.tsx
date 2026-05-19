@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Logo } from "./Logo";
 
 const STORAGE_KEY = "pp-age-verified";
 
@@ -53,9 +54,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
         >
           <div className="w-full max-w-md bg-background border border-border rounded-2xl shadow-2xl p-8 md:p-10 text-center">
             <div className="flex justify-center">
-              <span className="inline-block w-8 h-8 rounded-full border border-primary relative">
-                <span className="absolute inset-2 rounded-full bg-primary/80" />
-              </span>
+              <Logo height={22} />
             </div>
             <p className="mt-5 text-[11px] uppercase tracking-[0.22em] text-primary">
               Age verification
