@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { findBatch, type Batch, SAMPLE_LOT, labPartner, batches } from "@/data/batches";
-import { BadgeCheck, ShieldCheck, Search, FileText, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
+import { BadgeCheck, Search, FileText, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 type State =
