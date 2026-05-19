@@ -98,7 +98,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
     onClose();
     if (r.kind === "product") navigate({ to: "/shop/$slug", params: { slug: r.slug } });
     else if (r.kind === "article") navigate({ to: "/blog/$slug", params: { slug: r.slug } });
-    else navigate({ to: "/verify", search: { lot: r.lot } as never });
+    else navigate({ to: "/shop/$slug", params: { slug: r.slug } });
   }
 
   return (
