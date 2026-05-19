@@ -179,13 +179,13 @@ function Home() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Featured</p>
-            <h2 className="text-3xl md:text-4xl text-ink">Best-selling peptides</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight [text-wrap:balance]">Best-selling peptides</h2>
           </div>
           <Link to="/shop" className="text-sm text-foreground/70 hover:text-foreground inline-flex items-center gap-1">
             Shop all <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 sm:gap-x-6 gap-y-12 sm:gap-y-12">
           {products.slice(0, 4).map((p) => <ProductCard key={p.slug} p={p} />)}
         </div>
       </section>

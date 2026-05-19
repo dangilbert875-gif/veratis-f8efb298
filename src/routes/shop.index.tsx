@@ -77,7 +77,7 @@ function ShopPage() {
             {String(filtered.length).padStart(2, "0")} results
           </span>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-16">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
           {filtered.map((p) => <ProductCard key={p.slug} p={p} />)}
         </div>
       </section>
