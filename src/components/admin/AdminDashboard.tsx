@@ -118,7 +118,9 @@ function titleFor(id: SectionId): string {
     case "payouts": return "Partner payouts";
     case "products": return "Catalog";
     case "archive": return "Verification archive";
+    case "coa": return "Certificate uploads";
     case "articles": return "Educational publications";
+    case "partners": return "Research partners";
     case "customers": return "Customer registry";
   }
 }
