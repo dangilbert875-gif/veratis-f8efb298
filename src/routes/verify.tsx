@@ -62,19 +62,19 @@ function Page() {
 
   return (
     <Layout>
-      {/* Dark verification terminal */}
-      <section className="bg-ink text-background border-b border-background/10">
-        <div className="mx-auto max-w-7xl px-6 pt-16 md:pt-20 pb-20 md:pb-24">
+      {/* Archive verification terminal */}
+      <section className="archive-surface archive-grain text-background border-b border-background/10 relative overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-6 pt-16 md:pt-20 pb-20 md:pb-24">
           {/* Terminal status bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.22em] text-background/55 border-b border-background/10 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 text-[10px] font-mono uppercase tracking-[0.22em] text-background/65 border-b border-background/10 pb-4">
             <span className="inline-flex items-center gap-2.5">
               <span className="relative inline-flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+                <span className="absolute inline-flex h-full w-full rounded-full bg-primary/40 animate-ping" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary/80" />
               </span>
               veratis-archive · verification terminal
             </span>
-            <span className="tabular-nums hidden sm:inline">
+            <span className="tabular-nums hidden sm:inline text-background/55">
               {stats.count} lots indexed · {stats.mean}% mean · partition 01
             </span>
           </div>
@@ -82,25 +82,22 @@ function Page() {
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 mt-10 md:mt-14">
             {/* Left rail — context */}
             <div className="lg:col-span-5 xl:col-span-4">
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary/90 mb-5">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary/80 mb-5">
                 — Verify batch · retrieval 1.2
               </p>
               <h1 className="font-display text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em] text-background">
                 Authenticate<br />your vial.
               </h1>
-              <p className="mt-6 text-[14.5px] leading-[1.75] text-background/65 max-w-md">
-                Every VERATIS vial leaves our facility with a unique lot identifier
-                printed on the label and on the outer carton tamper seal. Enter the
-                lot to retrieve its original certificate — signed, dated, and held
-                in our permanent archive.
+              <p className="mt-6 text-[14.5px] leading-[1.75] text-background/80 max-w-[34ch]">
+                Every VERATIS vial carries a unique lot identifier printed on the
+                label and the carton tamper seal. Enter it to retrieve the
+                original, signed certificate held in our permanent archive.
               </p>
 
-              <ul className="mt-9 grid grid-cols-1 gap-y-2.5 max-w-md">
+              <ul className="mt-9 grid grid-cols-1 gap-y-3 max-w-md">
                 {trustItems.map((t) => (
-                  <li key={t} className="flex items-baseline gap-3 text-[12.5px] text-background/75">
-                    <span className="font-mono text-[9.5px] tabular-nums tracking-[0.16em] text-primary/80 w-6">
-                      ·
-                    </span>
+                  <li key={t} className="flex items-center gap-3 text-[13px] text-background/85">
+                    <span aria-hidden className="h-px w-5 bg-primary/50 flex-none" />
                     {t}
                   </li>
                 ))}
@@ -114,10 +111,10 @@ function Page() {
                   [labPartner.iso, "Lab accreditation"],
                 ].map(([v, k]) => (
                   <div key={k}>
-                    <dt className="font-display text-[1.4rem] text-background leading-none tabular-nums tracking-[-0.01em]">
+                    <dt className="font-display text-[1.45rem] text-background leading-none tabular-nums tracking-[-0.01em]">
                       {v}
                     </dt>
-                    <dd className="mt-2 text-[9.5px] font-mono uppercase tracking-[0.18em] text-background/45">
+                    <dd className="mt-2.5 text-[9.5px] font-mono uppercase tracking-[0.2em] text-background/60">
                       {k}
                     </dd>
                   </div>
@@ -128,7 +125,7 @@ function Page() {
             {/* Right — verification module */}
             <div className="lg:col-span-7 xl:col-span-8">
               <BatchVerify />
-              <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.2em] text-background/40 flex flex-wrap items-center justify-between gap-2">
+              <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.2em] text-background/55 flex flex-wrap items-center justify-between gap-2">
                 <span>Retrieved from permanent archive · revision 1.2</span>
                 <span className="tabular-nums">Specimen lot · {SAMPLE_LOT}</span>
               </p>
