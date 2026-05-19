@@ -55,23 +55,31 @@ function AdminLoginPage() {
         });
         console.info("[Admin Auth] signInWithPassword response", sanitizeAuthResponse(data, error));
         if (error) throw error;
-        // Verify admin role before redirecting
+        console.info("[Admin Auth] login success", {
+          userId: data.user?.id ?? null,
+          email: data.user?.email ?? null,
+          sessionPresent: Boolean(data.session),
+          accessTokenPresent: Boolean(data.session?.access_token),
+        });
+        // Verify the session was persisted to storage before navigating.
+        const verify = await supabase.auth.getSession();
+        console.info("[Admin Auth] post-login getSession", {
+          hasSession: Boolean(verify.data.session),
+          userId: verify.data.session?.user?.id ?? null,
+        });
+        // Look up role for logging only — do NOT sign out on missing role.
+        // The admin guard will decide access and show "Access denied".
         if (data.user) {
           const { data: roles, error: roleErr } = await supabase
             .from("user_roles")
             .select("role")
             .eq("user_id", data.user.id);
-          console.info("[Admin Auth] Admin role verification response", {
+          console.info("[Admin Auth] profile/role lookup", {
             userId: data.user.id,
             roles: (roles ?? []).map((r: any) => r.role),
+            roleValue: (roles ?? []).map((r: any) => r.role).join(",") || null,
             error: roleErr ? sanitizeAuthError(roleErr) : null,
           });
-          if (roleErr) throw new Error("Could not verify account role. " + roleErr.message);
-          const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
-          if (!isAdmin) {
-            await supabase.auth.signOut();
-            throw new Error("MISSING_ADMIN_ROLE");
-          }
         }
       } else {
         console.info("[Admin Auth] signUp request", {
