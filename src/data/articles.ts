@@ -8,7 +8,8 @@ export type ArticleCategory =
   | "Endotoxin Standards"
   | "Verification Systems"
   | "Mass Spectrometry"
-  | "Laboratory Protocol";
+  | "Laboratory Protocol"
+  | "Compound Reference";
 
 export type ArticleSection =
   | { kind: "p"; text: string }
@@ -39,6 +40,7 @@ export type Article = {
   relatedCompounds?: string[]; // product slugs
   archiveLots?: string[];      // batch lots
   references: string[];
+  faq?: { q: string; a: string }[];
   body: ArticleSection[];
 };
 
@@ -51,6 +53,7 @@ export const categories: ArticleCategory[] = [
   "Endotoxin Standards",
   "Verification Systems",
   "Laboratory Protocol",
+  "Compound Reference",
 ];
 
 export const articles: Article[] = [
