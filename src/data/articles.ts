@@ -54,7 +54,122 @@ export const categories: ArticleCategory[] = [
   "Verification Systems",
   "Laboratory Protocol",
   "Compound Reference",
+  {
+    slug: "what-is-bpc-157",
+    title: "What Is BPC-157?",
+    deck: "An overview of the synthetic pentadecapeptide commonly referenced in regenerative research literature.",
+    category: "Compound Reference",
+    readMinutes: 8,
+    publishedOn: "2026-05-12",
+    updatedOn: "2026-05-18",
+    author: "VERATIS Reference desk",
+    reviewedBy: "VERATIS Analytical",
+    revision: "1.0",
+    image: lab,
+    featured: true,
+    mostReferenced: true,
+    pullQuote:
+      "BPC-157 is a defined 15-residue sequence with a well-characterized analytical profile — the literature around it is what remains contested.",
+    relatedCompounds: ["bpc-157-12mg", "tb-500-fragment-12mg", "ghk-cu-100mg", "bpc-tb-500-blend"],
+    archiveLots: ["PP-2612", "PP-2611"],
+    references: [
+      "Sikiric, P. et al. The pentadecapeptide BPC 157 and the cytoprotection concept. Curr. Pharm. Des. (2018).",
+      "Seiwerth, S. et al. BPC 157 and standard angiogenic growth factors. Front. Pharmacol. (2021).",
+      "Chang, C.-H. et al. The promoting effect of pentadecapeptide BPC 157 on tendon healing. J. Appl. Physiol. (2011).",
+      "ICH Q6A — Specifications for new drug substances and products.",
+      "USP <1047> Biotechnology-derived articles — peptide analysis.",
+    ],
+    faq: [
+      {
+        q: "Is BPC-157 a naturally occurring peptide?",
+        a: "The 15-residue sequence is derived from a partial sequence reported in human gastric juice, but the research compound supplied under the BPC-157 name is produced synthetically by solid-phase peptide synthesis. It is not extracted from a biological source.",
+      },
+      {
+        q: "What does a BPC-157 certificate of analysis typically report?",
+        a: "A complete release record reports identity by ESI-MS, purity by RP-HPLC with the detection wavelength and gradient declared, water content by Karl Fischer titration, endotoxin by LAL, appearance, and the lot-specific manufacture and release dates.",
+      },
+      {
+        q: "How should lyophilized BPC-157 be stored?",
+        a: "Sealed lyophilized vials are typically stored at −20 °C protected from light and moisture. Reconstituted working stocks are stored refrigerated for short windows or aliquoted and frozen to minimize freeze-thaw cycles.",
+      },
+      {
+        q: "What does 99% purity actually mean on a BPC-157 lot?",
+        a: "It is an area-percent figure: the integrated area of the main HPLC peak divided by the total integrated UV area at a stated wavelength. It does not account for counter-ions, residual solvents, water content, or endotoxin, which are reported separately on a full release panel.",
+      },
+      {
+        q: "Is BPC-157 approved for human therapeutic use?",
+        a: "No. BPC-157 is a research compound supplied for in-vitro laboratory and reference use only. It is not an approved pharmaceutical product in major regulatory jurisdictions.",
+      },
+    ],
+    body: [
+      { kind: "h", text: "Overview" },
+      { kind: "p", text: "BPC-157 — Body Protection Compound 157 — is a synthetic 15-residue peptide widely referenced in the regenerative and cytoprotection literature. The sequence corresponds to a fragment first described in studies of human gastric juice and is supplied today as a research-use synthetic compound rather than as a biologically extracted material." },
+      { kind: "p", text: "Its prominence in preclinical literature comes less from a single landmark finding than from a sustained body of in-vitro and animal work exploring tissue signaling, vascular response, and gastrointestinal protection. For the analytical chemist, BPC-157 is also a useful reference subject: the molecule itself is well defined, while the literature around it remains a fast-moving target." },
+      { kind: "definition", term: "Pentadecapeptide", body: "A peptide composed of fifteen amino acid residues. The BPC-157 sequence is reported as Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val." },
+      { kind: "quote", text: "BPC-157 is a defined 15-residue sequence with a well-characterized analytical profile — the literature around it is what remains contested." },
+
+      { kind: "h", text: "Molecular Background" },
+      { kind: "p", text: "The compound is a linear pentadecapeptide assembled by solid-phase peptide synthesis (SPPS), most commonly using Fmoc chemistry, followed by cleavage, precipitation, and reverse-phase HPLC purification. The high proline content of the sequence contributes to a relatively rigid backbone and to the resistance to gastric proteolysis frequently noted in early literature." },
+      { kind: "p", text: "Because the molecule contains no cysteine residues, it carries no disulfide bridges; identity confirmation by mass spectrometry is therefore straightforward — the deconvoluted intact mass is compared directly to the theoretical mass calculated from the sequence. The absence of aromatic residues other than the proline ring system means RP-HPLC purity is typically read at 214 nm, where the amide bond absorbs, rather than at 280 nm." },
+      { kind: "table", head: ["Field", "Reported value"], rows: [
+        ["Compound", "Body Protection Compound 157 (BPC-157)"],
+        ["Length", "15 residues (pentadecapeptide)"],
+        ["Sequence", "Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val"],
+        ["Molecular formula", "C62H98N16O22"],
+        ["Average mass", "1419.5 Da"],
+        ["Origin", "Synthetic, SPPS (Fmoc)"],
+        ["Disulfide bridges", "None"],
+        ["Detection wavelength", "214 nm (amide bond)"],
+      ]},
+
+      { kind: "h", text: "Research Interest" },
+      { kind: "p", text: "Areas commonly explored in the preclinical literature include tissue signaling, angiogenic response, and the broader cytoprotection model first articulated by the group that introduced the sequence. Studies in animal models have examined musculoskeletal recovery endpoints — particularly tendon and ligament — as well as gastrointestinal mucosal response and modulation of inflammatory pathways." },
+      { kind: "p", text: "These reports remain primarily preclinical. They describe proposed mechanisms and observed effects in defined laboratory systems; they do not establish therapeutic efficacy in human populations, and the regulatory status of the compound reflects that distinction." },
+      { kind: "list", items: [
+        "Tissue and tendon recovery research in rodent models.",
+        "Angiogenesis and VEGF pathway interest in cell culture.",
+        "Gastrointestinal mucosal protection in animal studies.",
+        "Exploratory work on neurological and vascular response.",
+      ]},
+
+      { kind: "h", text: "Lyophilization & Storage" },
+      { kind: "p", text: "Like most research peptides, BPC-157 is supplied lyophilized. Removing bulk water from the formulation stabilizes the peptide for transport and long-term storage by suppressing the hydrolytic and oxidative pathways that drive degradation in solution. A correctly lyophilized vial presents as a uniform white cake or pellet under the stopper, sealed under nitrogen." },
+      { kind: "p", text: "Once reconstituted, the same peptide is governed by liquid-state kinetics. Storage conditions, the choice of solvent system, the pH and ionic strength of the working stock, and the number of freeze-thaw cycles the aliquot has experienced all measurably affect chromatographic profile over weeks." },
+      { kind: "list", items: [
+        "Lyophilized vials: −20 °C, protected from light and moisture.",
+        "Reconstituted stocks: refrigerated for short windows or aliquoted and frozen.",
+        "Avoid repeated freeze-thaw cycles on the same aliquot.",
+        "Cold-chain transit reduces in-transit thermal excursions but does not replace storage discipline at the bench.",
+      ]},
+
+      { kind: "h", text: "Analytical Verification" },
+      { kind: "p", text: "A defensible release record for a BPC-157 lot rests on a small set of orthogonal measurements. None of them on its own constitutes a complete identity-and-purity statement; together they bound what the material in the vial is, and what it is not." },
+      { kind: "table", head: ["Method", "What it answers"], rows: [
+        ["RP-HPLC (UV)", "Area-percent purity at a declared wavelength and gradient."],
+        ["ESI-MS", "Identity by intact mass against the theoretical sequence mass."],
+        ["LAL", "Endotoxin load reported in EU/mg against a specification limit."],
+        ["Karl Fischer", "Residual water content as a percentage of the lyophilized cake."],
+        ["Visual + appearance", "Cake integrity, color, vacuum seal."],
+      ]},
+      { kind: "p", text: "On every VERATIS lot these results are signed by an independent ISO 17025 accredited laboratory, archived against the lot number, and resolvable for the life of the product. The verification philosophy is conservative by design: identity, purity, endotoxin, and water are each reported separately, with the method declared, so that the COA is a defensible release record rather than a single composite score." },
+
+      { kind: "h", text: "Common Misconceptions" },
+      { kind: "p", text: "Several familiar misunderstandings recur in the consumer-facing market for research peptides. They are worth naming explicitly because each one corresponds to a specific analytical fact." },
+      { kind: "list", items: [
+        "“99% purity” is a complete quality statement. It is not — it is an area-percent figure from a single chromatographic method at one wavelength, and it is silent on identity, endotoxin, and water.",
+        "Identity and purity are the same measurement. They are not. HPLC quantifies; mass spectrometry identifies. A lot can be 99.5% pure and still be the wrong molecule.",
+        "A COA is universal across a product. A COA is lot-specific. The same product, two different lots, will have two distinct certificates and two distinct lot numbers.",
+        "Recycled or generic COAs are equivalent to lot-specific documents. They are not, and the presence of an identical COA across multiple shipments is itself a red flag.",
+      ]},
+
+      { kind: "h", text: "Current Research Landscape" },
+      { kind: "p", text: "The current body of BPC-157 literature is predominantly preclinical: animal models of injury and recovery, in-vitro work on vascular and cell-migration endpoints, and a smaller body of formulation and pharmacokinetic studies. Reviews and methodology papers continue to appear; controlled human clinical evidence remains limited." },
+      { kind: "p", text: "For the working researcher, the practical posture this implies is straightforward. The molecule is defined and analytically tractable. The mechanism literature is genuinely active. The therapeutic claims occasionally attached to the compound in non-scientific channels are not supported by the present human evidence base, and treating them as established overstates what the literature can carry." },
+    ],
+  },
 ];
+
+// Replace the previous closing of the array
 
 export const articles: Article[] = [
   {
