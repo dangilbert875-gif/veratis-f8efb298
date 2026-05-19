@@ -18,7 +18,9 @@ function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -29,24 +31,66 @@ function AdminLoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setInfo(null);
     setLoading(true);
     try {
       if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim().toLowerCase(),
+          password,
+        });
         if (error) throw error;
+        // Verify admin role before redirecting
+        if (data.user) {
+          const { data: roles, error: roleErr } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", data.user.id);
+          if (roleErr) throw new Error("Could not verify account role. " + roleErr.message);
+          const isAdmin = (roles ?? []).some((r: any) => r.role === "admin");
+          if (!isAdmin) {
+            await supabase.auth.signOut();
+            throw new Error("MISSING_ADMIN_ROLE");
+          }
+        }
       } else {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: email.trim().toLowerCase(),
           password,
           options: { emailRedirectTo: window.location.origin + "/admin" },
         });
         if (error) throw error;
+        setInfo("Account created. If email confirmation is required, check your inbox before signing in.");
+        setMode("signin");
+        setLoading(false);
+        return;
       }
       navigate({ to: "/admin" });
     } catch (err: any) {
-      setError(err.message ?? "Authentication failed");
+      setError(mapAuthError(err));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sendReset = async () => {
+    setError(null);
+    setInfo(null);
+    if (!email.trim()) {
+      setError("Enter your email above, then tap reset password.");
+      return;
+    }
+    setResetting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+        redirectTo: window.location.origin + "/admin/login",
+      });
+      if (error) throw error;
+      setInfo("Password reset link sent. Check your inbox.");
+    } catch (err: any) {
+      setError(mapAuthError(err));
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -91,6 +135,9 @@ function AdminLoginPage() {
             {error && (
               <div className="text-[12px] text-red-700 border-l-2 border-red-700/40 pl-3 py-1">{error}</div>
             )}
+            {info && (
+              <div className="text-[12px] text-emerald-800 border-l-2 border-emerald-700/40 pl-3 py-1">{info}</div>
+            )}
             <button
               type="submit"
               disabled={loading}
@@ -99,7 +146,18 @@ function AdminLoginPage() {
               {loading ? "…" : mode === "signin" ? "Enter console" : "Create"}
             </button>
           </form>
-          <div className="mt-5 text-center">
+          <div className="mt-5 text-center space-y-2">
+            {mode === "signin" && (
+              <div>
+                <button
+                  onClick={sendReset}
+                  disabled={resetting}
+                  className="text-[11px] tracking-[0.12em] uppercase text-foreground/50 hover:text-ink transition-colors disabled:opacity-50"
+                >
+                  {resetting ? "Sending…" : "Reset password"}
+                </button>
+              </div>
+            )}
             <button
               onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
               className="text-[11px] tracking-[0.12em] uppercase text-foreground/50 hover:text-ink transition-colors"
@@ -111,4 +169,31 @@ function AdminLoginPage() {
       </div>
     </div>
   );
+}
+
+function mapAuthError(err: any): string {
+  const raw: string = (err?.message ?? "").toString();
+  const code: string = (err?.code ?? err?.error_code ?? "").toString();
+  if (raw === "MISSING_ADMIN_ROLE") {
+    return "This account is not authorized for the admin console. Contact an existing administrator to grant the admin role.";
+  }
+  if (code === "email_not_confirmed" || /not confirmed/i.test(raw)) {
+    return "Email not confirmed. Check your inbox for the verification link before signing in.";
+  }
+  if (code === "user_not_found" || /user not found/i.test(raw)) {
+    return "No account exists for that email. Use ‘Need credentials?’ to create one.";
+  }
+  if (code === "invalid_credentials" || /invalid login credentials/i.test(raw)) {
+    return "Email or password is incorrect. If you just created the account, confirm your email first; otherwise reset your password.";
+  }
+  if (code === "over_email_send_rate_limit" || /rate limit/i.test(raw)) {
+    return "Too many attempts. Wait a minute and try again.";
+  }
+  if (/fetch|network|failed to fetch/i.test(raw)) {
+    return "Cannot reach the authentication server. Check your network connection or the backend configuration.";
+  }
+  if (/weak.?password|password.*short/i.test(raw)) {
+    return "Password is too weak. Use at least 8 characters with a mix of letters and numbers.";
+  }
+  return raw || "Authentication failed. Please try again.";
 }
