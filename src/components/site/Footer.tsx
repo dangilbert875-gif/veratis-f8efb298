@@ -5,14 +5,14 @@ export function Footer() {
     <footer className="border-t border-border bg-mist mt-24">
       <div className="mx-auto max-w-7xl px-6 py-16 grid grid-cols-2 md:grid-cols-5 gap-10">
         <div className="col-span-2">
-          <div className="flex items-center gap-2">
-            <span className="inline-block w-6 h-6 rounded-full border border-primary relative">
-              <span className="absolute inset-1.5 rounded-full bg-primary/80" />
-            </span>
-            <span className="font-display text-xl tracking-tight text-ink">VERATIS</span>
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground max-w-xs">
+          <span className="font-display text-[1.4rem] tracking-[0.34em] text-ink leading-none block">
+            VERATIS
+          </span>
+          <p className="mt-5 text-sm text-muted-foreground max-w-xs leading-relaxed">
             Research-grade peptides with verified purity and full batch documentation.
+          </p>
+          <p className="mt-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground/80">
+            VeratisBio.com
           </p>
           <form className="mt-6 flex max-w-sm border border-border rounded-md overflow-hidden bg-background">
             <input
@@ -51,7 +51,7 @@ export function Footer() {
             Disclaimer: Products are intended for research purposes only and are not intended to diagnose, treat, cure, or prevent any disease. All products sold by VERATIS are for in-vitro laboratory and research use. Not for human or veterinary consumption.
           </p>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p>© {new Date().getFullYear()} Veratis. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Veratis · VeratisBio.com · All rights reserved.</p>
             <p>Made with care in the USA.</p>
           </div>
         </div>
