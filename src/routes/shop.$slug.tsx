@@ -5,6 +5,17 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { batches, labPartner } from "@/data/batches";
 import { LotTag } from "@/components/site/LotTag";
 import { VialImage } from "@/components/site/VialImage";
+
+function titleFor(name: string) {
+  return name
+    .replace(/\s*\d[\d,]*\s*mg(\s*\/\s*\d[\d,]*\s*mg)?/gi, "")
+    .replace(/\s*VIAL\s*$/i, " Vial")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+function sizeFor(size: string) {
+  return size.replace(/\bMG\b/g, "mg").replace(/\s*\/\s*/g, " / ").replace(/\s{2,}/g, " ").trim();
+}
 import { Check, ShieldCheck, FlaskConical, Truck, FileText, Snowflake, HelpCircle } from "lucide-react";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
@@ -87,6 +98,8 @@ function ProductPage() {
   const { product: p } = Route.useLoaderData();
   const lot = batches.find((b) => b.slug === p.slug);
   const lotId = lot?.lot ?? p.lot;
+  const title = titleFor(p.name);
+  const sizeLabel = sizeFor(p.size);
   const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
   const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
@@ -97,7 +110,7 @@ function ProductPage() {
         <span className="mx-2 text-foreground/55">/</span>
         <Link to="/shop" className="hover:text-ink transition">Catalog</Link>
         <span className="mx-2 text-foreground/55">/</span>
-        <span className="text-ink">{p.name}</span>
+        <span className="text-ink">{title}</span>
       </div>
 
       <section className="mx-auto max-w-7xl px-6 pb-20 grid md:grid-cols-12 gap-12 lg:gap-20">
@@ -111,20 +124,20 @@ function ProductPage() {
             ))}
             <div className="absolute inset-0">
               <VialImage
-                name={p.name.replace(/ VIAL$/i, "")}
+                name={p.name}
                 dosage={p.dosage}
                 lot={lotId}
                 purity={p.purity}
                 size="detail"
-                alt={`${p.name} — lyophilized research vial`}
+                alt={`${title} — lyophilized research vial`}
               />
             </div>
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/55">
-              <span>Specimen · {p.name}</span>
+              <span>Specimen · {title}</span>
               <span className="tabular-nums">LOT {lotId}</span>
             </div>
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/50">
-              <span>{p.size} · Lyophilized · {p.purity} HPLC</span>
+              <span>{sizeLabel} · Lyophilized · {p.purity} HPLC</span>
               <span>Format A · 1:1</span>
             </div>
           </div>
@@ -136,18 +149,18 @@ function ProductPage() {
             <span className="h-px w-6 bg-foreground/20" />
             <LotTag lot={lotId} status="verified" linked />
           </div>
-          <h1 className="mt-5 text-4xl md:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.022em]">{p.name}</h1>
+          <h1 className="mt-5 text-4xl md:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.022em]">{title}</h1>
           <p className="mt-5 text-[15px] text-muted-foreground leading-relaxed">{p.short}</p>
 
           <div className="mt-9 flex items-baseline gap-3 pb-6 border-b border-border">
             <span className="font-display text-[2.25rem] text-ink tabular-nums leading-none">${p.price}</span>
-            <span className="text-[12px] font-mono uppercase tracking-[0.16em] text-foreground/55">/ {p.size} vial</span>
+            <span className="text-[12px] font-mono uppercase tracking-[0.16em] text-foreground/55">/ {sizeLabel}</span>
           </div>
 
           {/* Specification block — reads like a lab document, not a product card */}
           <dl className="mt-7 border border-border rounded-[3px] divide-y divide-border bg-background">
             {[
-              ["Identity", `${p.name}, confirmed by ESI-MS`],
+              ["Identity", `${title}, confirmed by ESI-MS`],
               ["Purity (HPLC)", `${p.purity}`],
               ["Endotoxin", lot?.endotoxin ?? "< 0.5 EU/mg"],
               ["Water content", lot?.water ?? "< 2.5%"],
