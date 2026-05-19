@@ -29,7 +29,7 @@ function AdminPage() {
     (async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
-        navigate({ to: "/login" });
+        navigate({ to: "/admin/login" });
         return;
       }
       try {
@@ -68,7 +68,7 @@ function AdminPage() {
           <button
             onClick={async () => {
               await supabase.auth.signOut();
-              navigate({ to: "/login" });
+              navigate({ to: "/admin/login" });
             }}
             className="text-[11px] tracking-[0.18em] uppercase text-foreground/60 hover:text-ink border-b border-ink/30 pb-0.5"
           >
