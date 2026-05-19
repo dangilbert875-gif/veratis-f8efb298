@@ -19,6 +19,7 @@ type CartContextValue = {
   count: number;
   subtotal: number;
   isOpen: boolean;
+  lastAddedAt: number;
   openCart: () => void;
   closeCart: () => void;
   addItem: (p: Product, qty?: number) => void;
@@ -34,6 +35,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [lastAddedAt, setLastAddedAt] = useState(0);
 
   useEffect(() => {
     try {
@@ -78,6 +80,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
       ];
     });
+    setLastAddedAt(Date.now());
     setIsOpen(true);
   }, []);
 
@@ -103,6 +106,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         count,
         subtotal,
         isOpen,
+        lastAddedAt,
         openCart: () => setIsOpen(true),
         closeCart: () => setIsOpen(false),
         addItem,

@@ -92,7 +92,7 @@ export function ProductCard({ p }: { p: Product }) {
           if (available) addItem(p, 1);
         }}
         disabled={!available}
-        className="mt-4 w-full inline-flex items-center justify-center h-10 border border-ink/20 rounded-[3px] text-[10.5px] font-medium uppercase tracking-[0.22em] text-ink bg-background transition-colors duration-200 hover:bg-ink hover:text-background hover:border-ink disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-ink"
+        className="mt-4 w-full inline-flex items-center justify-center h-10 border border-ink/20 rounded-[3px] text-[10.5px] font-medium uppercase tracking-[0.22em] text-ink bg-background transition-all duration-200 hover:bg-ink hover:text-background hover:border-ink hover:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_20px_-10px_rgba(15,23,42,0.25)] active:scale-[0.985] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-ink disabled:hover:shadow-none"
       >
         {available ? "Add to Cart" : "Reserved"}
       </button>

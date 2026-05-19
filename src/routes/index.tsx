@@ -7,6 +7,8 @@ import { FlaskConical, ShieldCheck, Lock, ArrowRight, Microscope, PackageCheck, 
 import { BatchVerify } from "@/components/site/BatchVerify";
 import { LotTag, ArchiveIndexStrip } from "@/components/site/LotTag";
 import { batches, labPartner } from "@/data/batches";
+import { ArchiveActivity } from "@/components/site/ArchiveActivity";
+import { WhyVeratis } from "@/components/site/WhyVeratis";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -188,6 +190,8 @@ function Home() {
         </div>
       </section>
 
+      <ArchiveActivity />
+
       {/* Our Testing Process */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="max-w-2xl">
@@ -287,6 +291,8 @@ function Home() {
           ))}
         </div>
       </section>
+
+      <WhyVeratis />
 
       {/* Operational metrics — replaces testimonials */}
       <section className="mx-auto max-w-7xl px-6 py-24">
