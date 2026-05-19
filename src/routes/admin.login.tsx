@@ -1,6 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+
+type AdminDebugState = {
+  userId: string | null;
+  sessionExists: boolean;
+  profileRole: string | null;
+  routeStatus: string;
+  lastAuthError: string | null;
+};
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
@@ -14,118 +22,105 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [resetting, setResetting] = useState(false);
+  const [debug, setDebug] = useState<AdminDebugState>({
+    userId: null,
+    sessionExists: false,
+    profileRole: null,
+    routeStatus: "Login page ready",
+    lastAuthError: null,
+  });
 
   useEffect(() => {
     logSupabaseConnectionStatus();
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(({ data, error }) => {
       console.info("[Admin Auth] Existing session check", {
         hasSession: Boolean(data.session),
         userId: data.session?.user?.id ?? null,
         email: data.session?.user?.email ?? null,
+        error: error ? sanitizeAuthError(error) : null,
       });
-      if (data.session) navigate({ to: "/admin" });
+      setDebug((current) => ({
+        ...current,
+        userId: data.session?.user?.id ?? null,
+        sessionExists: Boolean(data.session),
+        routeStatus: data.session ? "Existing session found" : "No session on login page",
+        lastAuthError: error?.message ?? null,
+      }));
     }).catch((err) => {
       console.error("[Admin Auth] Session check failed", sanitizeAuthError(err));
+      setDebug((current) => ({ ...current, lastAuthError: err?.message ?? String(err), routeStatus: "Session check failed" }));
     });
-  }, [navigate]);
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setInfo(null);
     setLoading(true);
+    setDebug((current) => ({ ...current, routeStatus: "Signing in", lastAuthError: null }));
     try {
-      if (mode === "signin") {
-        const normalizedEmail = email.trim().toLowerCase();
-        console.info("[Admin Auth] signInWithPassword request", {
-          email: normalizedEmail,
-          passwordProvided: Boolean(password),
-          passwordLength: password.length,
-        });
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: normalizedEmail,
-          password,
-        });
-        console.info("[Admin Auth] signInWithPassword response", sanitizeAuthResponse(data, error));
-        if (error) throw error;
-        console.info("[Admin Auth] login success", {
-          userId: data.user?.id ?? null,
-          email: data.user?.email ?? null,
-          sessionPresent: Boolean(data.session),
-          accessTokenPresent: Boolean(data.session?.access_token),
-        });
-        // Verify the session was persisted to storage before navigating.
-        const verify = await supabase.auth.getSession();
-        console.info("[Admin Auth] post-login getSession", {
-          hasSession: Boolean(verify.data.session),
-          userId: verify.data.session?.user?.id ?? null,
-        });
-        // Look up role for logging only — do NOT sign out on missing role.
-        // The admin guard will decide access and show "Access denied".
-        if (data.user) {
-          const { data: roles, error: roleErr } = await supabase
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", data.user.id);
-          console.info("[Admin Auth] profile/role lookup", {
-            userId: data.user.id,
-            roles: (roles ?? []).map((r: any) => r.role),
-            roleValue: (roles ?? []).map((r: any) => r.role).join(",") || null,
-            error: roleErr ? sanitizeAuthError(roleErr) : null,
-          });
-        }
-      } else {
-        console.info("[Admin Auth] signUp request", {
-          email: email.trim().toLowerCase(),
-          passwordProvided: Boolean(password),
-          passwordLength: password.length,
-        });
-        const { error } = await supabase.auth.signUp({
-          email: email.trim().toLowerCase(),
-          password,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
-        });
-        console.info("[Admin Auth] signUp response", { error: error ? sanitizeAuthError(error) : null });
-        if (error) throw error;
-        setInfo("Account created. If email confirmation is required, check your inbox before signing in.");
-        setMode("signin");
-        setLoading(false);
-        return;
-      }
-      navigate({ to: "/admin" });
+      const normalizedEmail = email.trim().toLowerCase();
+      console.info("[Admin Auth] signInWithPassword request", {
+        email: normalizedEmail,
+        passwordProvided: Boolean(password),
+        passwordLength: password.length,
+      });
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      });
+      console.info("[Admin Auth] signInWithPassword response", sanitizeAuthResponse(data, error));
+      if (error) throw error;
+
+      const sessionCheck = await supabase.auth.getSession();
+      const role = data.user ? await getAdminRoleForDebug(data.user.id) : null;
+      console.info("[Admin Auth] login success", {
+        userId: data.user?.id ?? null,
+        email: data.user?.email ?? null,
+        sessionPresent: Boolean(sessionCheck.data.session),
+        role,
+      });
+
+      setDebug({
+        userId: data.user?.id ?? null,
+        sessionExists: Boolean(sessionCheck.data.session),
+        profileRole: role,
+        routeStatus: "Login success — redirecting to dashboard",
+        lastAuthError: null,
+      });
+      setInfo("Login successful. Opening dashboard…");
+      navigate({ to: "/admin/dashboard", replace: true });
     } catch (err: any) {
       console.error("[Admin Auth] Authentication flow failed", sanitizeAuthError(err));
       setError(mapAuthError(err));
+      setDebug((current) => ({
+        ...current,
+        routeStatus: "Login failed",
+        lastAuthError: err?.message ?? String(err),
+      }));
     } finally {
       setLoading(false);
     }
   };
 
-  const sendReset = async () => {
+  const clearSession = async () => {
     setError(null);
     setInfo(null);
-    if (!email.trim()) {
-      setError("Enter your email above, then tap reset password.");
-      return;
-    }
-    setResetting(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-        redirectTo: window.location.origin + "/admin/login",
-      });
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      setInfo("Password reset link sent. Check your inbox.");
+      setDebug({ userId: null, sessionExists: false, profileRole: null, routeStatus: "Signed out", lastAuthError: null });
+      setInfo("Signed out. You can log in again now.");
     } catch (err: any) {
-      setError(mapAuthError(err));
-    } finally {
-      setResetting(false);
+      console.error("[Admin Auth] Sign out failed", sanitizeAuthError(err));
+      setDebug((current) => ({ ...current, routeStatus: "Sign out failed", lastAuthError: err?.message ?? String(err) }));
+      setError(err?.message ?? "Unable to sign out. Refresh and try again.");
     }
   };
 
@@ -138,9 +133,7 @@ function AdminLoginPage() {
         <div className="border border-ink/12 bg-background p-8">
           <div className="mb-7">
             <div className="text-[10px] tracking-[0.28em] uppercase text-foreground/50 mb-2">Operations console</div>
-            <h1 className="text-[22px] font-medium tracking-tight text-ink">
-              {mode === "signin" ? "Administrator sign-in" : "Create credentials"}
-            </h1>
+            <h1 className="text-[22px] font-medium tracking-tight text-ink">Administrator sign-in</h1>
             <p className="mt-2 text-[13px] text-foreground/60 leading-relaxed">
               Restricted to authorized personnel. All access is logged and auditable.
             </p>
@@ -178,30 +171,51 @@ function AdminLoginPage() {
               disabled={loading}
               className="w-full h-10 bg-ink text-background text-[11.5px] tracking-[0.2em] uppercase font-medium hover:bg-ink/90 disabled:opacity-50 transition-colors"
             >
-              {loading ? "…" : mode === "signin" ? "Enter console" : "Create"}
+              {loading ? "…" : "Enter console"}
             </button>
           </form>
-          <div className="mt-5 text-center space-y-2">
-            {mode === "signin" && (
-              <div>
-                <button
-                  onClick={sendReset}
-                  disabled={resetting}
-                  className="text-[11px] tracking-[0.12em] uppercase text-foreground/50 hover:text-ink transition-colors disabled:opacity-50"
-                >
-                  {resetting ? "Sending…" : "Reset password"}
-                </button>
-              </div>
-            )}
+          <div className="mt-5 text-center">
             <button
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              type="button"
+              onClick={clearSession}
               className="text-[11px] tracking-[0.12em] uppercase text-foreground/50 hover:text-ink transition-colors"
             >
-              {mode === "signin" ? "Need credentials?" : "Already enrolled?"}
+              Clear session
             </button>
           </div>
+          <AdminAuthDebugPanel debug={debug} />
         </div>
       </div>
+    </div>
+  );
+}
+
+async function getAdminRoleForDebug(userId: string): Promise<string | null> {
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, email")
+    .eq("id", userId)
+    .maybeSingle();
+  const { data: roles, error: roleError } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId);
+
+  const role = (roles ?? []).map((row: any) => row.role).find((value: string) => value === "admin") ?? null;
+  console.info("[Admin Auth] profile lookup result", { profile, error: profileError ? sanitizeAuthError(profileError) : null });
+  console.info("[Admin Auth] role value", { role, roles, error: roleError ? sanitizeAuthError(roleError) : null });
+  return role;
+}
+
+function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
+  return (
+    <div className="mt-6 border border-ink/10 bg-mist/25 p-3 text-left text-[11px] leading-relaxed text-foreground/65">
+      <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">Auth debug</div>
+      <div>Supabase user id: {debug.userId ?? "—"}</div>
+      <div>Session exists: {debug.sessionExists ? "true" : "false"}</div>
+      <div>Profile role: {debug.profileRole ?? "—"}</div>
+      <div>Route status: {debug.routeStatus}</div>
+      <div>Last auth error: {debug.lastAuthError ?? "—"}</div>
     </div>
   );
 }
@@ -247,25 +261,6 @@ function logSupabaseConnectionStatus() {
     projectRefFromKey,
     projectRefsMatch: Boolean(projectRefFromUrl && projectRefFromKey && projectRefFromUrl === projectRefFromKey),
   });
-
-  if (!url || !publicKey) return;
-
-  fetch(`${url.replace(/\/$/, "")}/auth/v1/settings`, {
-    headers: { apikey: publicKey },
-  })
-    .then(async (response) => {
-      const payload = await response.json().catch(() => null);
-      console.info("[Admin Auth] Auth settings response", {
-        status: response.status,
-        ok: response.ok,
-        emailPasswordEnabled: Boolean(payload?.external?.email),
-        signupDisabled: Boolean(payload?.disable_signup),
-        emailAutoConfirm: Boolean(payload?.mailer_autoconfirm),
-      });
-    })
-    .catch((err) => {
-      console.error("[Admin Auth] Auth settings request failed", sanitizeAuthError(err));
-    });
 }
 
 function sanitizeAuthResponse(data: any, error: any) {
