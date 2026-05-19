@@ -48,8 +48,6 @@ const sectionGroups = [
   },
 ] as const;
 
-const sections = sectionGroups.flatMap((g) => g.items);
-
 export type SectionId =
   | "overview"
   | "products"
@@ -61,6 +59,11 @@ export type SectionId =
   | "referrals"
   | "payouts"
   | "customers";
+
+type SectionItem = { id: SectionId; label: string };
+const sections: SectionItem[] = sectionGroups.flatMap(
+  (g) => g.items as readonly SectionItem[],
+);
 
 export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: AdminDebugState }) {
   const [active, setActive] = useState<SectionId>("overview");
