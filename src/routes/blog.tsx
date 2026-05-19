@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { articles, categories, type ArticleCategory } from "@/data/articles";
 import { Search } from "lucide-react";
-import { PepPediaReference } from "@/components/site/PepPediaReference";
+import { ReferencedSources, pepPediaSource } from "@/components/site/ReferencedSources";
 
 export const Route = createFileRoute("/blog")({
   head: () => ({
@@ -152,8 +152,12 @@ function Blog() {
           </div>
         )}
 
-        <div className="mt-20 pt-10 border-t border-border max-w-2xl">
-          <PepPediaReference />
+        <div className="mt-20 max-w-3xl">
+          <ReferencedSources
+            heading="Referenced sources"
+            intro="External educational archives we cite alongside the Veratis reference library. Curated, independent, and outside our control."
+            sources={[pepPediaSource()]}
+          />
         </div>
       </section>
     </Layout>
