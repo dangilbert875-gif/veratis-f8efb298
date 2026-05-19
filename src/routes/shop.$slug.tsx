@@ -293,7 +293,7 @@ function ProductPage() {
             {
               icon: Truck,
               title: "Shipping & fulfillment",
-              body: "Orders placed before 2pm ET ship the same business day. All vials ship in insulated mailers with cold packs at no additional cost. Domestic delivery in 2–4 business days via tracked carriers. Discreet packaging — no exterior product markings.",
+              body: "Orders placed before 2pm ET ship the same business day. All vials ship in insulated mailers with cold packs at no additional cost. Delivery in 2–4 business days via tracked carriers within the continental United States — we do not currently ship to Alaska, Hawaii, US territories, or internationally. Discreet packaging — no exterior product markings.",
             },
             {
               icon: FileText,
