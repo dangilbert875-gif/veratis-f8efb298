@@ -201,34 +201,34 @@ function NotFoundResult({ query, dark }: { query: string; dark: boolean }) {
 function CertificatePreview() {
   const sample = batches[0];
   return (
-    <div className="rounded-[3px] border border-background/10 bg-background/[0.025] overflow-hidden">
-      <div className="flex items-center justify-between px-5 py-3 border-b border-background/10 text-[10px] font-mono uppercase tracking-[0.2em]">
-        <span className="text-background/45">Specimen certificate · format preview</span>
-        <span className="text-background/40 tabular-nums">{sample.lot}</span>
+    <div className="rounded-[3px] border border-background/12 bg-background/[0.035] overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-background/12 text-[10px] font-mono uppercase tracking-[0.2em] bg-background/[0.02]">
+        <span className="text-background/60">Specimen certificate · format preview</span>
+        <span className="text-background/55 tabular-nums">{sample.lot}</span>
       </div>
-      <div className="px-5 py-5">
-        <p className="font-display text-[17px] text-background leading-tight">
+      <div className="px-6 py-6">
+        <p className="font-display text-[18px] text-background leading-tight tracking-[-0.01em]">
           {sample.product} · {sample.size}
         </p>
-        <p className="text-[11px] text-background/45 mt-0.5 tabular-nums font-mono">
+        <p className="text-[11px] text-background/55 mt-1 tabular-nums font-mono">
           Tested {sample.testedOn} · {labPartner.name}
         </p>
-        <dl className="mt-4 grid grid-cols-3 gap-x-6 gap-y-2 text-[12px]">
+        <dl className="mt-6 grid grid-cols-3 gap-x-6 gap-y-3 text-[12px]">
           {[
             ["Purity", `${sample.purity.toFixed(2)}%`],
             ["Identity", sample.identity],
             ["Endotoxin", sample.endotoxin],
           ].map(([k, v]) => (
             <div key={k}>
-              <dt className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-background/40">{k}</dt>
-              <dd className="text-background tabular-nums mt-0.5">{v}</dd>
+              <dt className="text-[9.5px] font-mono uppercase tracking-[0.2em] text-background/55">{k}</dt>
+              <dd className="text-background tabular-nums mt-1.5 text-[13px]">{v}</dd>
             </div>
           ))}
         </dl>
       </div>
-      <div className="px-5 py-3 border-t border-background/10 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.16em] text-background/40">
+      <div className="px-5 py-3 border-t border-background/12 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.18em] text-background/55 bg-background/[0.015]">
         <span>Enter a lot above to retrieve its certificate</span>
-        <span className="text-primary/80">{labPartner.iso}</span>
+        <span className="text-background/65">{labPartner.iso}</span>
       </div>
     </div>
   );
@@ -237,22 +237,29 @@ function CertificatePreview() {
 function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) {
   if (dark) {
     return (
-      <div className="rounded-[3px] border border-primary/40 bg-background/[0.04] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
-        <div className="flex items-center justify-between px-5 py-3 border-b border-background/10 bg-primary/10">
-          <div className="inline-flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.2em] text-primary">
+      <div className="rounded-[3px] border border-background/20 bg-background/[0.05] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500 shadow-[0_20px_60px_-40px_rgba(0,0,0,0.6)]">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-background/12 bg-background/[0.03]">
+          <div className="inline-flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.2em] text-background/90">
             <BadgeCheck size={13} strokeWidth={2} />
-            Authentic · Verified by {labPartner.name}
+            Archive verified · {labPartner.name}
           </div>
-          <span className="text-[10px] font-mono tabular-nums uppercase tracking-[0.2em] text-background/55">
+          <span className="text-[10px] font-mono tabular-nums uppercase tracking-[0.2em] text-background/65">
             Lot {batch.lot}
           </span>
         </div>
-        <div className="px-5 py-5">
-          <p className="font-display text-[18px] text-background leading-tight">
+        <div className="px-6 py-6">
+          <p className="font-display text-[20px] text-background leading-tight tracking-[-0.01em]">
             {batch.product} · {batch.size}
           </p>
-          <p className="text-[11px] text-background/50 mt-0.5 font-mono">{batch.appearance}</p>
-          <dl className="mt-5 grid grid-cols-2 gap-y-3 gap-x-6 text-[13px]">
+          <p className="text-[11px] text-background/60 mt-1 font-mono">{batch.appearance}</p>
+
+          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-background/65">
+            <span>· Certificate retrieved</span>
+            <span>· Independent assay confirmed</span>
+            <span>· Document integrity validated</span>
+          </div>
+
+          <dl className="mt-6 grid grid-cols-2 gap-y-3.5 gap-x-8 text-[13px]">
             {[
               ["Purity (HPLC)", <PurityCounter key="p" value={batch.purity} />],
               ["Identity (MS)", batch.identity],
@@ -260,24 +267,24 @@ function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) 
               ["Tested", batch.testedOn],
               ["Best before", batch.expiresOn],
             ].map(([k, v]) => (
-              <div key={k as string} className="flex justify-between border-b border-background/10 pb-1.5">
-                <dt className="text-background/55 text-[12px]">{k}</dt>
+              <div key={k as string} className="flex justify-between border-b border-background/12 pb-2">
+                <dt className="text-background/65 text-[12px]">{k}</dt>
                 <dd className="text-background tabular-nums">{v}</dd>
               </div>
             ))}
           </dl>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <button className="inline-flex items-center gap-2 text-[12px] text-background border border-background/20 rounded-[3px] px-4 py-2 hover:border-primary/60 hover:text-primary active:scale-[0.985] transition-all duration-200">
-              <FileText size={12} /> Download full COA
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <button className="inline-flex items-center gap-2 text-[11.5px] font-medium uppercase tracking-[0.16em] text-ink bg-background border border-background rounded-[3px] px-5 h-10 hover:bg-background/90 active:scale-[0.985] transition-all duration-200">
+              <FileText size={12} /> Download signed COA
             </button>
             <Link
               to="/shop/$slug" params={{ slug: batch.slug }}
-              className="inline-flex items-center gap-1.5 text-[12px] text-primary hover:underline underline-offset-4"
+              className="inline-flex items-center gap-1.5 text-[11.5px] font-mono uppercase tracking-[0.16em] text-background/80 hover:text-background transition"
             >
-              View product <ArrowRight size={12} />
+              View product <ArrowRight size={11} />
             </Link>
           </div>
-          <div className="mt-5 pt-4 border-t border-background/10 grid grid-cols-2 gap-x-6 gap-y-1 text-[10px] font-mono uppercase tracking-[0.16em] text-background/40">
+          <div className="mt-6 pt-4 border-t border-background/12 grid grid-cols-2 gap-x-6 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-background/55">
             <p>Method · {batch.method}</p>
             <p className="text-right">Verified against permanent archive</p>
             <p>{labPartner.iso} · {labPartner.accreditation}</p>
