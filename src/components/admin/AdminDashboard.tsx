@@ -25,28 +25,47 @@ export type AdminDebugState = {
 
 export type Viewer = { email: string | null; fullName: string | null; userId: string };
 
-// Sidebar order reflects operational priority:
-// Orders → Verification/COAs → Inventory → Customers → secondary.
+// Grouped navigation: operational laboratory structure.
 const sectionGroups = [
   {
-    heading: "Primary",
+    heading: "Console",
     items: [
       { id: "overview", label: "Overview" },
       { id: "activity", label: "Activity" },
-      { id: "orders", label: "Orders" },
-      { id: "coa", label: "COA Uploads" },
-      { id: "archive", label: "Verification Archive" },
-      { id: "products", label: "Inventory" },
-      { id: "customers", label: "Customers" },
     ],
   },
   {
-    heading: "Secondary",
+    heading: "Operations",
+    items: [
+      { id: "orders", label: "Orders" },
+      { id: "customers", label: "Customers" },
+      { id: "products", label: "Inventory" },
+    ],
+  },
+  {
+    heading: "Verification",
+    items: [
+      { id: "archive", label: "Verification Archive" },
+      { id: "coa", label: "COA Uploads" },
+    ],
+  },
+  {
+    heading: "Content",
     items: [
       { id: "articles", label: "Education" },
-      { id: "referrals", label: "Referrals" },
       { id: "partners", label: "Research Partners" },
+    ],
+  },
+  {
+    heading: "Affiliates",
+    items: [
+      { id: "referrals", label: "Referrals" },
       { id: "payouts", label: "Payouts" },
+    ],
+  },
+  {
+    heading: "System",
+    items: [
       { id: "audit", label: "Audit Log" },
     ],
   },
@@ -74,7 +93,21 @@ const sections: SectionItem[] = sectionGroups.flatMap(
 export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: AdminDebugState }) {
   const [active, setActive] = useState<SectionId>("overview");
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [diagOpen, setDiagOpen] = useState(false);
+  const [lastSync, setLastSync] = useState<Date>(() => new Date());
+  const [, force] = useState(0);
   const navigate = useNavigate();
+
+  // Re-render every 10s so the "last synchronized" timestamp ticks.
+  useEffect(() => {
+    const id = window.setInterval(() => force((n) => n + 1), 10_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // When user re-enters Overview, refresh the synchronized stamp.
+  useEffect(() => {
+    if (active === "overview") setLastSync(new Date());
+  }, [active]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -100,15 +133,18 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
   return (
     <div className="min-h-screen bg-background text-ink flex">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-[240px] shrink-0 flex-col border-r border-ink/10 bg-mist/30">
+      <aside className="hidden md:flex w-[244px] shrink-0 flex-col border-r border-ink/10 bg-mist/30">
         <div className="px-6 py-7 border-b border-ink/10">
           <div className="text-[9px] tracking-[0.32em] uppercase text-foreground/45">Veratis</div>
           <div className="mt-1 text-[14px] font-medium tracking-tight">Operations Console</div>
         </div>
-        <nav className="flex-1 px-3 py-5 space-y-5 overflow-y-auto">
-          {sectionGroups.map((g) => (
-            <div key={g.heading}>
-              <div className="px-3 mb-2 text-[9px] tracking-[0.28em] uppercase text-foreground/40">
+        <nav className="flex-1 px-3 py-5 overflow-y-auto">
+          {sectionGroups.map((g, gi) => (
+            <div
+              key={g.heading}
+              className={gi > 0 ? "mt-5 pt-5 border-t border-ink/8" : ""}
+            >
+              <div className="px-3 mb-2 text-[9px] tracking-[0.3em] uppercase text-foreground/40">
                 {g.heading}
               </div>
               <div className="space-y-0.5">
@@ -117,10 +153,10 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
                     key={s.id}
                     onClick={() => setActive(s.id as SectionId)}
                     className={[
-                      "w-full text-left px-3 py-2 text-[12.5px] tracking-[0.02em] transition-colors",
+                      "w-full text-left px-3 py-2 text-[12.5px] tracking-[0.02em] transition-colors relative",
                       active === s.id
                         ? "bg-ink text-background"
-                        : "text-foreground/70 hover:text-ink hover:bg-background",
+                        : "text-foreground/65 hover:text-ink hover:bg-background/80",
                     ].join(" ")}
                   >
                     {s.label}
@@ -144,8 +180,8 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
 
       {/* Main */}
       <main className="flex-1 min-w-0">
-        <header className="border-b border-ink/10 px-6 md:px-10 py-5 flex items-center justify-between">
-          <div>
+        <header className="border-b border-ink/10 px-6 md:px-10 py-5 flex items-center justify-between gap-6">
+          <div className="min-w-0">
             <div className="text-[9px] tracking-[0.32em] uppercase text-foreground/45">
               {sections.find((s) => s.id === active)?.label}
             </div>
@@ -154,6 +190,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            <SystemStatus lastSync={lastSync} />
             <button
               type="button"
               onClick={() => setPaletteOpen(true)}
@@ -177,7 +214,19 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           </div>
         </header>
         <div className="p-6 md:p-10">
-          {debug && <AdminAuthDebugPanel debug={debug} />}
+          {debug && (
+            <div className="mb-6 border border-ink/10">
+              <button
+                type="button"
+                onClick={() => setDiagOpen((v) => !v)}
+                className="w-full text-left px-4 py-2.5 flex items-center justify-between text-[10px] tracking-[0.24em] uppercase text-foreground/50 hover:text-ink hover:bg-mist/30 transition-colors"
+              >
+                <span>System diagnostics</span>
+                <span className="text-foreground/40">{diagOpen ? "Hide" : "Show"}</span>
+              </button>
+              {diagOpen && <AdminAuthDebugPanel debug={debug} />}
+            </div>
+          )}
           {active === "overview" && <OverviewPanel onNavigate={setActive} />}
           {active === "activity" && <ActivityPanel />}
           {active === "audit" && <AuditLogPanel />}
@@ -202,9 +251,34 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
   );
 }
 
+function relSync(d: Date) {
+  const s = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  return `${h}h ago`;
+}
+
+function SystemStatus({ lastSync }: { lastSync: Date }) {
+  return (
+    <div className="hidden lg:flex items-center gap-2 text-[10px] tracking-[0.18em] uppercase text-foreground/50">
+      <span className="relative inline-flex w-1.5 h-1.5">
+        <span className="absolute inset-0 rounded-full bg-[var(--state-success)] opacity-60 animate-ping" />
+        <span className="relative inline-block w-1.5 h-1.5 rounded-full bg-[var(--state-success)]" />
+      </span>
+      <span>Archive online</span>
+      <span className="text-foreground/30">·</span>
+      <span className="tabular-nums normal-case tracking-normal text-[11px] text-foreground/55">
+        synchronized {relSync(lastSync)}
+      </span>
+    </div>
+  );
+}
+
 function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
   return (
-    <div className="mb-6 border border-ink/10 bg-mist/25 p-3 text-[11px] leading-relaxed text-foreground/65">
+    <div className="border-t border-ink/10 bg-mist/25 p-3 text-[11px] leading-relaxed text-foreground/65">
       <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">Auth debug</div>
       <div>Supabase user id: {debug.userId ?? "—"}</div>
       <div>Session exists: {debug.sessionExists ? "true" : "false"}</div>

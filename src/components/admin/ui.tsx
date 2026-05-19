@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
 export function Card({ title, hint, children, action }: { title?: string; hint?: string; children: ReactNode; action?: ReactNode }) {
   return (
@@ -19,11 +20,96 @@ export function Card({ title, hint, children, action }: { title?: string; hint?:
 
 export function Stat({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
   return (
-    <div className="border border-ink/10 bg-background p-5">
+    <div className="group border border-ink/10 bg-background p-5 transition-colors hover:border-ink/25">
       <div className="text-[9.5px] tracking-[0.28em] uppercase text-foreground/50">{label}</div>
       <div className="mt-2 text-[26px] font-medium tracking-tight tabular-nums text-ink">{value}</div>
       {sub && <div className="mt-1 text-[11px] text-foreground/55">{sub}</div>}
     </div>
+  );
+}
+
+/** Dominant operational KPI card. Slightly larger, anchors the dashboard. */
+export function HeroStat({
+  label,
+  value,
+  sub,
+  trend,
+  series,
+}: {
+  label: string;
+  value: ReactNode;
+  sub?: string;
+  trend?: { delta: number; suffix?: string };
+  series?: number[];
+}) {
+  return (
+    <div className="relative border border-ink/15 bg-background p-6 md:p-7 transition-colors hover:border-ink/30">
+      <div className="flex items-start justify-between gap-6">
+        <div className="min-w-0">
+          <div className="text-[9.5px] tracking-[0.32em] uppercase text-foreground/55">
+            {label}
+          </div>
+          <div className="mt-3 text-[42px] leading-none font-medium tracking-tight tabular-nums text-ink">
+            {value}
+          </div>
+          <div className="mt-3 flex items-center gap-3 text-[11.5px] text-foreground/60">
+            {trend && <TrendBadge delta={trend.delta} suffix={trend.suffix} />}
+            {sub && <span>{sub}</span>}
+          </div>
+        </div>
+        {series && series.length > 0 && (
+          <div className="hidden sm:block w-[180px] h-[56px] shrink-0 text-ink/70">
+            <Sparkline values={series} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function TrendBadge({ delta, suffix = "vs prior" }: { delta: number; suffix?: string }) {
+  const rounded = Math.round(delta * 10) / 10;
+  const Icon = rounded > 0 ? ArrowUpRight : rounded < 0 ? ArrowDownRight : Minus;
+  return (
+    <span className="inline-flex items-center gap-1 tabular-nums">
+      <Icon className="w-3 h-3" strokeWidth={1.5} />
+      <span className="text-ink">
+        {rounded > 0 ? "+" : ""}
+        {Number.isFinite(rounded) ? rounded : 0}%
+      </span>
+      <span className="text-foreground/45">{suffix}</span>
+    </span>
+  );
+}
+
+/** Compact monochrome sparkline. Pure SVG, no chart lib. */
+export function Sparkline({
+  values,
+  className = "",
+}: {
+  values: number[];
+  className?: string;
+}) {
+  if (!values.length) return null;
+  const w = 180;
+  const h = 56;
+  const pad = 2;
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const range = max - min || 1;
+  const step = values.length > 1 ? (w - pad * 2) / (values.length - 1) : 0;
+  const points = values.map((v, i) => {
+    const x = pad + i * step;
+    const y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return [x, y] as const;
+  });
+  const path = points.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const area = `${path} L${points[points.length - 1][0].toFixed(1)},${h} L${points[0][0].toFixed(1)},${h} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className={`w-full h-full ${className}`} preserveAspectRatio="none">
+      <path d={area} fill="currentColor" opacity={0.06} />
+      <path d={path} fill="none" stroke="currentColor" strokeWidth={1} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
