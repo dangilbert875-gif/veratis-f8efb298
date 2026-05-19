@@ -30,13 +30,23 @@ export const Route = createFileRoute("/shop/$slug")({
       </div>
     </Layout>
   ),
-  errorComponent: ({ error }) => (
-    <Layout>
-      <div className="mx-auto max-w-3xl px-6 py-32 text-center">
-        <h1 className="text-2xl text-ink">{error.message}</h1>
-      </div>
-    </Layout>
-  ),
+  errorComponent: ({ error }) => {
+    // Log full error server/console-side; never render raw messages to users.
+    console.error(error);
+    return (
+      <Layout>
+        <div className="mx-auto max-w-3xl px-6 py-32 text-center">
+          <h1 className="text-2xl text-ink">Something went wrong</h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            We couldn't load this product. Please try again in a moment.
+          </p>
+          <Link to="/shop" className="mt-6 inline-block text-primary hover:underline">
+            Back to shop
+          </Link>
+        </div>
+      </Layout>
+    );
+  },
   component: ProductPage,
 });
 

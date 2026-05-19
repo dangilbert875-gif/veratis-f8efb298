@@ -35,15 +35,20 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
   };
 
   const gated = verified === false;
+  const pending = verified === null;
 
   return (
     <>
-      <div
-        aria-hidden={gated}
-        className={gated ? "pointer-events-none select-none blur-md" : ""}
-      >
-        {children}
-      </div>
+      {/*
+        Security: do not render gated content into the DOM until the visitor
+        has confirmed age. Visual blur is not a content guard — withholding the
+        markup prevents trivial DevTools bypass of the gate.
+      */}
+      {verified === true ? (
+        children
+      ) : (
+        <div aria-hidden="true" className="min-h-screen bg-background" />
+      )}
       {gated && (
         <div
           role="dialog"
@@ -95,6 +100,12 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
+      )}
+      {pending && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-[100] bg-background"
+        />
       )}
     </>
   );
