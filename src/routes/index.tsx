@@ -212,12 +212,9 @@ function Home() {
                 </li>
               ))}
             </ul>
-            <div className="mt-9 flex flex-wrap gap-3">
+            <div className="mt-9">
               <Link to="/coa-archive" className="inline-flex items-center gap-2 border border-background/25 text-background px-5 py-3 rounded-md text-[13px] font-medium hover:bg-background/5 transition">
-                <Archive size={14} /> Browse full archive
-              </Link>
-              <Link to="/standards" className="inline-flex items-center gap-2 text-background/80 hover:text-background px-2 py-3 text-[13px] font-medium transition">
-                Testing standards <ArrowRight size={13} />
+                <Archive size={14} /> Browse full archive <ArrowRight size={13} />
               </Link>
             </div>
             <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-4 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/40">
