@@ -1,63 +1,371 @@
-import p1 from "@/assets/product-1.jpg";
-import p2 from "@/assets/product-2.jpg";
-import p3 from "@/assets/product-3.jpg";
-import p4 from "@/assets/product-4.jpg";
+import vialMaster from "@/assets/vial-master.jpg";
 
 export type Product = {
   slug: string;
-  name: string;
+  name: string;           // EXACT label name
+  dosage: string;         // e.g. "12mg", "10,000 IU", "10mg/10mg"
   category: string;
-  size: string;
+  size: string;           // long-form, e.g. "12 mg vial"
   price: number;
   purity: string;
-  image: string;
+  image: string;          // master vial (label rendered as overlay)
   short: string;
   description: string;
   inStock?: boolean;
   classification?: string;
+  lot: string;
 };
-
-const images = [p1, p2, p3, p4];
-const img = (i: number) => images[i % images.length];
 
 export const products: Product[] = [
   // Tissue Recovery
-  { slug: "bpc-157", name: "BPC-157", category: "Tissue Recovery", classification: "15-amino acid synthetic peptide", size: "10 mg", price: 70, purity: "99.4%", image: img(0), inStock: true, short: "Body Protection Compound, lyophilized.", description: "A 15-amino acid synthetic peptide widely studied in research settings for tissue repair and gastrointestinal protective pathways. Manufactured under cGMP and verified by independent HPLC and ESI-MS." },
-  { slug: "tb-500", name: "TB-500", category: "Tissue Recovery", classification: "Thymosin Beta-4 fragment", size: "10 mg", price: 90, purity: "99.1%", image: img(1), inStock: true, short: "Thymosin Beta-4 fragment.", description: "A synthetic fragment of the naturally occurring Thymosin Beta-4 peptide. Each lot is released under independent HPLC and mass-spectrometry verification." },
-  { slug: "bpc-157-tb-500", name: "BPC-157 / TB-500", category: "Stacks & Protocols", classification: "Combined recovery stack", size: "10 / 10 mg", price: 170, purity: "99.2%", image: img(2), inStock: false, short: "Dual-compound recovery stack.", description: "A pre-formulated combination of BPC-157 and TB-500 supplied in a single lyophilized vial. Provided for in-vitro tissue-recovery research." },
+  {
+    slug: "bpc-157-12mg",
+    name: "BPC-157 12mg VIAL",
+    dosage: "12MG",
+    category: "Tissue Recovery",
+    classification: "15-amino acid synthetic peptide",
+    size: "12 mg vial",
+    price: 95,
+    purity: "99.4%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2612",
+    short: "Body Protection Compound, 12 mg lyophilized.",
+    description:
+      "A 15-amino acid synthetic peptide studied in research models for tissue repair and gastrointestinal protective pathways. Released only after independent HPLC and ESI-MS verification.",
+  },
+  {
+    slug: "bpc-tb-500-blend",
+    name: "BPC/TB-500 Blend 10mg/10mg VIAL",
+    dosage: "10MG / 10MG",
+    category: "Tissue Recovery",
+    classification: "Dual-compound recovery blend",
+    size: "10 mg / 10 mg vial",
+    price: 175,
+    purity: "99.2%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2611",
+    short: "Combined BPC-157 + TB-500 lyophilized blend.",
+    description:
+      "A pre-formulated lyophilized combination of BPC-157 and TB-500 supplied in a single nitrogen-sealed research vial. Each lot is verified for identity and purity by an independent ISO 17025 laboratory.",
+  },
+  {
+    slug: "tb-500-fragment-12mg",
+    name: "TB-500 (Fragment) 12mg VIAL",
+    dosage: "12MG",
+    category: "Tissue Recovery",
+    classification: "Thymosin Beta-4 active fragment",
+    size: "12 mg vial",
+    price: 120,
+    purity: "99.1%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2610",
+    short: "Active fragment of Thymosin Beta-4.",
+    description:
+      "The synthetic active fragment of Thymosin Beta-4 commonly referenced as TB-500. Manufactured under cGMP and released under independent HPLC and ESI-MS verification.",
+  },
+  {
+    slug: "tb-4-full-sequence-10mg",
+    name: "TB-4 (Full Sequence) 10mg VIAL",
+    dosage: "10MG",
+    category: "Tissue Recovery",
+    classification: "Thymosin Beta-4 full 43-aa sequence",
+    size: "10 mg vial",
+    price: 155,
+    purity: "99.0%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2609",
+    short: "Full 43-amino acid Thymosin Beta-4.",
+    description:
+      "The complete 43-amino acid Thymosin Beta-4 polypeptide, supplied lyophilized for in-vitro tissue-recovery and cellular research.",
+  },
 
-  // Cellular Longevity
-  { slug: "ghk-cu", name: "GHK-Cu", category: "Cellular Longevity", classification: "Copper-binding tripeptide", size: "100 mg", price: 70, purity: "99.6%", image: img(2), inStock: true, short: "Copper tripeptide, research grade.", description: "A naturally occurring copper-binding tripeptide investigated for its role in extracellular matrix remodeling and cellular regeneration." },
-  { slug: "epitalon", name: "Epitalon", category: "Cellular Longevity", classification: "Synthetic tetrapeptide", size: "10 mg", price: 60, purity: "99.2%", image: img(3), inStock: true, short: "Tetrapeptide, lyophilized.", description: "A synthetic tetrapeptide produced for research applications in cellular senescence and telomere-pathway studies." },
-  { slug: "nad-plus", name: "NAD+", category: "Cellular Longevity", classification: "Nicotinamide adenine dinucleotide", size: "1000 mg", price: 140, purity: "99.0%", image: img(0), inStock: false, short: "Coenzyme research substrate.", description: "Lyophilized NAD+ supplied for in-vitro cellular energy and longevity research." },
-  { slug: "mots-c", name: "MOTS-C", category: "Cellular Longevity", classification: "Mitochondrial-derived peptide", size: "10 mg", price: 110, purity: "99.1%", image: img(1), inStock: false, short: "Mitochondrial signaling peptide.", description: "A 16-amino acid peptide encoded within the mitochondrial genome, studied for metabolic homeostasis and aging-pathway research." },
+  // Regenerative
+  {
+    slug: "ghk-cu-100mg",
+    name: "GHK-CU 100mg VIAL",
+    dosage: "100MG",
+    category: "Regenerative",
+    classification: "Copper-binding tripeptide",
+    size: "100 mg vial",
+    price: 95,
+    purity: "99.6%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2608",
+    short: "Copper tripeptide, 100 mg research format.",
+    description:
+      "A naturally occurring copper-binding tripeptide investigated for extracellular matrix remodeling and regenerative pathways. Lyophilized, nitrogen-sealed.",
+  },
+  {
+    slug: "ghk-cu-50mg",
+    name: "GHK-CU 50mg VIAL",
+    dosage: "50MG",
+    category: "Regenerative",
+    classification: "Copper-binding tripeptide",
+    size: "50 mg vial",
+    price: 65,
+    purity: "99.6%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2607",
+    short: "Copper tripeptide, 50 mg research format.",
+    description:
+      "Half-format research vial of GHK-Cu for shorter studies. Independently verified for identity, copper coordination, and HPLC purity.",
+  },
+  {
+    slug: "glow-70",
+    name: "Glow 70 VIAL",
+    dosage: "70MG",
+    category: "Regenerative",
+    classification: "Tri-compound regenerative blend",
+    size: "70 mg vial",
+    price: 180,
+    purity: "99.2%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2606",
+    short: "Tri-compound regenerative research blend.",
+    description:
+      "A combined lyophilized research formulation supplied as a single nitrogen-sealed vial for combination-protocol studies in regenerative and dermal pathways.",
+  },
 
-  // Neuro Research
-  { slug: "semax", name: "Semax", category: "Neuro Research", classification: "ACTH(4-10) analogue", size: "30 mg", price: 95, purity: "99.0%", image: img(0), inStock: true, short: "Heptapeptide derivative.", description: "A synthetic analogue of a fragment of adrenocorticotropic hormone, studied in neurotrophic and cognitive research models." },
-  { slug: "selank", name: "Selank", category: "Neuro Research", classification: "Synthetic heptapeptide", size: "10 mg", price: 75, purity: "99.3%", image: img(1), inStock: true, short: "Synthetic heptapeptide.", description: "A synthetic anxiolytic peptide developed for laboratory neurochemistry research. Each lot is COA-verified and cold-chain dispatched." },
-  { slug: "dsip", name: "DSIP", category: "Neuro Research", classification: "Delta sleep-inducing peptide", size: "5 mg", price: 60, purity: "99.0%", image: img(2), inStock: false, short: "Nonapeptide, lyophilized.", description: "Delta Sleep-Inducing Peptide, a nonapeptide investigated in sleep architecture and neuroendocrine research." },
+  // Growth Hormone Research
+  {
+    slug: "ghrp-6-10mg",
+    name: "GHRP-6 10mg VIAL",
+    dosage: "10MG",
+    category: "Growth Hormone",
+    classification: "GH-releasing hexapeptide",
+    size: "10 mg vial",
+    price: 60,
+    purity: "99.3%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2605",
+    short: "Growth-hormone-releasing hexapeptide.",
+    description:
+      "A synthetic hexapeptide investigated in growth-hormone signaling and appetite-regulation research. Lyophilized and lot-verified.",
+  },
+  {
+    slug: "ipamorelin-10mg",
+    name: "Ipamorelin 10mg VIAL",
+    dosage: "10MG",
+    category: "Growth Hormone",
+    classification: "Selective GH-releasing pentapeptide",
+    size: "10 mg vial",
+    price: 75,
+    purity: "99.5%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2604",
+    short: "Selective GH-releasing pentapeptide.",
+    description:
+      "A selective synthetic pentapeptide studied in growth-hormone signaling research. Sealed vials with sterile rubber stopper and aluminum crimp.",
+  },
 
-  // Performance Research
-  { slug: "ipamorelin", name: "Ipamorelin", category: "Performance Research", classification: "Selective GH-releasing pentapeptide", size: "10 mg", price: 70, purity: "99.5%", image: img(3), inStock: true, short: "Pentapeptide, lyophilized.", description: "A selective synthetic pentapeptide studied in growth-hormone signaling research. Sealed vials with sterile rubber stopper and aluminum crimp." },
-  { slug: "sermorelin", name: "Sermorelin", category: "Performance Research", classification: "GHRH (1-29) analogue", size: "10 mg", price: 85, purity: "99.2%", image: img(0), inStock: true, short: "GHRH analogue.", description: "A synthetic 29-amino acid analogue of growth-hormone-releasing hormone, supplied as a lyophilized cake for endocrine research." },
-  { slug: "cjc-1295-no-dac", name: "CJC-1295 (No DAC)", category: "Performance Research", classification: "Modified GRF (1-29)", size: "5 mg", price: 50, purity: "99.1%", image: img(1), inStock: true, short: "Modified GRF (1-29).", description: "A synthetic GHRH analogue without the Drug Affinity Complex (DAC) modification. Lyophilized and nitrogen-sealed." },
-  { slug: "aod-9604", name: "AOD-9604", category: "Performance Research", classification: "hGH fragment 176-191", size: "10 mg", price: 90, purity: "99.0%", image: img(2), inStock: true, short: "Lipolytic GH fragment.", description: "A modified fragment of human growth hormone (residues 176-191), studied in adipose-tissue metabolism research." },
+  // Hormonal
+  {
+    slug: "hcg-10000-iu",
+    name: "HCG 10,000 IU VIAL",
+    dosage: "10,000 IU",
+    category: "Hormonal",
+    classification: "Human chorionic gonadotropin",
+    size: "10,000 IU vial",
+    price: 180,
+    purity: "99.0%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2603",
+    short: "Glycoprotein hormone, 10,000 IU format.",
+    description:
+      "Lyophilized human chorionic gonadotropin supplied for in-vitro endocrine research. Released only after independent identity and potency verification.",
+  },
+  {
+    slug: "hcg-5000-iu",
+    name: "HCG 5,000 IU VIAL",
+    dosage: "5,000 IU",
+    category: "Hormonal",
+    classification: "Human chorionic gonadotropin",
+    size: "5,000 IU vial",
+    price: 100,
+    purity: "99.0%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2602",
+    short: "Glycoprotein hormone, 5,000 IU format.",
+    description:
+      "Smaller-format research vial of lyophilized HCG. Each lot is independently verified for identity and supplied with a signed certificate of analysis.",
+  },
+
+  // Pigmentation
+  {
+    slug: "melanotan-2-10mg",
+    name: "Melanotan-2 10mg VIAL",
+    dosage: "10MG",
+    category: "Pigmentation",
+    classification: "Cyclic α-MSH analogue",
+    size: "10 mg vial",
+    price: 60,
+    purity: "99.1%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2601",
+    short: "Cyclic α-MSH analogue, lyophilized.",
+    description:
+      "A synthetic cyclic analogue of the peptide hormone α-MSH supplied for in-vitro melanocortin-receptor research.",
+  },
+
+  // Mitochondrial
+  {
+    slug: "mots-c-10mg",
+    name: "MOTS-C 10mg VIAL",
+    dosage: "10MG",
+    category: "Mitochondrial",
+    classification: "Mitochondrial-derived peptide",
+    size: "10 mg vial",
+    price: 130,
+    purity: "99.1%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2600",
+    short: "Mitochondrial signaling peptide.",
+    description:
+      "A 16-amino acid peptide encoded within the mitochondrial genome, studied for metabolic homeostasis and aging-pathway research.",
+  },
+  {
+    slug: "ss-31-10mg",
+    name: "SS-31 10mg VIAL",
+    dosage: "10MG",
+    category: "Mitochondrial",
+    classification: "Mitochondria-targeted tetrapeptide",
+    size: "10 mg vial",
+    price: 150,
+    purity: "99.2%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2599",
+    short: "Cardiolipin-targeted tetrapeptide.",
+    description:
+      "A mitochondria-targeted aromatic-cationic tetrapeptide that selectively associates with cardiolipin, studied in inner-membrane stability and bioenergetic research.",
+  },
 
   // Metabolic Research
-  { slug: "glp-1-s-10mg", name: "GLP-1 S", category: "Metabolic Research", classification: "GLP-1 receptor analogue", size: "10 mg", price: 128, purity: "99.3%", image: img(3), inStock: true, short: "GLP-1 receptor analogue.", description: "A research-grade GLP-1 receptor analogue supplied for in-vitro studies in incretin signaling and glucose homeostasis." },
-  { slug: "glp-1-s-5mg", name: "GLP-1 S", category: "Metabolic Research", classification: "GLP-1 receptor analogue", size: "5 mg", price: 85, purity: "99.3%", image: img(0), inStock: true, short: "GLP-1 receptor analogue, smaller format.", description: "Half-size research format of the GLP-1 S compound for short-duration laboratory studies." },
-  { slug: "glp-2-tz-10mg", name: "GLP-2 TZ", category: "Metabolic Research", classification: "GLP-2 receptor analogue", size: "10 mg", price: 100, purity: "99.1%", image: img(1), inStock: true, short: "GLP-2 receptor analogue.", description: "A research-grade GLP-2 receptor analogue investigated for intestinal-epithelial and nutrient-absorption pathways." },
-  { slug: "glp-2-tz-30mg", name: "GLP-2 TZ", category: "Metabolic Research", classification: "GLP-2 receptor analogue", size: "30 mg", price: 240, purity: "99.1%", image: img(2), inStock: false, short: "Extended-format GLP-2 vial.", description: "Larger-format vial of the GLP-2 TZ compound for extended research protocols." },
-  { slug: "glp-3-r-10mg", name: "GLP-3 R", category: "Metabolic Research", classification: "Triple-agonist analogue", size: "10 mg", price: 111, purity: "99.0%", image: img(3), inStock: true, short: "Triple-agonist analogue.", description: "A multi-receptor metabolic analogue supplied for advanced incretin-pathway research." },
-  { slug: "melanotan-ii", name: "Melanotan II", category: "Metabolic Research", classification: "Cyclic heptapeptide α-MSH analog", size: "10 mg", price: 60, purity: "99.1%", image: img(0), inStock: false, short: "α-MSH analog, lyophilized.", description: "A synthetic analogue of the peptide hormone α-MSH supplied for melanocortin-receptor research." },
-
-  // Research Essentials
-  { slug: "bac-water-10ml", name: "Bacteriostatic Water", category: "Research Essentials", classification: "0.9% benzyl alcohol diluent", size: "10 mL", price: 18, purity: "USP", image: img(1), inStock: false, short: "Sterile diluent, 10 mL.", description: "USP-grade bacteriostatic water supplied as a reconstitution diluent for laboratory peptide research." },
-  { slug: "bac-water-3ml", name: "Bacteriostatic Water", category: "Research Essentials", classification: "0.9% benzyl alcohol diluent", size: "3 mL", price: 12, purity: "USP", image: img(2), inStock: true, short: "Sterile diluent, 3 mL.", description: "Small-format USP-grade bacteriostatic water for short-duration reconstitution work." },
-  { slug: "acetic-acid-3ml", name: "Acetic Acid", category: "Research Essentials", classification: "0.6% acetic acid diluent", size: "3 mL", price: 15, purity: "USP", image: img(3), inStock: true, short: "Reconstitution acid, 3 mL.", description: "Dilute acetic acid solution supplied as a reconstitution medium for peptides with low aqueous solubility." },
-
-  // Stacks & Protocols
-  { slug: "glow-blend", name: "GLOW Blend", category: "Stacks & Protocols", classification: "BPC-157 / TB-500 / GHK-Cu stack", size: "10 / 10 / 50 mg", price: 170, purity: "99.2%", image: img(0), inStock: true, short: "Tri-compound recovery + dermal stack.", description: "A combined lyophilized formulation of BPC-157, TB-500, and GHK-Cu supplied as a single research vial for combination-protocol studies." },
+  {
+    slug: "retatrutide-12mg",
+    name: "Retatrutide 12mg VIAL",
+    dosage: "12MG",
+    category: "Metabolic",
+    classification: "GLP-1 / GIP / glucagon triple-agonist",
+    size: "12 mg vial",
+    price: 165,
+    purity: "99.3%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2598",
+    short: "Triple-agonist metabolic analogue.",
+    description:
+      "A research-grade triple-receptor agonist (GLP-1 / GIP / glucagon) supplied for in-vitro studies in incretin signaling and glucose homeostasis.",
+  },
+  {
+    slug: "retatrutide-30mg",
+    name: "Retatrutide 30mg VIAL",
+    dosage: "30MG",
+    category: "Metabolic",
+    classification: "GLP-1 / GIP / glucagon triple-agonist",
+    size: "30 mg vial",
+    price: 360,
+    purity: "99.3%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2597",
+    short: "Extended-format triple-agonist vial.",
+    description:
+      "Larger-format research vial of Retatrutide for extended in-vitro metabolic-pathway protocols. Each lot is independently HPLC and mass-spec verified.",
+  },
+  {
+    slug: "retatrutide-60mg",
+    name: "Retatrutide 60mg VIAL",
+    dosage: "60MG",
+    category: "Metabolic",
+    classification: "GLP-1 / GIP / glucagon triple-agonist",
+    size: "60 mg vial",
+    price: 680,
+    purity: "99.3%",
+    image: vialMaster,
+    inStock: false,
+    lot: "PP-2596",
+    short: "Bulk research format triple-agonist vial.",
+    description:
+      "Bulk-format research vial of Retatrutide. Supplied under nitrogen seal with full lot documentation and independent verification.",
+  },
+  {
+    slug: "semaglutide-5mg",
+    name: "Semaglutide 5mg VIAL",
+    dosage: "5MG",
+    category: "Metabolic",
+    classification: "GLP-1 receptor analogue",
+    size: "5 mg vial",
+    price: 110,
+    purity: "99.3%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2595",
+    short: "GLP-1 receptor analogue, 5 mg format.",
+    description:
+      "Research-grade semaglutide supplied as a lyophilized cake for in-vitro studies in GLP-1 receptor signaling.",
+  },
+  {
+    slug: "semaglutide-10mg",
+    name: "Semaglutide 10mg VIAL",
+    dosage: "10MG",
+    category: "Metabolic",
+    classification: "GLP-1 receptor analogue",
+    size: "10 mg vial",
+    price: 195,
+    purity: "99.3%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2594",
+    short: "GLP-1 receptor analogue, 10 mg format.",
+    description:
+      "Extended-format research vial of semaglutide for longer-duration in-vitro incretin-pathway studies.",
+  },
+  {
+    slug: "tirzepatide-10mg",
+    name: "Tirzepatide 10mg VIAL",
+    dosage: "10MG",
+    category: "Metabolic",
+    classification: "GIP / GLP-1 dual-agonist analogue",
+    size: "10 mg vial",
+    price: 175,
+    purity: "99.2%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2593",
+    short: "Dual incretin receptor analogue.",
+    description:
+      "A research-grade GIP / GLP-1 dual-agonist supplied for in-vitro incretin and glucose-homeostasis research. Released after independent verification.",
+  },
+  {
+    slug: "tirzepatide-30mg",
+    name: "Tirzepatide 30mg VIAL",
+    dosage: "30MG",
+    category: "Metabolic",
+    classification: "GIP / GLP-1 dual-agonist analogue",
+    size: "30 mg vial",
+    price: 460,
+    purity: "99.2%",
+    image: vialMaster,
+    inStock: true,
+    lot: "PP-2592",
+    short: "Extended-format dual-agonist vial.",
+    description:
+      "Larger-format research vial of tirzepatide. Supplied lyophilized under nitrogen with a signed independent certificate of analysis.",
+  },
 ];
 
 const categoryNames = Array.from(new Set(products.map((p) => p.category)));

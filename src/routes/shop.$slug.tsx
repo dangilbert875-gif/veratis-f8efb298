@@ -4,6 +4,7 @@ import { products } from "@/data/products";
 import { ProductCard } from "@/components/site/ProductCard";
 import { batches, labPartner } from "@/data/batches";
 import { LotTag } from "@/components/site/LotTag";
+import { VialImage } from "@/components/site/VialImage";
 import { Check, ShieldCheck, FlaskConical, Truck, FileText, Snowflake, HelpCircle } from "lucide-react";
 import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
@@ -85,7 +86,7 @@ export const Route = createFileRoute("/shop/$slug")({
 function ProductPage() {
   const { product: p } = Route.useLoaderData();
   const lot = batches.find((b) => b.slug === p.slug);
-  const lotId = lot?.lot ?? "PP-XXXX";
+  const lotId = lot?.lot ?? p.lot;
   const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
   const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
@@ -108,7 +109,16 @@ function ProductPage() {
             ].map((pos) => (
               <span key={pos} className={`absolute ${pos} w-4 h-px bg-ink/30`} aria-hidden />
             ))}
-            <img src={p.image} alt={`${p.name} — ${p.size} lyophilized vial`} width={1024} height={1024} className="w-full h-full object-cover" />
+            <div className="absolute inset-0">
+              <VialImage
+                name={p.name.replace(/ VIAL$/i, "")}
+                dosage={p.dosage}
+                lot={lotId}
+                purity={p.purity}
+                size="detail"
+                alt={`${p.name} — lyophilized research vial`}
+              />
+            </div>
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/55">
               <span>Specimen · {p.name}</span>
               <span className="tabular-nums">LOT {lotId}</span>
