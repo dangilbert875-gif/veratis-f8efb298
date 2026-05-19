@@ -124,6 +124,39 @@ function Home() {
         </div>
       </section>
 
+      {/* Why Pure Peptide Exists — brand philosophy */}
+      <section className="mx-auto max-w-7xl px-6 pt-24 pb-8">
+        <div className="grid md:grid-cols-12 gap-12 md:gap-16">
+          <div className="md:col-span-5">
+            <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Why Pure Peptide exists</p>
+            <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
+              The industry's quietest standard.
+            </h2>
+          </div>
+          <div className="md:col-span-7">
+            <p className="text-[1.0625rem] text-foreground/80 leading-[1.75]">
+              Most peptide suppliers recycle a single certificate across dozens of lots, redact the laboratory name, or publish nothing at all. We were chemists before we were a company, and we found that unacceptable.
+            </p>
+            <p className="mt-5 text-[1.0625rem] text-foreground/80 leading-[1.75]">
+              Pure Peptide exists to operate on the opposite premise — that the document a researcher receives must correspond, exactly, to the vial in their hand. Every lot. Every time. Verifiable by anyone.
+            </p>
+            <ul className="mt-10 grid sm:grid-cols-2 gap-x-8 gap-y-5">
+              {[
+                ["Public batch documentation", "Every lot's COA is posted to the archive at the moment of release."],
+                ["Independent verification", "Sealed vials are couriered blind to an ISO 17025 accredited laboratory."],
+                ["Documented purity standards", "≥ 98% purity, < 1.0 EU/mg endotoxin — published, not implied."],
+                ["Never recycled, never redacted", "Each certificate is signed, dated, and tied to a single production lot."],
+              ].map(([k, v]) => (
+                <li key={k} className="border-l-2 border-primary/70 pl-4">
+                  <p className="text-[13px] text-ink font-medium">{k}</p>
+                  <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed">{v}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* Featured products */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="flex items-end justify-between mb-10">
