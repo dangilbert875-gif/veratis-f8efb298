@@ -31,6 +31,7 @@ import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -142,6 +143,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/standards'
     | '/terms'
     | '/verify'
+    | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/standards'
     | '/terms'
     | '/verify'
+    | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -285,6 +296,7 @@ export interface FileRouteTypes {
     | '/standards'
     | '/terms'
     | '/verify'
+    | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -470,14 +482,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
 }
 
