@@ -63,6 +63,11 @@
   /* Deep charcoal-navy surface for archive / verification terminals.
      Lifted off pure black so the page reads as pharmaceutical, not cyber. */
   --archive: oklch(0.18 0.014 245);
+  /* Operational state tokens — muted, archival, never saturated. */
+  --state-success: oklch(0.55 0.06 155);
+  --state-warning: oklch(0.62 0.08 75);
+  --state-danger:  oklch(0.55 0.10 25);
+  --state-archived: oklch(0.50 0.04 240);
 }
 
 .dark {
