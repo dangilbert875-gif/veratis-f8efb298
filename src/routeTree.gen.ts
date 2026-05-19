@@ -16,6 +16,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
 import { Route as ResearchUseRouteImport } from './routes/research-use'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PaymentPolicyRouteImport } from './routes/payment-policy'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -61,6 +62,11 @@ const ResearchUseRoute = ResearchUseRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentPolicyRoute = PaymentPolicyRouteImport.update({
+  id: '/payment-policy',
+  path: '/payment-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LabTestingRoute = LabTestingRouteImport.update({
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
   '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
   '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
   '/research-use': typeof ResearchUseRoute
   '/shipping-returns': typeof ShippingReturnsRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/payment-policy'
     | '/privacy'
     | '/research-use'
     | '/shipping-returns'
@@ -211,6 +221,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/payment-policy'
     | '/privacy'
     | '/research-use'
     | '/shipping-returns'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/payment-policy'
     | '/privacy'
     | '/research-use'
     | '/shipping-returns'
@@ -252,6 +264,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
+  PaymentPolicyRoute: typeof PaymentPolicyRoute
   PrivacyRoute: typeof PrivacyRoute
   ResearchUseRoute: typeof ResearchUseRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment-policy': {
+      id: '/payment-policy'
+      path: '/payment-policy'
+      fullPath: '/payment-policy'
+      preLoaderRoute: typeof PaymentPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lab-testing': {
@@ -413,6 +433,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
+  PaymentPolicyRoute: PaymentPolicyRoute,
   PrivacyRoute: PrivacyRoute,
   ResearchUseRoute: ResearchUseRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
