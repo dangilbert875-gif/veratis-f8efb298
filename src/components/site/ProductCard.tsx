@@ -8,6 +8,7 @@ function lotFor(slug: string) {
 
 export function ProductCard({ p }: { p: Product }) {
   const lot = lotFor(p.slug);
+  const available = p.inStock !== false;
   return (
     <Link
       to="/shop/$slug"
@@ -54,7 +55,9 @@ export function ProductCard({ p }: { p: Product }) {
         </div>
         <div className="text-right shrink-0">
           <p className="text-[15px] text-ink font-medium tabular-nums">${p.price}</p>
-          <p className="mt-0.5 text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/45">In stock</p>
+          <p className={`mt-0.5 text-[10px] font-mono uppercase tracking-[0.16em] ${available ? "text-foreground/45" : "text-foreground/35"}`}>
+            {available ? "Available" : "Reserved"}
+          </p>
         </div>
       </div>
     </Link>
