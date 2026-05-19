@@ -1,7 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
 import { products } from "@/data/products";
-import { Check, ShieldCheck, FlaskConical, Truck, FileText } from "lucide-react";
+import { ProductCard } from "@/components/site/ProductCard";
+import { Check, ShieldCheck, FlaskConical, Truck, FileText, Snowflake, HelpCircle } from "lucide-react";
+import {
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+} from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/shop/$slug")({
   loader: ({ params }) => {
@@ -38,6 +42,9 @@ export const Route = createFileRoute("/shop/$slug")({
 
 function ProductPage() {
   const { product: p } = Route.useLoaderData();
+  const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
+  const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
+  const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
   return (
     <Layout>
       <div className="mx-auto max-w-7xl px-6 pt-10 pb-6 text-xs text-muted-foreground">
@@ -121,6 +128,66 @@ function ProductPage() {
           </p>
         </div>
       </section>
+
+      {/* Details accordion */}
+      <section className="mx-auto max-w-4xl px-6 py-20">
+        <Accordion type="multiple" className="border-t border-border">
+          {[
+            {
+              icon: Snowflake,
+              title: "Storage & handling",
+              body: "Store sealed vials at –20 °C, protected from light. Once reconstituted, refrigerate at 2–8 °C and use within 28 days. Avoid freeze-thaw cycles. Lyophilized powder is shipped under nitrogen and remains stable at ambient temperatures for up to 14 days in transit.",
+            },
+            {
+              icon: Truck,
+              title: "Shipping & fulfillment",
+              body: "Orders placed before 2pm ET ship the same business day. All vials ship in insulated mailers with cold packs at no additional cost. Domestic delivery in 2–4 business days via tracked carriers. Discreet packaging — no exterior product markings.",
+            },
+            {
+              icon: FileText,
+              title: "Documentation",
+              body: "Every vial is labeled with its production lot number. Use that lot number on our lab portal to retrieve identity, purity (HPLC), mass-spec confirmation, endotoxin level, and appearance results — signed by an independent ISO 17025 accredited laboratory.",
+            },
+            {
+              icon: HelpCircle,
+              title: "Common questions",
+              body: "These products are sold strictly for in-vitro laboratory and research applications. We do not provide dosing guidance, protocols, or any information related to human use. For questions about lot specifications or order status, our team responds within one business day.",
+            },
+          ].map(({ icon: Icon, title, body }) => (
+            <AccordionItem key={title} value={title} className="border-border">
+              <AccordionTrigger className="text-left text-base text-ink hover:no-underline py-5">
+                <span className="flex items-center gap-3">
+                  <Icon size={18} className="text-primary" strokeWidth={1.5} />
+                  {title}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-6 pl-9">
+                {body}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
+
+      {/* Related products */}
+      {relatedList.length > 0 && (
+        <section className="border-t border-border">
+          <div className="mx-auto max-w-7xl px-6 py-20">
+            <div className="flex items-end justify-between mb-10">
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-primary mb-3">Related</p>
+                <h2 className="text-2xl md:text-3xl text-ink">You may also be researching</h2>
+              </div>
+              <Link to="/shop" className="text-sm text-foreground/70 hover:text-foreground">
+                Shop all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+              {relatedList.map((rp) => <ProductCard key={rp.slug} p={rp} />)}
+            </div>
+          </div>
+        </section>
+      )}
     </Layout>
   );
 }
