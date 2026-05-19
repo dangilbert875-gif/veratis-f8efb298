@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StandardsRouteImport } from './routes/standards'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -30,6 +32,11 @@ const VerifyRoute = VerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StandardsRoute = StandardsRouteImport.update({
   id: '/standards',
   path: '/standards',
@@ -43,6 +50,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
   id: '/shipping-returns',
   path: '/shipping-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LabTestingRoute = LabTestingRouteImport.update({
@@ -110,9 +122,11 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -127,9 +141,11 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -145,9 +161,11 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
   '/lab-testing': typeof LabTestingRoute
+  '/privacy': typeof PrivacyRoute
   '/shipping-returns': typeof ShippingReturnsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -164,9 +182,11 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/privacy'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
+    | '/terms'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -181,9 +201,11 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/privacy'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
+    | '/terms'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -198,9 +220,11 @@ export interface FileRouteTypes {
     | '/faq'
     | '/how-to-pay'
     | '/lab-testing'
+    | '/privacy'
     | '/shipping-returns'
     | '/sitemap.xml'
     | '/standards'
+    | '/terms'
     | '/verify'
     | '/blog/$slug'
     | '/shop/$slug'
@@ -216,9 +240,11 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   HowToPayRoute: typeof HowToPayRoute
   LabTestingRoute: typeof LabTestingRoute
+  PrivacyRoute: typeof PrivacyRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StandardsRoute: typeof StandardsRoute
+  TermsRoute: typeof TermsRoute
   VerifyRoute: typeof VerifyRoute
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
@@ -231,6 +257,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/standards': {
@@ -252,6 +285,13 @@ declare module '@tanstack/react-router' {
       path: '/shipping-returns'
       fullPath: '/shipping-returns'
       preLoaderRoute: typeof ShippingReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lab-testing': {
@@ -353,9 +393,11 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   HowToPayRoute: HowToPayRoute,
   LabTestingRoute: LabTestingRoute,
+  PrivacyRoute: PrivacyRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StandardsRoute: StandardsRoute,
+  TermsRoute: TermsRoute,
   VerifyRoute: VerifyRoute,
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
@@ -363,3 +405,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
