@@ -20,7 +20,37 @@ export const Route = createFileRoute("/shop/$slug")({
       ? [
           { title: `${loaderData.product.name} — VERATIS` },
           { name: "description", content: loaderData.product.short },
+          { property: "og:title", content: `${loaderData.product.name} — VERATIS` },
+          { property: "og:description", content: loaderData.product.short },
+          { property: "og:type", content: "product" },
+          { property: "og:url", content: `https://pure-peptide-labs.lovable.app/shop/${loaderData.product.slug}` },
           { property: "og:image", content: loaderData.product.image },
+        ]
+      : [],
+    scripts: loaderData
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: loaderData.product.name,
+              description: loaderData.product.description,
+              image: `https://pure-peptide-labs.lovable.app${loaderData.product.image}`,
+              category: loaderData.product.category,
+              brand: { "@type": "Brand", name: "VERATIS" },
+              offers: {
+                "@type": "Offer",
+                price: loaderData.product.price,
+                priceCurrency: "USD",
+                availability:
+                  loaderData.product.inStock === false
+                    ? "https://schema.org/OutOfStock"
+                    : "https://schema.org/InStock",
+                url: `https://pure-peptide-labs.lovable.app/shop/${loaderData.product.slug}`,
+              },
+            }),
+          },
         ]
       : [],
   }),

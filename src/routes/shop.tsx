@@ -10,6 +10,9 @@ export const Route = createFileRoute("/shop")({
     meta: [
       { title: "Shop Peptides — VERATIS" },
       { name: "description", content: "Browse research-grade peptides. Every batch HPLC and mass-spec verified." },
+      { property: "og:title", content: "Catalog of research-grade peptides — VERATIS" },
+      { property: "og:description", content: "Browse the VERATIS catalog. Every vial is lot-traceable to an independent certificate of analysis." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/shop" },
     ],
   }),
   component: ShopPage,

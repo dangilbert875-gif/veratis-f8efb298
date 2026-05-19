@@ -7,6 +7,9 @@ export const Route = createFileRoute("/contact")({
     meta: [
       { title: "Contact — VERATIS" },
       { name: "description", content: "Get in touch with the VERATIS team. We reply within one business day." },
+      { property: "og:title", content: "Contact VERATIS" },
+      { property: "og:description", content: "Talk to a chemist, not a script. Batch questions, custom assays, and wholesale inquiries answered within one business day." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/contact" },
     ],
   }),
   component: Contact,

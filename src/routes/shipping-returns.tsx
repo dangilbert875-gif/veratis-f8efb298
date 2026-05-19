@@ -6,6 +6,9 @@ export const Route = createFileRoute("/shipping-returns")({
     meta: [
       { title: "Shipping & Returns — VERATIS" },
       { name: "description", content: "Shipping rates, transit times, and our straightforward return policy." },
+      { property: "og:title", content: "Shipping & Returns — VERATIS" },
+      { property: "og:description", content: "Cold-chain insulated dispatch within 48 hours. Free US shipping over $150. 14-day return window on unopened vials." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/shipping-returns" },
     ],
   }),
   component: Page,

@@ -33,8 +33,9 @@ export const Route = createFileRoute("/how-to-pay")({
       {
         property: "og:description",
         content:
-          "Premium, transparent Bitcoin payment process for VERATIS orders.",
+          "Bitcoin payment in three steps. Transparent, verifiable, and dispatched within 48 hours of confirmation.",
       },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/how-to-pay" },
     ],
   }),
   component: HowToPayPage,

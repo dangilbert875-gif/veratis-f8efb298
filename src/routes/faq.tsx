@@ -3,16 +3,6 @@ import { Layout, PageHeader } from "@/components/site/Layout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Plus, Minus } from "lucide-react";
 
-export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "FAQ — VERATIS" },
-      { name: "description", content: "Answers about purity testing, shipping, storage, and intended use of our research peptides." },
-    ],
-  }),
-  component: FAQ,
-});
-
 const sections = [
   {
     title: "Products & testing",
@@ -39,6 +29,35 @@ const sections = [
     ] as [string, string][],
   },
 ];
+
+export const Route = createFileRoute("/faq")({
+  head: () => ({
+    meta: [
+      { title: "FAQ — VERATIS" },
+      { name: "description", content: "Answers about purity testing, shipping, storage, and intended use of our research peptides." },
+      { property: "og:title", content: "FAQ — VERATIS" },
+      { property: "og:description", content: "Common questions on purity verification, cold-chain shipping, storage, and intended laboratory use." },
+      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/faq" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: sections.flatMap((s) =>
+            s.items.map(([q, a]) => ({
+              "@type": "Question",
+              name: q,
+              acceptedAnswer: { "@type": "Answer", text: a },
+            })),
+          ),
+        }),
+      },
+    ],
+  }),
+  component: FAQ,
+});
 
 function FAQ() {
   return (
