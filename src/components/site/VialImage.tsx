@@ -26,17 +26,20 @@ function labelDosage(dosage: string) {
 // Choose a name size class based on character length so longer compounds
 // step down gracefully instead of overflowing.
 function nameClass(name: string, size: Size) {
-  const len = name.length;
+  // Longest single token determines whether the name needs to shrink to
+  // avoid mid-word letter splits inside the narrow label column.
+  const longestToken = name.split(/[\s/]+/).reduce((m, w) => Math.max(m, w.length), 0);
+  const len = Math.max(name.length, longestToken * 1.4);
   if (size === "detail") {
-    if (len <= 10) return "text-[clamp(13px,1.55vw,21px)]";
-    if (len <= 18) return "text-[clamp(11px,1.3vw,18px)]";
-    if (len <= 26) return "text-[clamp(10px,1.1vw,15px)]";
-    return "text-[clamp(9px,0.95vw,13px)]";
+    if (len <= 9) return "text-[clamp(12px,1.4vw,19px)]";
+    if (len <= 14) return "text-[clamp(11px,1.2vw,16px)]";
+    if (len <= 22) return "text-[clamp(10px,1.05vw,14px)]";
+    return "text-[clamp(9px,0.9vw,12px)]";
   }
-  if (len <= 10) return "text-[clamp(9px,1.1vw,14px)]";
-  if (len <= 18) return "text-[clamp(8px,0.95vw,12px)]";
-  if (len <= 26) return "text-[clamp(7px,0.82vw,11px)]";
-  return "text-[clamp(6.5px,0.72vw,10px)]";
+  if (len <= 9) return "text-[clamp(8px,0.9vw,12px)]";
+  if (len <= 14) return "text-[clamp(7.5px,0.78vw,10.5px)]";
+  if (len <= 22) return "text-[clamp(7px,0.68vw,9.5px)]";
+  return "text-[clamp(6.5px,0.6vw,8.5px)]";
 }
 
 export function VialImage({
@@ -108,10 +111,11 @@ export function VialImage({
           <p
             className={`font-display text-ink uppercase tracking-[0.04em] ${nameClass(displayName, size)}`}
             style={{
-              lineHeight: 1.08,
+              lineHeight: 1.1,
               textWrap: "balance" as unknown as undefined,
-              wordBreak: "break-word",
-              hyphens: "auto",
+              wordBreak: "normal",
+              overflowWrap: "normal",
+              hyphens: "manual",
             }}
           >
             {displayName}
