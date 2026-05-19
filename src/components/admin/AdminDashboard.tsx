@@ -9,17 +9,21 @@ import { ProductsPanel } from "./panels/ProductsPanel";
 import { ArchivePanel } from "./panels/ArchivePanel";
 import { ArticlesPanel } from "./panels/ArticlesPanel";
 import { CustomersPanel } from "./panels/CustomersPanel";
+import { CoaUploadsPanel } from "./panels/CoaUploadsPanel";
+import { PartnersPanel } from "./panels/PartnersPanel";
 
 type Viewer = { email: string | null; fullName: string | null; userId: string };
 
 const sections = [
   { id: "overview", label: "Overview" },
+  { id: "products", label: "Products" },
   { id: "orders", label: "Orders" },
+  { id: "archive", label: "Verification Archive" },
+  { id: "coa", label: "COA Uploads" },
+  { id: "articles", label: "Education" },
+  { id: "partners", label: "Research Partners" },
   { id: "referrals", label: "Referrals" },
   { id: "payouts", label: "Payouts" },
-  { id: "products", label: "Products" },
-  { id: "archive", label: "Verification Archive" },
-  { id: "articles", label: "Education" },
   { id: "customers", label: "Customers" },
 ] as const;
 
@@ -58,7 +62,7 @@ export function AdminDashboard({ viewer }: { viewer: Viewer }) {
           <button
             onClick={async () => {
               await supabase.auth.signOut();
-              navigate({ to: "/login" });
+              navigate({ to: "/admin/login" });
             }}
             className="mt-2 text-[10px] tracking-[0.2em] uppercase text-foreground/50 hover:text-ink"
           >
@@ -96,7 +100,9 @@ export function AdminDashboard({ viewer }: { viewer: Viewer }) {
           {active === "payouts" && <PayoutsPanel />}
           {active === "products" && <ProductsPanel />}
           {active === "archive" && <ArchivePanel />}
+          {active === "coa" && <CoaUploadsPanel />}
           {active === "articles" && <ArticlesPanel />}
+          {active === "partners" && <PartnersPanel />}
           {active === "customers" && <CustomersPanel />}
         </div>
       </main>
@@ -112,7 +118,9 @@ function titleFor(id: SectionId): string {
     case "payouts": return "Partner payouts";
     case "products": return "Catalog";
     case "archive": return "Verification archive";
+    case "coa": return "Certificate uploads";
     case "articles": return "Educational publications";
+    case "partners": return "Research partners";
     case "customers": return "Customer registry";
   }
 }
