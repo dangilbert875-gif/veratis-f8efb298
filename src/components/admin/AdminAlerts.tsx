@@ -35,11 +35,11 @@ export function AdminAlerts({ onNavigate }: { onNavigate: (s: SectionId) => void
       section: "orders",
     });
   }
-  if (data.lowStock.length > 0) {
+    if (data.lowStock.length > 0) {
     items.push({
       tone: "warn",
       label: `${data.lowStock.length} product${data.lowStock.length > 1 ? "s" : ""} below low-stock threshold`,
-      sub: data.lowStock.slice(0, 3).map((p) => p.label).join(" · "),
+        sub: data.lowStock.slice(0, 3).map((p: any) => p.label).join(" · "),
       section: "products",
     });
   }
@@ -47,7 +47,7 @@ export function AdminAlerts({ onNavigate }: { onNavigate: (s: SectionId) => void
     items.push({
       tone: "bad",
       label: `${data.expiredLots.length} expired lot${data.expiredLots.length > 1 ? "s" : ""} still active`,
-      sub: data.expiredLots.slice(0, 3).map((l) => l.lot_number).join(" · "),
+        sub: data.expiredLots.slice(0, 3).map((l: any) => l.lot_number).join(" · "),
       section: "coa",
     });
   }
