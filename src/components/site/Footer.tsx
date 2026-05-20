@@ -9,7 +9,7 @@ export function Footer() {
   const lastRelease = batches[0]?.testedOn ?? "—";
 
   return (
-    <footer className="bg-ink text-background/80 mt-32">
+    <footer className="bg-ink text-background/80 mt-20">
       {/* Top: institutional verification rail */}
       <div className="border-b border-background/10">
         <div className="mx-auto max-w-7xl px-6 py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
@@ -38,7 +38,7 @@ export function Footer() {
       </div>
 
       {/* Body: editorial brand block + linkrails */}
-      <div className="mx-auto max-w-7xl px-6 pt-24 pb-20 grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-10">
+      <div className="mx-auto max-w-7xl px-6 pt-12 pb-16 grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-10">
         <div className="col-span-2 md:col-span-4 lg:col-span-4">
           <Logo className="h-auto w-[200px] lg:w-[224px] text-background opacity-95" />
           <p className="mt-8 font-display text-[1.75rem] leading-[1.15] tracking-[-0.022em] text-background max-w-md">
