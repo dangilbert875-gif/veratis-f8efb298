@@ -579,6 +579,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          dosage: string | null
           endotoxin: string | null
           featured: boolean
           featured_image: string | null
@@ -599,6 +600,7 @@ export type Database = {
           seo_description: string | null
           seo_title: string | null
           short_description: string | null
+          size_label: string | null
           slug: string
           sort_order: number
           status: Database["public"]["Enums"]["product_status"]
@@ -614,6 +616,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          dosage?: string | null
           endotoxin?: string | null
           featured?: boolean
           featured_image?: string | null
@@ -634,6 +637,7 @@ export type Database = {
           seo_description?: string | null
           seo_title?: string | null
           short_description?: string | null
+          size_label?: string | null
           slug: string
           sort_order?: number
           status?: Database["public"]["Enums"]["product_status"]
@@ -649,6 +653,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          dosage?: string | null
           endotoxin?: string | null
           featured?: boolean
           featured_image?: string | null
@@ -669,6 +674,7 @@ export type Database = {
           seo_description?: string | null
           seo_title?: string | null
           short_description?: string | null
+          size_label?: string | null
           slug?: string
           sort_order?: number
           status?: Database["public"]["Enums"]["product_status"]

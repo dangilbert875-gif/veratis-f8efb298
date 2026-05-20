@@ -1,10 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
-import { products } from "@/data/products";
+import { products, type Product } from "@/data/products";
 import { ProductCard } from "@/components/site/ProductCard";
 import { batches, labPartner } from "@/data/batches";
 import { LotTag } from "@/components/site/LotTag";
 import { VialImage } from "@/components/site/VialImage";
+import { getPublishedProductBySlug, listPublishedProducts } from "@/lib/public-catalog.functions";
+import { mapDbProduct } from "@/lib/use-catalog";
 
 function titleFor(name: string) {
   return name
@@ -26,10 +28,25 @@ import { CompoundDossier } from "@/components/site/CompoundDossier";
 import { dossierForSlug } from "@/data/compoundDossiers";
 
 export const Route = createFileRoute("/shop/$slug")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
+    // Try the backend first. Fall back to bundled catalog so the page stays
+    // resilient if the backend is briefly unavailable.
+    try {
+      const row = await getPublishedProductBySlug({ data: { slug: params.slug } });
+      if (row) {
+        const product = mapDbProduct(row);
+        const allRows = await listPublishedProducts().catch(() => [] as any[]);
+        const allProducts: Product[] = (allRows ?? []).map(mapDbProduct);
+        return { product, allProducts: allProducts.length ? allProducts : products };
+      }
+    } catch (err) {
+      // Backend hiccup — log and fall through to static catalog.
+      // eslint-disable-next-line no-console
+      console.warn("[shop.$slug] backend lookup failed, using fallback:", err);
+    }
     const product = products.find((p) => p.slug === params.slug);
     if (!product) throw notFound();
-    return { product };
+    return { product, allProducts: products };
   },
   head: ({ loaderData }) => ({
     meta: loaderData
@@ -123,7 +140,10 @@ export const Route = createFileRoute("/shop/$slug")({
 });
 
 function ProductPage() {
-  const { product: p } = Route.useLoaderData();
+  const { product: p, allProducts } = Route.useLoaderData() as {
+    product: Product;
+    allProducts: Product[];
+  };
   const lot = batches.find((b) => b.slug === p.slug);
   const lotId = lot?.lot ?? p.lot;
   const title = titleFor(p.name);
@@ -132,8 +152,8 @@ function ProductPage() {
   const { addItem } = useCart();
   const available = p.inStock !== false;
   const dossier = dossierForSlug(p.slug);
-  const related = products.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
-  const fallback = products.filter((x) => x.slug !== p.slug).slice(0, 4);
+  const related = allProducts.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
+  const fallback = allProducts.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
   return (
     <Layout>
