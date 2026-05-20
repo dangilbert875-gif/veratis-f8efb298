@@ -38,15 +38,15 @@ export function Footer() {
       </div>
 
       {/* Body: editorial brand block + linkrails */}
-      <div className="mx-auto max-w-7xl px-6 pt-12 pb-16 grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-10">
+      <div className="mx-auto max-w-7xl px-6 pt-10 pb-16 grid grid-cols-2 md:grid-cols-12 gap-y-14 gap-x-10">
         <div className="col-span-2 md:col-span-4 lg:col-span-4">
-          <Logo className="h-auto w-[200px] lg:w-[224px] text-background opacity-95" />
-          <p className="mt-8 font-display text-[1.75rem] leading-[1.15] tracking-[-0.022em] text-background max-w-md">
+          <p className="font-display text-[1.75rem] leading-[1.15] tracking-[-0.022em] text-background max-w-md">
             Documented. Verified. Archived.
           </p>
           <p className="mt-5 text-[13.5px] text-background/55 leading-[1.8] max-w-md">
             A verification platform for research peptides. Every lot independently assayed, signed, archived, and publicly retrievable — for the lifetime of the lot.
           </p>
+          <Logo className="mt-8 h-auto w-[168px] lg:w-[188px] text-background opacity-90" />
           <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-background/50">
             {[
               [ShieldCheck, "ISO 17025"],
