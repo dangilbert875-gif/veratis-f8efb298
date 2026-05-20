@@ -184,6 +184,7 @@ const orderPatchInput = z.object({
     btc_amount: z.number().nullable().optional(),
     btc_address: z.string().max(128).nullable().optional(),
     customer_name: z.string().max(128).nullable().optional(),
+    customer_email: z.string().email().max(255).optional(),
     shipping_name: z.string().max(128).nullable().optional(),
     shipping_address_1: z.string().max(256).nullable().optional(),
     shipping_address_2: z.string().max(256).nullable().optional(),
