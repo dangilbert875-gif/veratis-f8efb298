@@ -345,7 +345,7 @@ export function ArchivePanel() {
           <div className="px-5 py-2 border-b border-ink/10 bg-ink/[0.025] flex items-center gap-2 text-[12px]">
             <span className="text-foreground/70">{selected.size} selected</span>
             <span className="text-foreground/30">·</span>
-            <GhostButton onClick={bulkRelease}>Mark active</GhostButton>
+            <GhostButton onClick={bulkRelease}>Mark released</GhostButton>
             <GhostButton onClick={bulkArchive}>Archive</GhostButton>
             <GhostButton onClick={() => exportCsv("selected")}>Export</GhostButton>
             <GhostButton onClick={() => setSelected(new Set())}>Clear</GhostButton>
