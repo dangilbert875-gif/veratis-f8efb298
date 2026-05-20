@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { listOrders, getOrderDetail, patchOrder, bulkOrderAction, deleteOrder } from "@/lib/admin.functions";
 import { InternalNotes } from "../InternalNotes";
 import { Card, Empty, Field, GhostButton, PrimaryButton, SelectInput, TextInput, formatDate, formatUSD } from "../ui";
 
 // ───── Status taxonomy ─────
 const PAYMENT_STATUSES = [
-  "awaiting_payment", "btc_received", "confirmed", "underpaid",
-  "expired", "refunded", "failed",
+  "pending", "awaiting_payment", "paid", "confirmed",
+  "underpaid", "expired", "refunded", "failed",
 ] as const;
 const FULFILLMENT_STATUSES = [
   "not_started", "processing", "packed", "shipped",
@@ -18,8 +19,8 @@ const FULFILLMENT_STATUSES = [
 type Tone = "ok" | "warn" | "bad" | "neutral";
 
 function paymentTone(s: string): Tone {
-  if (["confirmed", "btc_received"].includes(s)) return "ok";
-  if (["awaiting_payment", "underpaid"].includes(s)) return "warn";
+  if (["confirmed", "paid", "btc_received"].includes(s)) return "ok";
+  if (["pending", "awaiting_payment", "underpaid"].includes(s)) return "warn";
   if (["failed", "expired", "refunded"].includes(s)) return "bad";
   return "neutral";
 }
@@ -28,6 +29,11 @@ function fulfillmentTone(s: string): Tone {
   if (["processing", "packed", "held"].includes(s)) return "warn";
   if (["cancelled"].includes(s)) return "bad";
   return "neutral";
+}
+
+function isComplete(o: any) {
+  return ["paid", "confirmed", "btc_received"].includes(o.payment_status)
+    && ["shipped", "delivered"].includes(o.fulfillment_status);
 }
 
 function StatusDot({ tone }: { tone: Tone }) {
@@ -49,6 +55,38 @@ function StatusBadge({ tone, children }: { tone: Tone; children: React.ReactNode
     <span className={`inline-flex items-center gap-1.5 border px-2 py-0.5 text-[10px] tracking-[0.14em] uppercase ${tones[tone]}`}>
       <StatusDot tone={tone} />
       {children}
+    </span>
+  );
+}
+
+function InlineStatusSelect({
+  value, tone, options, onChange,
+}: {
+  value: string;
+  tone: Tone;
+  options: string[];
+  onChange: (next: string) => void | Promise<void>;
+}) {
+  const tones: Record<Tone, string> = {
+    neutral: "border-ink/15 text-foreground/65 bg-mist/30 hover:border-ink/30",
+    ok: "border-emerald-700/30 text-emerald-800 bg-emerald-50/40 hover:border-emerald-700/50",
+    warn: "border-amber-700/30 text-amber-800 bg-amber-50/40 hover:border-amber-700/50",
+    bad: "border-red-700/30 text-red-800 bg-red-50/40 hover:border-red-700/50",
+  };
+  return (
+    <span className={`relative inline-flex items-center gap-1.5 border h-6 pl-2 pr-1 text-[10px] tracking-[0.14em] uppercase transition-colors ${tones[tone]}`}>
+      <StatusDot tone={tone} />
+      <span>{humanize(value)}</span>
+      <select
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        aria-label="Change status"
+      >
+        {options.map((s) => (
+          <option key={s} value={s}>{humanize(s)}</option>
+        ))}
+      </select>
     </span>
   );
 }
@@ -93,6 +131,7 @@ export function OrdersPanel() {
   const fetchOrders = useServerFn(listOrders);
   const bulk = useServerFn(bulkOrderAction);
   const removeOrder = useServerFn(deleteOrder);
+  const update = useServerFn(patchOrder);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
@@ -113,6 +152,57 @@ export function OrdersPanel() {
     qc.invalidateQueries({ queryKey: ["admin-overview"] });
     qc.invalidateQueries({ queryKey: ["admin-alerts"] });
     if (detailId) qc.invalidateQueries({ queryKey: ["admin-order", detailId] });
+  };
+
+  // ── Inline status mutation (table dropdowns) ──
+  const changePayment = async (o: any, next: string) => {
+    if (next === o.payment_status) return;
+    const patch: Record<string, any> = { payment_status: next };
+    if (["paid", "confirmed", "btc_received"].includes(next)) {
+      if (!o.payment_received_at) patch.payment_received_at = new Date().toISOString();
+      patch.status = "paid";
+    }
+    if (next === "refunded") patch.status = "refunded";
+    try {
+      await update({ data: { id: o.id, patch } });
+      toast.success(`Payment → ${humanize(next)}`);
+      refresh();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Update failed");
+    }
+  };
+
+  const changeFulfillment = async (o: any, next: string) => {
+    if (next === o.fulfillment_status) return;
+    const patch: Record<string, any> = { fulfillment_status: next };
+    if (next === "shipped") {
+      if (!o.shipped_at) patch.shipped_at = new Date().toISOString();
+      patch.status = "shipped";
+      if (!o.tracking_number) {
+        const t = typeof window !== "undefined"
+          ? window.prompt("Tracking number (optional — leave blank to fill later):", "")
+          : "";
+        if (t && t.trim()) patch.tracking_number = t.trim();
+        if (!o.carrier) {
+          const c = typeof window !== "undefined"
+            ? window.prompt("Carrier (USPS / UPS / FedEx / DHL / Other) — optional:", "USPS")
+            : "";
+          if (c && c.trim()) patch.carrier = c.trim();
+        }
+      }
+    }
+    if (next === "delivered") {
+      if (!o.delivered_at) patch.delivered_at = new Date().toISOString();
+      patch.status = "delivered";
+    }
+    if (next === "cancelled") patch.status = "cancelled";
+    try {
+      await update({ data: { id: o.id, patch } });
+      toast.success(`Fulfillment → ${humanize(next)}`);
+      refresh();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Update failed");
+    }
   };
 
   const filtered = useMemo(() => {
@@ -318,15 +408,33 @@ export function OrdersPanel() {
                         <div className="text-ink">{o.customer_name || o.customer_email}</div>
                         {o.customer_name && <div className="text-[10.5px] text-foreground/50">{o.customer_email}</div>}
                       </td>
-                      <td className="px-4 py-3"><StatusBadge tone={paymentTone(o.payment_status)}>{humanize(o.payment_status)}</StatusBadge></td>
-                      <td className="px-4 py-3"><StatusBadge tone={fulfillmentTone(o.fulfillment_status)}>{humanize(o.fulfillment_status)}</StatusBadge></td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <InlineStatusSelect
+                          value={o.payment_status}
+                          tone={paymentTone(o.payment_status)}
+                          options={PAYMENT_STATUSES as unknown as string[]}
+                          onChange={(v) => changePayment(o, v)}
+                        />
+                      </td>
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <InlineStatusSelect
+                          value={o.fulfillment_status}
+                          tone={fulfillmentTone(o.fulfillment_status)}
+                          options={FULFILLMENT_STATUSES as unknown as string[]}
+                          onChange={(v) => changeFulfillment(o, v)}
+                        />
+                      </td>
                       <td className="px-4 py-3 text-right tabular-nums">{formatUSD(o.total_usd)}</td>
                       <td className="px-4 py-3 text-foreground/65 text-[11.5px]">
                         {o.shipping_city ? `${o.shipping_city}${o.shipping_state ? ", " + o.shipping_state : ""}` : "—"}
                       </td>
                       <td className="px-4 py-3 text-foreground/60">{formatDate(o.created_at)}</td>
                       <td className="px-4 py-3">
-                        {alerts.length > 0 ? (
+                        {isComplete(o) ? (
+                          <span className="inline-flex items-center gap-1.5 text-[10.5px] tracking-[0.14em] uppercase text-emerald-800">
+                            <StatusDot tone="ok" /> Complete
+                          </span>
+                        ) : alerts.length > 0 ? (
                           <span className="inline-flex items-center gap-1.5 text-[10.5px] text-amber-800" title={alerts.join(" · ")}>
                             <StatusDot tone="warn" />
                             {alerts.length}

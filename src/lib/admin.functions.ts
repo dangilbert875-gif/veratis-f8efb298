@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 type Role = "admin" | "research_partner" | "customer";
 
@@ -201,11 +202,53 @@ export const patchOrder = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
+
+    // Snapshot prior state for audit logging
+    const { data: prior } = await supabase
+      .from("orders")
+      .select("order_number, payment_status, fulfillment_status, status, tracking_number, carrier, archived_at, risk_flag")
+      .eq("id", data.id)
+      .maybeSingle();
+
     const { error } = await supabase
       .from("orders")
       .update({ ...data.patch, updated_at: new Date().toISOString() })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+
+    // Audit log — record status-relevant transitions. Uses supabaseAdmin
+    // so the write bypasses the SELECT-only RLS policy on audit_logs.
+    try {
+      if (prior) {
+        const entries: Array<{ field: string; from: any; to: any }> = [];
+        const watch = ["payment_status", "fulfillment_status", "status", "tracking_number", "carrier", "risk_flag", "archived_at"];
+        for (const k of watch) {
+          if (k in data.patch && (prior as any)[k] !== (data.patch as any)[k]) {
+            entries.push({ field: k, from: (prior as any)[k], to: (data.patch as any)[k] });
+          }
+        }
+        if (entries.length) {
+          await supabaseAdmin.from("audit_logs").insert(
+            entries.map((e) => ({
+              actor_id: userId,
+              action: `ORDER_${e.field.toUpperCase()}_CHANGE`,
+              entity_type: "orders",
+              entity_id: data.id,
+              diff: {
+                order_number: prior.order_number,
+                field: e.field,
+                old: e.from,
+                new: e.to,
+              },
+            })),
+          );
+        }
+      }
+    } catch (err) {
+      // Audit failure must not break the operational update
+      console.warn("[orders] audit log write failed:", (err as any)?.message ?? err);
+    }
+
     return { ok: true };
   });
 
