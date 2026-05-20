@@ -46,21 +46,61 @@ const LOT_PUBLIC_COLUMNS =
 
 /** Public COA archive — released + public_visible only. */
 export const listPublicLots = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabaseAdmin
-    .from("product_lots")
+  // The public archive mirrors the live storefront: one entry per currently
+  // published, non-archived product. We surface the latest matching lot when
+  // one exists, and otherwise fall back to the product's own lot/purity
+  // fields so the archive stays in sync with the catalog even before a
+  // formal COA release has been recorded.
+  const { data: products, error: productsErr } = await supabaseAdmin
+    .from("products")
     .select(
-      LOT_PUBLIC_COLUMNS +
-        ", products:product_id!inner(name, slug, status, archived_at)",
+      "id, slug, name, lot_number, purity, endotoxin, sort_order, created_at",
     )
-    .eq("status", "released")
-    .eq("public_visible", true)
+    .eq("status", "published")
     .is("archived_at", null)
-    .eq("products.status", "published")
-    .is("products.archived_at", null)
-    .order("release_date", { ascending: false, nullsFirst: false })
-    .limit(500);
-  if (error) throw new Error(error.message);
-  return data ?? [];
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (productsErr) throw new Error(productsErr.message);
+
+  const productIds = (products ?? []).map((p) => p.id);
+  let lotsByProduct = new Map<string, any>();
+  if (productIds.length) {
+    const { data: lots, error: lotsErr } = await supabaseAdmin
+      .from("product_lots")
+      .select(LOT_PUBLIC_COLUMNS)
+      .in("product_id", productIds)
+      .is("archived_at", null)
+      .order("release_date", { ascending: false, nullsFirst: false });
+    if (lotsErr) throw new Error(lotsErr.message);
+    for (const lot of (lots as any[]) ?? []) {
+      // Keep the first (most recent) lot we see per product.
+      if (!lotsByProduct.has(lot.product_id)) {
+        lotsByProduct.set(lot.product_id, lot);
+      }
+    }
+  }
+
+  return (products ?? []).map((p) => {
+    const lot = lotsByProduct.get(p.id);
+    return {
+      id: lot?.id ?? p.id,
+      lot_number: lot?.lot_number ?? p.lot_number ?? "",
+      product_id: p.id,
+      purity: lot?.purity ?? p.purity ?? null,
+      identity_status: lot?.identity_status ?? null,
+      identity_method: lot?.identity_method ?? null,
+      water_content: lot?.water_content ?? null,
+      endotoxin: lot?.endotoxin ?? p.endotoxin ?? null,
+      release_date: lot?.release_date ?? null,
+      best_before: lot?.best_before ?? null,
+      lab_partner: lot?.lab_partner ?? null,
+      tested_by: lot?.tested_by ?? null,
+      coa_url: lot?.coa_url ?? null,
+      coa_download_enabled: lot?.coa_download_enabled ?? false,
+      status: lot?.status ?? null,
+      products: { name: p.name, slug: p.slug, status: "published", archived_at: null },
+    };
+  });
 });
 
 /** Public Verify Batch lookup — returns null when not publicly verifiable. */
