@@ -553,9 +553,11 @@ export type Database = {
           active: boolean
           archived_at: string | null
           best_before: string | null
+          coa_download_enabled: boolean
           coa_url: string | null
           created_at: string
           created_by: string | null
+          deactivated_at: string | null
           endotoxin: string | null
           hplc_url: string | null
           id: string
@@ -566,20 +568,27 @@ export type Database = {
           lot_number: string
           notes: string | null
           product_id: string | null
+          product_page_visible: boolean
+          public_visible: boolean
           purity: string | null
           raw_data: Json
           release_date: string | null
+          status: Database["public"]["Enums"]["lot_status"]
           tested_by: string | null
           updated_at: string
+          verify_lookup_enabled: boolean
+          visibility_override: boolean
           water_content: string | null
         }
         Insert: {
           active?: boolean
           archived_at?: string | null
           best_before?: string | null
+          coa_download_enabled?: boolean
           coa_url?: string | null
           created_at?: string
           created_by?: string | null
+          deactivated_at?: string | null
           endotoxin?: string | null
           hplc_url?: string | null
           id?: string
@@ -590,20 +599,27 @@ export type Database = {
           lot_number: string
           notes?: string | null
           product_id?: string | null
+          product_page_visible?: boolean
+          public_visible?: boolean
           purity?: string | null
           raw_data?: Json
           release_date?: string | null
+          status?: Database["public"]["Enums"]["lot_status"]
           tested_by?: string | null
           updated_at?: string
+          verify_lookup_enabled?: boolean
+          visibility_override?: boolean
           water_content?: string | null
         }
         Update: {
           active?: boolean
           archived_at?: string | null
           best_before?: string | null
+          coa_download_enabled?: boolean
           coa_url?: string | null
           created_at?: string
           created_by?: string | null
+          deactivated_at?: string | null
           endotoxin?: string | null
           hplc_url?: string | null
           id?: string
@@ -614,11 +630,16 @@ export type Database = {
           lot_number?: string
           notes?: string | null
           product_id?: string | null
+          product_page_visible?: boolean
+          public_visible?: boolean
           purity?: string | null
           raw_data?: Json
           release_date?: string | null
+          status?: Database["public"]["Enums"]["lot_status"]
           tested_by?: string | null
           updated_at?: string
+          verify_lookup_enabled?: boolean
+          visibility_override?: boolean
           water_content?: string | null
         }
         Relationships: [
@@ -1021,6 +1042,15 @@ export type Database = {
         | "research_partner"
         | "suspended"
         | "flagged"
+      lot_status:
+        | "draft"
+        | "pending_assay"
+        | "awaiting_coa"
+        | "released"
+        | "archived"
+        | "deactivated"
+        | "failed"
+        | "retest_required"
       order_status:
         | "pending"
         | "awaiting_payment"
@@ -1169,6 +1199,16 @@ export const Constants = {
         "research_partner",
         "suspended",
         "flagged",
+      ],
+      lot_status: [
+        "draft",
+        "pending_assay",
+        "awaiting_coa",
+        "released",
+        "archived",
+        "deactivated",
+        "failed",
+        "retest_required",
       ],
       order_status: [
         "pending",
