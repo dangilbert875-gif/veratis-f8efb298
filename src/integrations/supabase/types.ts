@@ -1035,13 +1035,23 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      log_admin_account_event: {
+        Args: {
+          _action: string
+          _actor: string
+          _diff: Json
+          _target_user: string
+        }
+        Returns: undefined
+      }
       next_order_number: { Args: never; Returns: string }
       restore: { Args: { _id: string; _table: string }; Returns: undefined }
       soft_delete: { Args: { _id: string; _table: string }; Returns: undefined }
+      super_admin_count: { Args: never; Returns: number }
     }
     Enums: {
       affiliate_status: "active" | "paused" | "suspended"
-      app_role: "admin" | "research_partner" | "customer"
+      app_role: "admin" | "research_partner" | "customer" | "super_admin"
       article_status: "draft" | "published" | "archived"
       customer_state:
         | "active"
@@ -1198,7 +1208,7 @@ export const Constants = {
   public: {
     Enums: {
       affiliate_status: ["active", "paused", "suspended"],
-      app_role: ["admin", "research_partner", "customer"],
+      app_role: ["admin", "research_partner", "customer", "super_admin"],
       article_status: ["draft", "published", "archived"],
       customer_state: [
         "active",

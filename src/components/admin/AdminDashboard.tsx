@@ -168,13 +168,13 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
         </nav>
         <div className="px-6 py-5 border-t border-ink/10 text-[11px] text-foreground/60">
           <div className="truncate">{viewer.email}</div>
-          <button
-            type="button"
-            onClick={signOut}
-            className="mt-2 text-[10px] tracking-[0.2em] uppercase text-foreground/50 hover:text-ink"
-          >
-            Sign out
-          </button>
+          <div className="mt-2 flex items-center gap-3 text-[10px] tracking-[0.2em] uppercase">
+            <a href="/admin/account" className="text-foreground/50 hover:text-ink">Account</a>
+            <span className="text-foreground/20">·</span>
+            <button type="button" onClick={signOut} className="text-foreground/50 hover:text-ink">
+              Sign out
+            </button>
+          </div>
         </div>
       </aside>
 
