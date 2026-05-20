@@ -140,7 +140,10 @@ export const Route = createFileRoute("/shop/$slug")({
 });
 
 function ProductPage() {
-  const { product: p, allProducts } = Route.useLoaderData();
+  const { product: p, allProducts } = Route.useLoaderData() as {
+    product: Product;
+    allProducts: Product[];
+  };
   const lot = batches.find((b) => b.slug === p.slug);
   const lotId = lot?.lot ?? p.lot;
   const title = titleFor(p.name);
