@@ -1035,6 +1035,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      next_order_number: { Args: never; Returns: string }
       restore: { Args: { _id: string; _table: string }; Returns: undefined }
       soft_delete: { Args: { _id: string; _table: string }; Returns: undefined }
     }
