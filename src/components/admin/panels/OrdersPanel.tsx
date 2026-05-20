@@ -824,6 +824,23 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                 </div>
               )}
             </section>
+
+            {/* H. Danger zone */}
+            <section className="border border-red-700/20 bg-red-50/30">
+              <header className="px-4 py-2.5 border-b border-red-700/15 text-[10.5px] tracking-[0.22em] uppercase text-red-800/80">Danger zone</header>
+              <div className="p-4 flex items-center justify-between gap-4">
+                <div className="text-[11.5px] text-foreground/70">
+                  Permanently delete this order and its items. This action cannot be undone.
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="shrink-0 h-8 px-3 text-[11px] tracking-[0.14em] uppercase border border-red-700/40 text-red-800 bg-background hover:bg-red-700 hover:text-white transition-colors"
+                >
+                  Delete order
+                </button>
+              </div>
+            </section>
           </div>
         )}
       </aside>
