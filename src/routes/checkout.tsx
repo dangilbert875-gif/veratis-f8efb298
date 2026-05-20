@@ -334,20 +334,6 @@ function Row({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-function ShippingOption({ active, onClick, label, detail, price }: {
-  active: boolean; onClick: () => void; label: string; detail: string; price: number;
-}) {
-  return (
-    <button type="button" onClick={onClick}
-      className={`text-left p-4 border rounded-[3px] transition-all ${active ? "border-ink bg-mist/50" : "border-border hover:border-ink/50"}`}>
-      <div className="flex items-center justify-between">
-        <p className="text-[12.5px] text-ink">{label}</p>
-        <p className="text-[12px] tabular-nums text-ink">${price}</p>
-      </div>
-      <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-1">{detail}</p>
-    </button>
-  );
-}
 function StepRail({ step }: { step: Step }) {
   const steps = ["Contact", "Shipping", "Review"];
   return (
