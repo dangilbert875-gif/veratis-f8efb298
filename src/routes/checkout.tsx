@@ -274,7 +274,12 @@ function CheckoutPage() {
           </ul>
           <div className="px-5 py-4 border-t border-border space-y-2 text-[12px]">
             <Row label="Subtotal" value={`$${subtotal.toFixed(0)}`} />
-            <Row label={shippingMethod === "express" ? "Express overnight" : "Cold-chain shipping"} value={`$${shippingCost}`} />
+            <Row label="Cold-chain shipping" value={shippingCost === 0 ? "Free" : `$${shippingCost}`} />
+            {shippingCost > 0 && (
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55">
+                — Free over ${FREE_SHIPPING_THRESHOLD}
+              </p>
+            )}
             <div className="pt-2 mt-2 border-t border-border flex justify-between items-baseline">
               <span className="font-mono uppercase tracking-[0.18em] text-foreground/55 text-[10.5px]">Total</span>
               <span className="text-lg text-ink tabular-nums">${total.toFixed(0)}</span>
