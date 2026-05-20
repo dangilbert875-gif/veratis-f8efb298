@@ -495,6 +495,7 @@ export function OrdersPanel() {
 function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; onClose: () => void; onChanged: () => void }) {
   const fetchDetail = useServerFn(getOrderDetail);
   const update = useServerFn(patchOrder);
+  const removeOrder = useServerFn(deleteOrder);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-order", orderId],
     queryFn: () => fetchDetail({ data: { id: orderId } }),
@@ -527,12 +528,35 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
       "payment_status","fulfillment_status","risk_flag","tracking_number","carrier",
       "shipping_method","shipped_at","delivered_at","payment_received_at","payment_expires_at",
       "btc_tx_hash","btc_confirmations","btc_amount","btc_address",
-      "customer_name","shipping_name","shipping_address_1","shipping_address_2",
+      "customer_name","customer_email","shipping_name","shipping_address_1","shipping_address_2",
       "shipping_city","shipping_state","shipping_zip","shipping_country","internal_notes",
     ];
     const patch: Record<string, any> = {};
-    keys.forEach((k) => { patch[k] = form[k] ?? null; });
+    keys.forEach((k) => {
+      let v = form[k];
+      if (k === "btc_amount" || k === "btc_confirmations") {
+        v = v === "" || v == null ? null : Number(v);
+        if (Number.isNaN(v)) v = null;
+      }
+      if (k === "customer_email") {
+        v = (v ?? "").trim();
+        if (!v) return; // email is required, skip if blank
+      }
+      patch[k] = v ?? null;
+    });
     await save(patch);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Delete order ${o?.order_number ?? ""}? This cannot be undone.`)) return;
+    try {
+      await removeOrder({ data: { id: orderId } });
+      toast.success("Order deleted");
+      onChanged();
+      onClose();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Delete failed");
+    }
   };
 
   const copy = (text: string, label: string) => {
@@ -623,8 +647,12 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                 <Field label="Name"><TextInput value={form.customer_name ?? ""} onChange={(e) => set("customer_name", e.target.value)} /></Field>
                 <Field label="Email">
                   <div className="flex gap-2">
-                    <TextInput value={o.customer_email ?? ""} readOnly />
-                    <GhostButton type="button" onClick={() => copy(o.customer_email ?? "", "Email")}>Copy</GhostButton>
+                    <TextInput
+                      type="email"
+                      value={form.customer_email ?? ""}
+                      onChange={(e) => set("customer_email", e.target.value)}
+                    />
+                    <GhostButton type="button" onClick={() => copy(form.customer_email ?? "", "Email")}>Copy</GhostButton>
                   </div>
                 </Field>
               </div>
@@ -674,11 +702,54 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
             <Section title="BTC payment">
               <div className="grid grid-cols-2 gap-3">
                 <KV label="USD total" value={formatUSD(o.total_usd)} />
-                <KV label="BTC amount" value={form.btc_amount ?? "—"} />
-                <KV label="Payment status" value={<span className={paymentTone(o.payment_status) === "ok" ? "text-emerald-800" : ""}>{humanize(o.payment_status)}</span>} />
-                <KV label="Received at" value={o.payment_received_at ? formatDate(o.payment_received_at) : "—"} />
+                <Field label="Payment status">
+                  <SelectInput value={form.payment_status ?? "awaiting_payment"} onChange={(e) => set("payment_status", e.target.value)}>
+                    {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+                  </SelectInput>
+                </Field>
+                <Field label="BTC amount">
+                  <TextInput
+                    type="number"
+                    step="0.00000001"
+                    value={form.btc_amount ?? ""}
+                    onChange={(e) => set("btc_amount", e.target.value)}
+                    className="font-mono !text-[11.5px]"
+                  />
+                </Field>
+                <Field label="BTC confirmations">
+                  <TextInput
+                    type="number"
+                    min={0}
+                    value={form.btc_confirmations ?? ""}
+                    onChange={(e) => set("btc_confirmations", e.target.value)}
+                  />
+                </Field>
+                <Field label="Received at">
+                  <TextInput
+                    type="datetime-local"
+                    value={form.payment_received_at ? new Date(form.payment_received_at).toISOString().slice(0,16) : ""}
+                    onChange={(e) => set("payment_received_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                  />
+                </Field>
+                <Field label="Expires at">
+                  <TextInput
+                    type="datetime-local"
+                    value={form.payment_expires_at ? new Date(form.payment_expires_at).toISOString().slice(0,16) : ""}
+                    onChange={(e) => set("payment_expires_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                  />
+                </Field>
               </div>
-              <div className="mt-3">
+              <div className="mt-3 grid grid-cols-1 gap-3">
+                <Field label="BTC address">
+                  <div className="flex gap-2">
+                    <TextInput
+                      value={form.btc_address ?? ""}
+                      onChange={(e) => set("btc_address", e.target.value)}
+                      className="font-mono !text-[11.5px]"
+                    />
+                    <GhostButton type="button" onClick={() => copy(form.btc_address ?? "", "BTC address")}>Copy</GhostButton>
+                  </div>
+                </Field>
                 <Field label="Transaction hash">
                   <div className="flex gap-2">
                     <TextInput value={form.btc_tx_hash ?? ""} onChange={(e) => set("btc_tx_hash", e.target.value)} className="font-mono !text-[11.5px]" />
@@ -752,6 +823,23 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   <Field label="Payment expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
                 </div>
               )}
+            </section>
+
+            {/* H. Danger zone */}
+            <section className="border border-red-700/20 bg-red-50/30">
+              <header className="px-4 py-2.5 border-b border-red-700/15 text-[10.5px] tracking-[0.22em] uppercase text-red-800/80">Danger zone</header>
+              <div className="p-4 flex items-center justify-between gap-4">
+                <div className="text-[11.5px] text-foreground/70">
+                  Permanently delete this order and its items. This action cannot be undone.
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="shrink-0 h-8 px-3 text-[11px] tracking-[0.14em] uppercase border border-red-700/40 text-red-800 bg-background hover:bg-red-700 hover:text-white transition-colors"
+                >
+                  Delete order
+                </button>
+              </div>
             </section>
           </div>
         )}
