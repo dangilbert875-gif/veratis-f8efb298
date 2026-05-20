@@ -34,6 +34,7 @@ import { Route as CheckoutOrderNumberRouteImport } from './routes/checkout.$orde
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminAccountRouteImport } from './routes/admin.account'
 import { Route as CheckoutThankYouOrderNumberRouteImport } from './routes/checkout.thank-you.$orderNumber'
 
 const VerifyRoute = VerifyRouteImport.update({
@@ -161,6 +162,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAccountRoute = AdminAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AdminRoute,
+} as any)
 const CheckoutThankYouOrderNumberRoute =
   CheckoutThankYouOrderNumberRouteImport.update({
     id: '/thank-you/$orderNumber',
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
+  '/admin/account': typeof AdminAccountRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
+  '/admin/account': typeof AdminAccountRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
+  '/admin/account': typeof AdminAccountRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -275,6 +284,7 @@ export interface FileRouteTypes {
     | '/standards'
     | '/terms'
     | '/verify'
+    | '/admin/account'
     | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
@@ -303,6 +313,7 @@ export interface FileRouteTypes {
     | '/standards'
     | '/terms'
     | '/verify'
+    | '/admin/account'
     | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
@@ -331,6 +342,7 @@ export interface FileRouteTypes {
     | '/standards'
     | '/terms'
     | '/verify'
+    | '/admin/account'
     | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
@@ -541,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/account': {
+      id: '/admin/account'
+      path: '/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AdminAccountRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/checkout/thank-you/$orderNumber': {
       id: '/checkout/thank-you/$orderNumber'
       path: '/thank-you/$orderNumber'
@@ -552,11 +571,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAccountRoute: typeof AdminAccountRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAccountRoute: AdminAccountRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
 }
@@ -613,3 +634,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
