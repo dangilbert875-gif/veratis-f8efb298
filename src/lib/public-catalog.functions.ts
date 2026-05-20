@@ -48,10 +48,15 @@ const LOT_PUBLIC_COLUMNS =
 export const listPublicLots = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabaseAdmin
     .from("product_lots")
-    .select(LOT_PUBLIC_COLUMNS + ", products:product_id(name, slug)")
+    .select(
+      LOT_PUBLIC_COLUMNS +
+        ", products:product_id!inner(name, slug, status, archived_at)",
+    )
     .eq("status", "released")
     .eq("public_visible", true)
     .is("archived_at", null)
+    .eq("products.status", "published")
+    .is("products.archived_at", null)
     .order("release_date", { ascending: false, nullsFirst: false })
     .limit(500);
   if (error) throw new Error(error.message);
@@ -68,12 +73,17 @@ export const lookupPublicLot = createServerFn({ method: "POST" })
     if (!q) return null;
     const { data: row, error } = await supabaseAdmin
       .from("product_lots")
-      .select(LOT_PUBLIC_COLUMNS + ", products:product_id(name, slug)")
+      .select(
+        LOT_PUBLIC_COLUMNS +
+          ", products:product_id!inner(name, slug, status, archived_at)",
+      )
       .ilike("lot_number", q)
       .eq("status", "released")
       .eq("public_visible", true)
       .eq("verify_lookup_enabled", true)
       .is("archived_at", null)
+      .eq("products.status", "published")
+      .is("products.archived_at", null)
       .maybeSingle();
     if (error) throw new Error(error.message);
     // Best-effort verification log (anonymous)
@@ -91,11 +101,13 @@ export const listPublicLotsForProduct = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { data: rows, error } = await supabaseAdmin
       .from("product_lots")
-      .select(LOT_PUBLIC_COLUMNS)
+      .select(LOT_PUBLIC_COLUMNS + ", products:product_id!inner(status, archived_at)")
       .eq("product_id", data.product_id)
       .eq("status", "released")
       .eq("product_page_visible", true)
       .is("archived_at", null)
+      .eq("products.status", "published")
+      .is("products.archived_at", null)
       .order("release_date", { ascending: false, nullsFirst: false });
     if (error) throw new Error(error.message);
     return rows ?? [];
