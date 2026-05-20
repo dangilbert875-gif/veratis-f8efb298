@@ -104,7 +104,7 @@ function CheckoutPage() {
             name: shipName, address_1: addr1, address_2: addr2,
             city, state: stateRegion, zip, country,
           },
-          shipping_method: shippingMethod,
+          shipping_method: "standard",
           notes,
           items: items.map((i) => ({
             slug: i.slug, name: i.name, size: i.size,
