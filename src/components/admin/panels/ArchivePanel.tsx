@@ -18,35 +18,49 @@ import {
   listLots,
   listProductsLite,
   setLotActive,
+  setLotStatus,
   uploadAsset,
   upsertLot,
 } from "@/lib/catalog.functions";
 
 type Lot = any;
 
-// ── status derivation ─────────────────────────────────────────────
-type LotStatus = "released" | "awaiting_coa" | "pending_assay" | "archived";
+// ── status model (mirrors DB enum public.lot_status) ──────────────
+export type LotStatus =
+  | "draft" | "pending_assay" | "awaiting_coa" | "released"
+  | "archived" | "deactivated" | "failed" | "retest_required";
 
 function statusOf(l: Lot): LotStatus {
-  if (!l.active || l.archived_at) return "archived";
-  if (!l.coa_url) return "awaiting_coa";
-  if (!l.purity || !l.release_date) return "pending_assay";
-  return "released";
+  return (l?.status as LotStatus) ?? "draft";
 }
 
 const STATUS_LABEL: Record<LotStatus, string> = {
-  released: "Released",
-  awaiting_coa: "Awaiting COA",
+  draft: "Draft",
   pending_assay: "Pending assay",
+  awaiting_coa: "Awaiting COA",
+  released: "Released",
   archived: "Archived",
+  deactivated: "Deactivated",
+  failed: "Failed / Rejected",
+  retest_required: "Retest required",
 };
 
+// muted, premium tones — green / amber / gray / red
 const STATUS_TONE: Record<LotStatus, "ok" | "warn" | "neutral" | "bad"> = {
   released: "ok",
   awaiting_coa: "warn",
   pending_assay: "warn",
+  retest_required: "warn",
+  draft: "neutral",
   archived: "neutral",
+  deactivated: "neutral",
+  failed: "bad",
 };
+
+const STATUS_OPTIONS: LotStatus[] = [
+  "draft","pending_assay","awaiting_coa","released",
+  "retest_required","failed","archived","deactivated",
+];
 
 function puritynum(s: string | null | undefined): number | null {
   if (!s) return null;
@@ -60,6 +74,7 @@ function puritynum(s: string | null | undefined): number | null {
 export function ArchivePanel() {
   const list = useServerFn(listLots);
   const setActive = useServerFn(setLotActive);
+  const changeStatus = useServerFn(setLotStatus);
   const archive = useServerFn(archiveLot);
   const save = useServerFn(upsertLot);
 
@@ -101,11 +116,14 @@ export function ArchivePanel() {
     for (const r of rows) {
       const s = statusOf(r);
       if (s === "released") released++;
-      if (s === "awaiting_coa") missingCoa++;
+      if (s === "released" && !r.coa_url) missingCoa++;
       if (s === "pending_assay") pending++;
       if (!r.product_id) missingProduct++;
-      const p = puritynum(r.purity);
-      if (p != null) { puritySum += p; purityCount++; }
+      // Avg purity = released + public_visible lots only
+      if (s === "released" && r.public_visible) {
+        const p = puritynum(r.purity);
+        if (p != null) { puritySum += p; purityCount++; }
+      }
       const t = new Date(r.updated_at ?? r.created_at ?? 0).getTime();
       if (t > lastUpdated) lastUpdated = t;
     }
@@ -296,10 +314,9 @@ export function ArchivePanel() {
             className="h-8 px-2 text-[12.5px] border border-ink/15 bg-background"
           >
             <option value="all">All statuses</option>
-            <option value="released">Released</option>
-            <option value="awaiting_coa">Awaiting COA</option>
-            <option value="pending_assay">Pending assay</option>
-            <option value="archived">Archived</option>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+            ))}
           </select>
           <select
             value={sort}
@@ -397,6 +414,9 @@ export function ArchivePanel() {
                       <td className="px-3 py-3 text-foreground/70">{formatDate(r.release_date)}</td>
                       <td className="px-3 py-3">
                         <StatusPill tone={STATUS_TONE[s]}>{STATUS_LABEL[s]}</StatusPill>
+                        {r.visibility_override && (
+                          <span className="ml-1.5 text-[9px] tracking-[0.2em] uppercase text-foreground/45">override</span>
+                        )}
                       </td>
                       <td className="px-3 py-3 text-right whitespace-nowrap">
                         <GhostButton onClick={() => setEditing(r)}>Edit</GhostButton>{" "}
@@ -404,16 +424,22 @@ export function ArchivePanel() {
                         <GhostButton onClick={() => duplicateLot(r)}>Duplicate</GhostButton>{" "}
                         <GhostButton
                           onClick={async () => {
-                            await setActive({ data: { id: r.id, active: !r.active } });
+                            const next: LotStatus = r.status === "deactivated" ? "released" : "deactivated";
+                            if (next === "deactivated" && r.status === "released" &&
+                                !confirm(`Deactivate released lot ${r.lot_number}?\n\nIt will be removed from the public archive and become un-verifiable.`)) return;
+                            await changeStatus({ data: { id: r.id, status: next } });
                             await reload();
                           }}
                         >
-                          {r.active ? "Deactivate" : "Activate"}
+                          {r.status === "deactivated" ? "Reactivate" : "Deactivate"}
                         </GhostButton>{" "}
                         <GhostButton
                           onClick={async () => {
-                            if (!confirm(`Archive lot ${r.lot_number}?`)) return;
-                            await archive({ data: { id: r.id } });
+                            const msg = r.status === "released"
+                              ? `Archive released lot ${r.lot_number}?\n\nIt will disappear from the public archive.`
+                              : `Archive lot ${r.lot_number}?`;
+                            if (!confirm(msg)) return;
+                            await changeStatus({ data: { id: r.id, status: "archived" } });
                             await reload();
                           }}
                         >
