@@ -34,6 +34,7 @@ import { Route as CheckoutOrderNumberRouteImport } from './routes/checkout.$orde
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as CheckoutThankYouOrderNumberRouteImport } from './routes/checkout.thank-you.$orderNumber'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -160,6 +161,12 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const CheckoutThankYouOrderNumberRoute =
+  CheckoutThankYouOrderNumberRouteImport.update({
+    id: '/thank-you/$orderNumber',
+    path: '/thank-you/$orderNumber',
+    getParentRoute: () => CheckoutRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/checkout/$orderNumber': typeof CheckoutOrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
+  '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/checkout/$orderNumber': typeof CheckoutOrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
+  '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -242,6 +251,7 @@ export interface FileRoutesById {
   '/checkout/$orderNumber': typeof CheckoutOrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
+  '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/checkout/$orderNumber'
     | '/shop/$slug'
     | '/shop/'
+    | '/checkout/thank-you/$orderNumber'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -298,6 +309,7 @@ export interface FileRouteTypes {
     | '/checkout/$orderNumber'
     | '/shop/$slug'
     | '/shop'
+    | '/checkout/thank-you/$orderNumber'
   id:
     | '__root__'
     | '/'
@@ -325,6 +337,7 @@ export interface FileRouteTypes {
     | '/checkout/$orderNumber'
     | '/shop/$slug'
     | '/shop/'
+    | '/checkout/thank-you/$orderNumber'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -528,6 +541,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/checkout/thank-you/$orderNumber': {
+      id: '/checkout/thank-you/$orderNumber'
+      path: '/thank-you/$orderNumber'
+      fullPath: '/checkout/thank-you/$orderNumber'
+      preLoaderRoute: typeof CheckoutThankYouOrderNumberRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
   }
 }
 
@@ -555,10 +575,12 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface CheckoutRouteChildren {
   CheckoutOrderNumberRoute: typeof CheckoutOrderNumberRoute
+  CheckoutThankYouOrderNumberRoute: typeof CheckoutThankYouOrderNumberRoute
 }
 
 const CheckoutRouteChildren: CheckoutRouteChildren = {
   CheckoutOrderNumberRoute: CheckoutOrderNumberRoute,
+  CheckoutThankYouOrderNumberRoute: CheckoutThankYouOrderNumberRoute,
 }
 
 const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(

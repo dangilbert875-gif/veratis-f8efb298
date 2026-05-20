@@ -193,7 +193,7 @@ function CheckoutPage() {
         },
       });
       clear();
-      navigate({ to: "/checkout/$orderNumber", params: { orderNumber: res.order_number } });
+      navigate({ to: "/checkout/thank-you/$orderNumber", params: { orderNumber: res.order_number } });
     } catch (e: any) {
       setError(e?.message || "Could not place order. Please try again.");
       setSubmitting(false);
