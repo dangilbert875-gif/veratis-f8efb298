@@ -218,7 +218,7 @@ function CheckoutPage() {
                 <p className="text-foreground/70">{country}</p>
               </Review>
               <Review label="Dispatch">
-                <p>{shippingMethod === "express" ? "Express overnight" : "Standard cold-chain"} · ${shippingCost}</p>
+                <p>Standard cold-chain · {shippingCost === 0 ? "Free" : `$${shippingCost}`}</p>
               </Review>
               <Review label="Payment method">
                 <p>Bitcoin (BTC)</p>
