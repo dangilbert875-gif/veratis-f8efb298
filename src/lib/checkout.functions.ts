@@ -31,6 +31,8 @@ const checkoutSchema = z.object({
   shipping_method: z.literal("standard"),
   notes: z.string().max(1024).optional().default(""),
   items: z.array(itemSchema).min(1).max(50),
+  payment_proof_url: z.string().url().max(1024).optional().nullable(),
+  payment_tx_id: z.string().max(256).optional().nullable(),
 });
 
 function genOrderNumber() {
@@ -90,6 +92,8 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         shipping_method: data.shipping_method,
         notes: data.notes?.trim() || null,
         items: data.items as any,
+        payment_proof_url: data.payment_proof_url || null,
+        payment_tx_id: data.payment_tx_id?.trim() || null,
       })
       .select("id, order_number")
       .single();
