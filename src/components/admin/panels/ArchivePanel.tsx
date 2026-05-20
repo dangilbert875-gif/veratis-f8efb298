@@ -225,15 +225,16 @@ export function ArchivePanel() {
     if (!selected.size) return;
     if (!confirm(`Archive ${selected.size} lot${selected.size === 1 ? "" : "s"}? This hides them from the public archive.`)) return;
     for (const id of selected) {
-      try { await archive({ data: { id } }); } catch {}
+      try { await changeStatus({ data: { id, status: "archived" } }); } catch {}
     }
     await reload();
   };
 
   const bulkRelease = async () => {
     if (!selected.size) return;
+    if (!confirm(`Mark ${selected.size} lot${selected.size === 1 ? "" : "s"} as Released?\n\nLots without a COA will still be released — verify each one before publishing.`)) return;
     for (const id of selected) {
-      try { await setActive({ data: { id, active: true } }); } catch {}
+      try { await changeStatus({ data: { id, status: "released" } }); } catch {}
     }
     await reload();
   };
