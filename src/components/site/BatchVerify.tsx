@@ -48,11 +48,11 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
       className={
         compact
           ? ""
-          : "rounded-[4px] border border-background/12 bg-background/[0.04] p-7 md:p-9 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_40px_90px_-50px_rgba(0,0,0,0.55)] backdrop-blur-[2px]"
+          : "rounded-[4px] border border-background/12 bg-background/[0.04] p-5 sm:p-7 md:p-9 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_40px_90px_-50px_rgba(0,0,0,0.55)] backdrop-blur-[2px]"
       }
     >
       {!compact && (
-        <div className="mb-7 flex items-center justify-between gap-4 text-[10.5px] font-mono uppercase tracking-[0.18em] text-background/65">
+        <div className="mb-6 sm:mb-7 flex items-center justify-between gap-4 text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-background/65">
           <span className="inline-flex items-center gap-2">
             <span className="relative inline-flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full rounded-full bg-primary/40 animate-ping" />
