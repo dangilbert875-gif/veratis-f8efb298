@@ -41,20 +41,6 @@ function About() {
           </div>
         </div>
       </section>
-      <section className="border-t border-border bg-mist/50">
-        <div className="mx-auto max-w-5xl px-6 py-20 grid md:grid-cols-3 gap-10">
-          {[
-            ["2019", "Founded by analytical chemists"],
-            ["12", "ISO 17025 lab partners worldwide"],
-            ["240k+", "Vials shipped with batch COAs"],
-          ].map(([v, k]) => (
-            <div key={k}>
-              <p className="text-4xl text-ink font-display">{v}</p>
-              <p className="mt-2 text-sm text-muted-foreground">{k}</p>
-            </div>
-          ))}
-        </div>
-      </section>
     </Layout>
   );
 }
