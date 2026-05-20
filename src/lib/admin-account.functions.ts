@@ -51,7 +51,7 @@ async function audit(
   await supabaseAdmin.rpc("log_admin_account_event", {
     _actor: actor,
     _action: action,
-    _target_user: target,
+    _target_user: target as string,
     _diff: diff as any,
   });
 }
