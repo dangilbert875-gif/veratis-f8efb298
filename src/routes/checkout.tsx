@@ -41,10 +41,10 @@ function CheckoutPage() {
   const [stateRegion, setStateRegion] = useState("");
   const [zip, setZip] = useState("");
   const [country, setCountry] = useState("United States");
-  const [shippingMethod, setShippingMethod] = useState<"standard" | "express">("standard");
-  const [notes, setNotes] = useState("");
-
-  const shippingCost = shippingMethod === "express" ? 45 : 18;
+  const [notes, setNotes_dummy] = [notes_state(), null] as const; // placeholder, overwritten below
+  // shipping is always standard; free over $150
+  const FREE_SHIPPING_THRESHOLD = 150;
+  const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 18;
   const total = subtotal + shippingCost;
 
   if (items.length === 0) {
