@@ -403,8 +403,10 @@ export type Database = {
           order_number: string
           payment_expires_at: string | null
           payment_method: string | null
+          payment_proof_url: string | null
           payment_received_at: string | null
           payment_status: string
+          payment_tx_id: string | null
           risk_flag: boolean
           shipped_at: string | null
           shipping_address_1: string | null
@@ -445,8 +447,10 @@ export type Database = {
           order_number: string
           payment_expires_at?: string | null
           payment_method?: string | null
+          payment_proof_url?: string | null
           payment_received_at?: string | null
           payment_status?: string
+          payment_tx_id?: string | null
           risk_flag?: boolean
           shipped_at?: string | null
           shipping_address_1?: string | null
@@ -487,8 +491,10 @@ export type Database = {
           order_number?: string
           payment_expires_at?: string | null
           payment_method?: string | null
+          payment_proof_url?: string | null
           payment_received_at?: string | null
           payment_status?: string
+          payment_tx_id?: string | null
           risk_flag?: boolean
           shipped_at?: string | null
           shipping_address_1?: string | null
