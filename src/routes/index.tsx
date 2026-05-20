@@ -297,12 +297,12 @@ function Home() {
       <WhyVeratis />
 
       {/* Operational metrics — replaces testimonials */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid md:grid-cols-12 gap-12 md:gap-20">
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="grid md:grid-cols-12 gap-10 md:gap-20">
           <div className="md:col-span-5">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Operational record</p>
-            <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
-              Measured in lots,<br />not in slogans.
+            <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.5rem] text-ink leading-[1.12] md:leading-[1.1] tracking-[-0.02em] [text-wrap:balance]">
+              Measured in lots, not in slogans.
             </h2>
             <p className="mt-6 text-muted-foreground leading-[1.75] max-w-md">
               The clearest signal of a serious peptide operation is its archive. Below is ours — every figure derived from production data, independently assayed, publicly retrievable.
@@ -326,13 +326,13 @@ function Home() {
                 <div
                   key={k}
                   className={[
-                    "py-7 px-1",
-                    i % 2 === 0 ? "pr-6 border-r border-border" : "pl-6",
+                    "py-5 sm:py-7 px-1 min-w-0",
+                    i % 2 === 0 ? "pr-3 sm:pr-6 border-r border-border" : "pl-3 sm:pl-6",
                     i >= 2 ? "border-t border-border" : "",
                   ].join(" ")}
                 >
-                  <dt className="font-display text-[1.75rem] md:text-[2rem] text-ink leading-none tabular-nums tracking-[-0.01em]">{v}</dt>
-                  <dd className="mt-3 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">{k}</dd>
+                  <dt className="font-display text-[1.125rem] sm:text-[1.5rem] md:text-[2rem] text-ink leading-tight tabular-nums tracking-[-0.01em] [text-wrap:balance]">{v}</dt>
+                  <dd className="mt-2 sm:mt-3 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 leading-snug">{k}</dd>
                 </div>
               ))}
             </dl>
