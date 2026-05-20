@@ -220,13 +220,13 @@ function Home() {
 
       {/* COA Preview */}
       <section className="border-y border-border bg-ink text-background">
-        <div className="mx-auto max-w-7xl px-6 py-28 md:py-36 grid md:grid-cols-12 gap-12 lg:gap-20 items-start">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:py-36 grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-20 items-start">
           <div className="md:col-span-5 md:pr-4">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary mb-4">— Signature system</p>
-            <h2 className="text-3xl md:text-[2.5rem] text-background leading-[1.1] tracking-[-0.02em]">
-              Authenticate any vial,<br />in under five seconds.
+            <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.5rem] text-background leading-[1.12] md:leading-[1.1] tracking-[-0.02em] [text-wrap:balance]">
+              Authenticate any vial, in under five seconds.
             </h2>
-            <p className="mt-6 text-background/70 leading-[1.75] max-w-md">
+            <p className="mt-5 md:mt-6 text-[14px] sm:text-[15px] text-background/70 leading-[1.7] md:leading-[1.75] max-w-md">
               Enter the lot printed on the label. The archive returns the original certificate — purity, identity, endotoxin — signed by an independent laboratory at the moment of release.
             </p>
             <ul className="mt-8 space-y-3.5 text-[13px] text-background/80">
@@ -246,17 +246,17 @@ function Home() {
                 <Archive size={14} /> Browse full archive <ArrowRight size={13} />
               </Link>
             </div>
-            <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-4 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/40">
+            <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-3 sm:gap-x-4 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.14em] sm:tracking-[0.16em] text-background/40">
               <div>
-                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">{batches.length}</p>
+                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">{batches.length}</p>
                 <p className="mt-1">Lots archived</p>
               </div>
               <div>
-                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">{avgPurity}%</p>
+                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">{avgPurity}%</p>
                 <p className="mt-1">Mean purity</p>
               </div>
               <div>
-                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">100%</p>
+                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">100%</p>
                 <p className="mt-1">YTD pass rate</p>
               </div>
             </div>
