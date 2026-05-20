@@ -647,8 +647,12 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                 <Field label="Name"><TextInput value={form.customer_name ?? ""} onChange={(e) => set("customer_name", e.target.value)} /></Field>
                 <Field label="Email">
                   <div className="flex gap-2">
-                    <TextInput value={o.customer_email ?? ""} readOnly />
-                    <GhostButton type="button" onClick={() => copy(o.customer_email ?? "", "Email")}>Copy</GhostButton>
+                    <TextInput
+                      type="email"
+                      value={form.customer_email ?? ""}
+                      onChange={(e) => set("customer_email", e.target.value)}
+                    />
+                    <GhostButton type="button" onClick={() => copy(form.customer_email ?? "", "Email")}>Copy</GhostButton>
                   </div>
                 </Field>
               </div>
@@ -698,11 +702,54 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
             <Section title="BTC payment">
               <div className="grid grid-cols-2 gap-3">
                 <KV label="USD total" value={formatUSD(o.total_usd)} />
-                <KV label="BTC amount" value={form.btc_amount ?? "—"} />
-                <KV label="Payment status" value={<span className={paymentTone(o.payment_status) === "ok" ? "text-emerald-800" : ""}>{humanize(o.payment_status)}</span>} />
-                <KV label="Received at" value={o.payment_received_at ? formatDate(o.payment_received_at) : "—"} />
+                <Field label="Payment status">
+                  <SelectInput value={form.payment_status ?? "awaiting_payment"} onChange={(e) => set("payment_status", e.target.value)}>
+                    {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+                  </SelectInput>
+                </Field>
+                <Field label="BTC amount">
+                  <TextInput
+                    type="number"
+                    step="0.00000001"
+                    value={form.btc_amount ?? ""}
+                    onChange={(e) => set("btc_amount", e.target.value)}
+                    className="font-mono !text-[11.5px]"
+                  />
+                </Field>
+                <Field label="BTC confirmations">
+                  <TextInput
+                    type="number"
+                    min={0}
+                    value={form.btc_confirmations ?? ""}
+                    onChange={(e) => set("btc_confirmations", e.target.value)}
+                  />
+                </Field>
+                <Field label="Received at">
+                  <TextInput
+                    type="datetime-local"
+                    value={form.payment_received_at ? new Date(form.payment_received_at).toISOString().slice(0,16) : ""}
+                    onChange={(e) => set("payment_received_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                  />
+                </Field>
+                <Field label="Expires at">
+                  <TextInput
+                    type="datetime-local"
+                    value={form.payment_expires_at ? new Date(form.payment_expires_at).toISOString().slice(0,16) : ""}
+                    onChange={(e) => set("payment_expires_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                  />
+                </Field>
               </div>
-              <div className="mt-3">
+              <div className="mt-3 grid grid-cols-1 gap-3">
+                <Field label="BTC address">
+                  <div className="flex gap-2">
+                    <TextInput
+                      value={form.btc_address ?? ""}
+                      onChange={(e) => set("btc_address", e.target.value)}
+                      className="font-mono !text-[11.5px]"
+                    />
+                    <GhostButton type="button" onClick={() => copy(form.btc_address ?? "", "BTC address")}>Copy</GhostButton>
+                  </div>
+                </Field>
                 <Field label="Transaction hash">
                   <div className="flex gap-2">
                     <TextInput value={form.btc_tx_hash ?? ""} onChange={(e) => set("btc_tx_hash", e.target.value)} className="font-mono !text-[11.5px]" />
