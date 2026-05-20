@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { getCheckoutOrder } from "@/lib/checkout.functions";
+import { getCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
 import { Bitcoin, Copy, Check, Mail, Clock, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
@@ -23,6 +23,13 @@ function ConfirmationPage() {
     queryKey: ["checkout-order", orderNumber],
     queryFn: () => fetcher({ data: { order_number: orderNumber } }),
     refetchInterval: 30_000,
+  });
+  const rateFetcher = useServerFn(getBtcUsdRate);
+  const { data: rateData } = useQuery({
+    queryKey: ["btc-usd-rate"],
+    queryFn: () => rateFetcher(),
+    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 
   if (isLoading) {
@@ -50,6 +57,12 @@ function ConfirmationPage() {
 
   const expiresAt = data.payment_expires_at ? new Date(data.payment_expires_at) : null;
   const paid = data.payment_status === "confirmed" || data.payment_received_at;
+  const liveRate = rateData?.rate ?? null;
+  const liveBtcAmount =
+    liveRate && Number(data.total_usd) > 0
+      ? (Number(data.total_usd) / liveRate).toFixed(8)
+      : null;
+  const displayBtcAmount = liveBtcAmount ?? (data.btc_amount ? String(data.btc_amount) : null);
 
   return (
     <Layout>
@@ -87,13 +100,18 @@ function ConfirmationPage() {
                 <Field label="Send BTC to this address">
                   <CopyValue value={data.btc_address} mono />
                 </Field>
-                {data.btc_amount && (
+                {displayBtcAmount && (
                   <Field label="Exact BTC amount">
-                    <CopyValue value={String(data.btc_amount)} mono />
+                    <CopyValue value={`${displayBtcAmount} BTC`} mono />
                   </Field>
                 )}
+                {liveRate && (
+                  <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
+                    — Rate: 1 BTC = ${liveRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot
+                  </p>
+                )}
                 <p className="text-[11.5px] text-foreground/70 leading-relaxed">
-                  Send the exact USD-equivalent of <strong className="text-ink">${Number(data.total_usd).toFixed(2)}</strong> in BTC
+                  Send exactly <strong className="text-ink">{displayBtcAmount ? `${displayBtcAmount} BTC` : `the USD-equivalent of $${Number(data.total_usd).toFixed(2)}`}</strong>{" "}
                   to the address above. Your order ships within 48 hours of on-chain confirmation. A confirmation email will be sent to{" "}
                   <span className="font-mono text-ink">{data.customer_email}</span>.
                 </p>
