@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
-import { products } from "@/data/products";
+import { products, type Product } from "@/data/products";
 import { ProductCard } from "@/components/site/ProductCard";
 import { batches, labPartner } from "@/data/batches";
 import { LotTag } from "@/components/site/LotTag";
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/shop/$slug")({
       if (row) {
         const product = mapDbProduct(row);
         const allRows = await listPublishedProducts().catch(() => [] as any[]);
-        const allProducts = (allRows ?? []).map(mapDbProduct);
+        const allProducts: Product[] = (allRows ?? []).map(mapDbProduct);
         return { product, allProducts: allProducts.length ? allProducts : products };
       }
     } catch (err) {
