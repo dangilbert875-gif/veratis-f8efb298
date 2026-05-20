@@ -798,6 +798,41 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+function Toggle({
+  label, checked, onChange, disabled, hint,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+  hint?: string;
+}) {
+  return (
+    <label className={`flex items-center justify-between py-1.5 ${disabled ? "opacity-50" : ""}`}>
+      <span className="text-[12.5px] text-ink">
+        {label}
+        {hint && <span className="ml-2 text-[10.5px] tracking-[0.14em] uppercase text-foreground/45">{hint}</span>}
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => !disabled && onChange(!checked)}
+        className={`relative h-[18px] w-[34px] rounded-full border transition-colors ${
+          checked ? "bg-ink border-ink" : "bg-background border-ink/25"
+        }`}
+      >
+        <span
+          className={`absolute top-[1px] h-[14px] w-[14px] rounded-full bg-background border border-ink/15 transition-transform ${
+            checked ? "translate-x-[17px] bg-background" : "translate-x-[1px]"
+          }`}
+        />
+      </button>
+    </label>
+  );
+}
+
 function FileSlot({
   label, path, onUpload, onPeek, onClear, accept, busy,
 }: {
