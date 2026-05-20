@@ -268,25 +268,27 @@ function Home() {
       </section>
 
       {/* Categories */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="flex items-end justify-between mb-10">
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="flex items-end justify-between mb-8 md:mb-10">
           <div>
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Research areas</p>
-            <h2 className="text-3xl md:text-4xl text-ink">By research category</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">By research category</h2>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {categories.map((c) => (
             <Link
               key={c.slug}
               to="/shop"
-              className="group relative bg-mist border border-border rounded-lg p-8 hover:border-ink/40 transition"
+              className="group relative bg-mist border border-border rounded-lg p-5 sm:p-8 pb-12 sm:pb-16 min-h-[120px] sm:min-h-[160px] flex flex-col hover:border-ink/40 transition"
             >
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55 tabular-nums">
+              <p className="text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 tabular-nums">
                 {String(c.count).padStart(2, "0")} compounds
               </p>
-              <h3 className="mt-2 text-2xl text-ink">{c.name}</h3>
-              <ArrowRight size={18} className="absolute bottom-6 right-6 text-foreground/40 group-hover:text-ink group-hover:translate-x-1 transition" />
+              <h3 className="mt-2 text-[1.0625rem] sm:text-2xl text-ink leading-[1.2] tracking-tight [text-wrap:balance] hyphens-auto break-words">
+                {c.name}
+              </h3>
+              <ArrowRight size={16} className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 text-foreground/40 group-hover:text-ink group-hover:translate-x-1 transition" />
             </Link>
           ))}
         </div>
