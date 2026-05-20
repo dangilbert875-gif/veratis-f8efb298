@@ -143,7 +143,7 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
       {/* Result */}
       <div className="mt-7 transition-all duration-500">
         {state.kind === "idle" && !compact && (
-          <CertificatePreview />
+          <CertificatePreview sample={batches[0]} />
         )}
         {state.kind === "loading" && !compact && (
           <div className="rounded-[3px] border border-background/10 bg-background/[0.03] overflow-hidden animate-in fade-in duration-200">
@@ -210,8 +210,8 @@ function NotFoundResult({ query, dark }: { query: string; dark: boolean }) {
   );
 }
 
-function CertificatePreview() {
-  const sample = batches[0];
+function CertificatePreview({ sample }: { sample?: Batch }) {
+  if (!sample) return null;
   return (
     <div className="rounded-[3px] border border-background/12 bg-background/[0.035] overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3 border-b border-background/12 text-[10px] font-mono uppercase tracking-[0.2em] bg-background/[0.02]">
