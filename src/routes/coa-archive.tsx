@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { batches, labPartner } from "@/data/batches";
+import { labPartner } from "@/data/batches";
+import { usePublicLots } from "@/lib/use-lots";
 import { Search, Download, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { downloadCoa } from "@/lib/coa";
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/coa-archive")({
 function Page() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<"date" | "purity">("date");
+  const { batches, loading } = usePublicLots();
 
   const filtered = useMemo(() => {
     const list = batches.filter((b) => {
@@ -34,9 +36,11 @@ function Page() {
     return list.sort((a, b) =>
       sort === "purity" ? b.purity - a.purity : b.testedOn.localeCompare(a.testedOn),
     );
-  }, [q, sort]);
+  }, [q, sort, batches]);
 
-  const avg = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
+  const avg = batches.length
+    ? (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2)
+    : "—";
 
   return (
     <Layout>
@@ -102,9 +106,11 @@ function Page() {
               </button>
             </div>
           ))}
-          {filtered.length === 0 && (
+          {!loading && filtered.length === 0 && (
             <div className="px-5 py-12 text-center text-sm text-muted-foreground">
-              No lots match "{q}".
+              {batches.length === 0
+                ? "No lots are currently published to the public archive."
+                : `No lots match "${q}".`}
             </div>
           )}
         </div>

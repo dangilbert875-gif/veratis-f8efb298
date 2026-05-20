@@ -235,9 +235,23 @@ const lotInput = z.object({
   active: z.boolean().optional(),
 });
 
+export const lotStatusEnum = z.enum([
+  "draft","pending_assay","awaiting_coa","released",
+  "archived","deactivated","failed","retest_required",
+]);
+
+const lotInputExt = lotInput.extend({
+  status: lotStatusEnum.optional(),
+  public_visible: z.boolean().optional(),
+  verify_lookup_enabled: z.boolean().optional(),
+  product_page_visible: z.boolean().optional(),
+  coa_download_enabled: z.boolean().optional(),
+  visibility_override: z.boolean().optional(),
+});
+
 export const upsertLot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => lotInput.parse(d))
+  .inputValidator((d: unknown) => lotInputExt.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
@@ -247,6 +261,25 @@ export const upsertLot = createServerFn({ method: "POST" })
       row.created_by = userId;
     }
     const { error } = await supabase.from("product_lots").upsert(row);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const setLotStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ id: z.string().uuid(), status: lotStatusEnum }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    // Resetting visibility_override lets the DB trigger re-derive flags.
+    const patch: any = { status: data.status, visibility_override: false };
+    if (data.status === "archived") patch.archived_at = new Date().toISOString();
+    if (data.status !== "archived") patch.archived_at = null;
+    if (data.status === "deactivated") patch.active = false;
+    if (data.status === "released") patch.active = true;
+    const { error } = await supabase.from("product_lots").update(patch).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

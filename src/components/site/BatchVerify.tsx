@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { findBatch, type Batch, SAMPLE_LOT, labPartner, batches } from "@/data/batches";
+import { type Batch, SAMPLE_LOT, labPartner } from "@/data/batches";
+import { useServerFn } from "@tanstack/react-start";
+import { lookupPublicLot } from "@/lib/public-catalog.functions";
+import { usePublicLots } from "@/lib/use-lots";
+import { mapDbLot } from "@/lib/use-lots";
 import { BadgeCheck, Search, FileText, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PurityCounter } from "./PurityCounter";
@@ -14,33 +18,40 @@ type State =
 export function BatchVerify({ compact = false }: { compact?: boolean }) {
   const [lot, setLot] = useState("");
   const [state, setState] = useState<State>({ kind: "idle" });
+  const lookup = useServerFn(lookupPublicLot);
+  const { batches } = usePublicLots();
 
   const stats = {
     count: batches.length,
-    avg: (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2),
-    lastRelease: batches[0].testedOn,
+    avg: batches.length
+      ? (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2)
+      : "—",
+    lastRelease: batches[0]?.testedOn ?? "—",
     medianResponse: "0.8s",
   };
+
+  async function runLookup(q: string) {
+    setState({ kind: "loading" });
+    try {
+      const row = await lookup({ data: { lot_number: q } });
+      if (row) setState({ kind: "ok", batch: mapDbLot(row) });
+      else setState({ kind: "notfound", query: q });
+    } catch {
+      setState({ kind: "notfound", query: q });
+    }
+  }
 
   function submit(e?: React.FormEvent) {
     e?.preventDefault();
     const q = lot.trim();
     if (!q) return;
-    setState({ kind: "loading" });
-    // Simulate brief lookup so it feels like a real query
-    setTimeout(() => {
-      const b = findBatch(q);
-      setState(b ? { kind: "ok", batch: b } : { kind: "notfound", query: q });
-    }, 450);
+    void runLookup(q);
   }
 
   function trySample() {
-    setLot(SAMPLE_LOT);
-    setState({ kind: "loading" });
-    setTimeout(() => {
-      const b = findBatch(SAMPLE_LOT);
-      if (b) setState({ kind: "ok", batch: b });
-    }, 300);
+    const sample = batches[0]?.lot ?? SAMPLE_LOT;
+    setLot(sample);
+    void runLookup(sample);
   }
 
   return (
@@ -132,7 +143,7 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
       {/* Result */}
       <div className="mt-7 transition-all duration-500">
         {state.kind === "idle" && !compact && (
-          <CertificatePreview />
+          <CertificatePreview sample={batches[0]} />
         )}
         {state.kind === "loading" && !compact && (
           <div className="rounded-[3px] border border-background/10 bg-background/[0.03] overflow-hidden animate-in fade-in duration-200">
@@ -199,8 +210,8 @@ function NotFoundResult({ query, dark }: { query: string; dark: boolean }) {
   );
 }
 
-function CertificatePreview() {
-  const sample = batches[0];
+function CertificatePreview({ sample }: { sample?: Batch }) {
+  if (!sample) return null;
   return (
     <div className="rounded-[3px] border border-background/12 bg-background/[0.035] overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3 border-b border-background/12 text-[10px] font-mono uppercase tracking-[0.2em] bg-background/[0.02]">

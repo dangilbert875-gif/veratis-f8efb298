@@ -36,3 +36,67 @@ export const getPublishedProductBySlug = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return row;
   });
+
+// ───────── Public verification lots ─────────
+
+const LOT_PUBLIC_COLUMNS =
+  "id, lot_number, product_id, purity, identity_status, identity_method, " +
+  "water_content, endotoxin, release_date, best_before, lab_partner, tested_by, " +
+  "coa_url, coa_download_enabled, status";
+
+/** Public COA archive — released + public_visible only. */
+export const listPublicLots = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabaseAdmin
+    .from("product_lots")
+    .select(LOT_PUBLIC_COLUMNS + ", products:product_id(name, slug)")
+    .eq("status", "released")
+    .eq("public_visible", true)
+    .is("archived_at", null)
+    .order("release_date", { ascending: false, nullsFirst: false })
+    .limit(500);
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+/** Public Verify Batch lookup — returns null when not publicly verifiable. */
+export const lookupPublicLot = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ lot_number: z.string().min(1).max(128) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const q = data.lot_number.trim();
+    if (!q) return null;
+    const { data: row, error } = await supabaseAdmin
+      .from("product_lots")
+      .select(LOT_PUBLIC_COLUMNS + ", products:product_id(name, slug)")
+      .ilike("lot_number", q)
+      .eq("status", "released")
+      .eq("public_visible", true)
+      .eq("verify_lookup_enabled", true)
+      .is("archived_at", null)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    // Best-effort verification log (anonymous)
+    try {
+      await supabaseAdmin.from("verification_logs").insert({ lot_number: q });
+    } catch {}
+    return row;
+  });
+
+/** Public lot lookup by product (for product detail pages). */
+export const listPublicLotsForProduct = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ product_id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { data: rows, error } = await supabaseAdmin
+      .from("product_lots")
+      .select(LOT_PUBLIC_COLUMNS)
+      .eq("product_id", data.product_id)
+      .eq("status", "released")
+      .eq("product_page_visible", true)
+      .is("archived_at", null)
+      .order("release_date", { ascending: false, nullsFirst: false });
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });

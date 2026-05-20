@@ -18,35 +18,49 @@ import {
   listLots,
   listProductsLite,
   setLotActive,
+  setLotStatus,
   uploadAsset,
   upsertLot,
 } from "@/lib/catalog.functions";
 
 type Lot = any;
 
-// ── status derivation ─────────────────────────────────────────────
-type LotStatus = "released" | "awaiting_coa" | "pending_assay" | "archived";
+// ── status model (mirrors DB enum public.lot_status) ──────────────
+export type LotStatus =
+  | "draft" | "pending_assay" | "awaiting_coa" | "released"
+  | "archived" | "deactivated" | "failed" | "retest_required";
 
 function statusOf(l: Lot): LotStatus {
-  if (!l.active || l.archived_at) return "archived";
-  if (!l.coa_url) return "awaiting_coa";
-  if (!l.purity || !l.release_date) return "pending_assay";
-  return "released";
+  return (l?.status as LotStatus) ?? "draft";
 }
 
 const STATUS_LABEL: Record<LotStatus, string> = {
-  released: "Released",
-  awaiting_coa: "Awaiting COA",
+  draft: "Draft",
   pending_assay: "Pending assay",
+  awaiting_coa: "Awaiting COA",
+  released: "Released",
   archived: "Archived",
+  deactivated: "Deactivated",
+  failed: "Failed / Rejected",
+  retest_required: "Retest required",
 };
 
+// muted, premium tones — green / amber / gray / red
 const STATUS_TONE: Record<LotStatus, "ok" | "warn" | "neutral" | "bad"> = {
   released: "ok",
   awaiting_coa: "warn",
   pending_assay: "warn",
+  retest_required: "warn",
+  draft: "neutral",
   archived: "neutral",
+  deactivated: "neutral",
+  failed: "bad",
 };
+
+const STATUS_OPTIONS: LotStatus[] = [
+  "draft","pending_assay","awaiting_coa","released",
+  "retest_required","failed","archived","deactivated",
+];
 
 function puritynum(s: string | null | undefined): number | null {
   if (!s) return null;
@@ -60,6 +74,7 @@ function puritynum(s: string | null | undefined): number | null {
 export function ArchivePanel() {
   const list = useServerFn(listLots);
   const setActive = useServerFn(setLotActive);
+  const changeStatus = useServerFn(setLotStatus);
   const archive = useServerFn(archiveLot);
   const save = useServerFn(upsertLot);
 
@@ -101,11 +116,14 @@ export function ArchivePanel() {
     for (const r of rows) {
       const s = statusOf(r);
       if (s === "released") released++;
-      if (s === "awaiting_coa") missingCoa++;
+      if (s === "released" && !r.coa_url) missingCoa++;
       if (s === "pending_assay") pending++;
       if (!r.product_id) missingProduct++;
-      const p = puritynum(r.purity);
-      if (p != null) { puritySum += p; purityCount++; }
+      // Avg purity = released + public_visible lots only
+      if (s === "released" && r.public_visible) {
+        const p = puritynum(r.purity);
+        if (p != null) { puritySum += p; purityCount++; }
+      }
       const t = new Date(r.updated_at ?? r.created_at ?? 0).getTime();
       if (t > lastUpdated) lastUpdated = t;
     }
@@ -207,15 +225,16 @@ export function ArchivePanel() {
     if (!selected.size) return;
     if (!confirm(`Archive ${selected.size} lot${selected.size === 1 ? "" : "s"}? This hides them from the public archive.`)) return;
     for (const id of selected) {
-      try { await archive({ data: { id } }); } catch {}
+      try { await changeStatus({ data: { id, status: "archived" } }); } catch {}
     }
     await reload();
   };
 
   const bulkRelease = async () => {
     if (!selected.size) return;
+    if (!confirm(`Mark ${selected.size} lot${selected.size === 1 ? "" : "s"} as Released?\n\nLots without a COA will still be released — verify each one before publishing.`)) return;
     for (const id of selected) {
-      try { await setActive({ data: { id, active: true } }); } catch {}
+      try { await changeStatus({ data: { id, status: "released" } }); } catch {}
     }
     await reload();
   };
@@ -296,10 +315,9 @@ export function ArchivePanel() {
             className="h-8 px-2 text-[12.5px] border border-ink/15 bg-background"
           >
             <option value="all">All statuses</option>
-            <option value="released">Released</option>
-            <option value="awaiting_coa">Awaiting COA</option>
-            <option value="pending_assay">Pending assay</option>
-            <option value="archived">Archived</option>
+            {STATUS_OPTIONS.map((s) => (
+              <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+            ))}
           </select>
           <select
             value={sort}
@@ -327,7 +345,7 @@ export function ArchivePanel() {
           <div className="px-5 py-2 border-b border-ink/10 bg-ink/[0.025] flex items-center gap-2 text-[12px]">
             <span className="text-foreground/70">{selected.size} selected</span>
             <span className="text-foreground/30">·</span>
-            <GhostButton onClick={bulkRelease}>Mark active</GhostButton>
+            <GhostButton onClick={bulkRelease}>Mark released</GhostButton>
             <GhostButton onClick={bulkArchive}>Archive</GhostButton>
             <GhostButton onClick={() => exportCsv("selected")}>Export</GhostButton>
             <GhostButton onClick={() => setSelected(new Set())}>Clear</GhostButton>
@@ -397,6 +415,9 @@ export function ArchivePanel() {
                       <td className="px-3 py-3 text-foreground/70">{formatDate(r.release_date)}</td>
                       <td className="px-3 py-3">
                         <StatusPill tone={STATUS_TONE[s]}>{STATUS_LABEL[s]}</StatusPill>
+                        {r.visibility_override && (
+                          <span className="ml-1.5 text-[9px] tracking-[0.2em] uppercase text-foreground/45">override</span>
+                        )}
                       </td>
                       <td className="px-3 py-3 text-right whitespace-nowrap">
                         <GhostButton onClick={() => setEditing(r)}>Edit</GhostButton>{" "}
@@ -404,16 +425,22 @@ export function ArchivePanel() {
                         <GhostButton onClick={() => duplicateLot(r)}>Duplicate</GhostButton>{" "}
                         <GhostButton
                           onClick={async () => {
-                            await setActive({ data: { id: r.id, active: !r.active } });
+                            const next: LotStatus = r.status === "deactivated" ? "released" : "deactivated";
+                            if (next === "deactivated" && r.status === "released" &&
+                                !confirm(`Deactivate released lot ${r.lot_number}?\n\nIt will be removed from the public archive and become un-verifiable.`)) return;
+                            await changeStatus({ data: { id: r.id, status: next } });
                             await reload();
                           }}
                         >
-                          {r.active ? "Deactivate" : "Activate"}
+                          {r.status === "deactivated" ? "Reactivate" : "Deactivate"}
                         </GhostButton>{" "}
                         <GhostButton
                           onClick={async () => {
-                            if (!confirm(`Archive lot ${r.lot_number}?`)) return;
-                            await archive({ data: { id: r.id } });
+                            const msg = r.status === "released"
+                              ? `Archive released lot ${r.lot_number}?\n\nIt will disappear from the public archive.`
+                              : `Archive lot ${r.lot_number}?`;
+                            if (!confirm(msg)) return;
+                            await changeStatus({ data: { id: r.id, status: "archived" } });
                             await reload();
                           }}
                         >
@@ -467,6 +494,12 @@ const lotEmpty = {
   hplc_url: "",
   notes: "",
   active: true,
+  status: "draft" as LotStatus,
+  public_visible: false,
+  verify_lookup_enabled: false,
+  product_page_visible: false,
+  coa_download_enabled: false,
+  visibility_override: false,
 };
 
 function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => void; onSaved: () => void }) {
@@ -530,6 +563,14 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
   const submit = async () => {
     setError(null);
     if (!form.lot_number) { setError("Lot number is required."); return; }
+    if (form.status === "released" && !form.coa_url &&
+        !confirm("This lot has no COA. Publish as Released anyway?\n\nThe lot will be public but its COA will not be downloadable.")) {
+      return;
+    }
+    if ((form.status === "failed") &&
+        !confirm(`Mark lot ${form.lot_number} as Failed / Rejected?\n\nIt will be hidden from the storefront and public archive.`)) {
+      return;
+    }
     setSaving(true);
     try {
       const payload: any = { ...form };
@@ -553,6 +594,14 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
   };
 
   const derivedStatus = statusOf(form);
+
+  // When admin toggles a flag manually, mark override on.
+  const setFlag = (k: string, v: boolean) =>
+    setForm((f: any) => ({ ...f, [k]: v, visibility_override: true }));
+
+  // When status changes from the drawer, clear override so DB trigger re-derives.
+  const setStatus = (s: LotStatus) =>
+    setForm((f: any) => ({ ...f, status: s, visibility_override: false }));
 
   return (
     <div className="fixed inset-0 z-50 flex">
@@ -609,12 +658,56 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
               <Field label="Best before">
                 <TextInput type="date" value={form.best_before ?? ""} onChange={(e) => set("best_before", e.target.value)} />
               </Field>
-              <Field label="Active in archive">
-                <SelectInput value={form.active ? "yes" : "no"} onChange={(e) => set("active", e.target.value === "yes")}>
-                  <option value="yes">Yes — visible in public archive</option>
-                  <option value="no">No — hidden</option>
+              <Field label="Status">
+                <SelectInput value={form.status ?? "draft"} onChange={(e) => setStatus(e.target.value as LotStatus)}>
+                  {STATUS_OPTIONS.map((s) => (
+                    <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                  ))}
                 </SelectInput>
               </Field>
+            </div>
+          </Section>
+
+          <Section title="Public visibility">
+            <div className="space-y-2.5">
+              {form.visibility_override ? (
+                <div className="text-[11px] tracking-[0.16em] uppercase text-amber-700 flex items-center justify-between">
+                  <span>Manual visibility override active</span>
+                  <button
+                    type="button"
+                    className="underline normal-case tracking-normal text-[12px] text-foreground/70 hover:text-ink"
+                    onClick={() => setForm((f: any) => ({ ...f, visibility_override: false }))}
+                  >
+                    Reset to status defaults
+                  </button>
+                </div>
+              ) : (
+                <div className="text-[11px] tracking-[0.16em] uppercase text-foreground/55">
+                  Visibility follows status — toggle a flag to override.
+                </div>
+              )}
+              <Toggle
+                label="Public archive visible"
+                checked={!!form.public_visible}
+                onChange={(v) => setFlag("public_visible", v)}
+              />
+              <Toggle
+                label="Verify lookup enabled"
+                checked={!!form.verify_lookup_enabled}
+                onChange={(v) => setFlag("verify_lookup_enabled", v)}
+              />
+              <Toggle
+                label="Product page visible"
+                checked={!!form.product_page_visible}
+                onChange={(v) => setFlag("product_page_visible", v)}
+              />
+              <Toggle
+                label="COA download enabled"
+                checked={!!form.coa_download_enabled}
+                onChange={(v) => setFlag("coa_download_enabled", v)}
+                disabled={!form.coa_url}
+                hint={!form.coa_url ? "No COA uploaded yet" : undefined}
+              />
             </div>
           </Section>
 
@@ -702,6 +795,41 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <div className="text-[10px] tracking-[0.28em] uppercase text-foreground/55 mb-3 border-b border-ink/10 pb-1.5">{title}</div>
       {children}
     </section>
+  );
+}
+
+function Toggle({
+  label, checked, onChange, disabled, hint,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+  hint?: string;
+}) {
+  return (
+    <label className={`flex items-center justify-between py-1.5 ${disabled ? "opacity-50" : ""}`}>
+      <span className="text-[12.5px] text-ink">
+        {label}
+        {hint && <span className="ml-2 text-[10.5px] tracking-[0.14em] uppercase text-foreground/45">{hint}</span>}
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        onClick={() => !disabled && onChange(!checked)}
+        className={`relative h-[18px] w-[34px] rounded-full border transition-colors ${
+          checked ? "bg-ink border-ink" : "bg-background border-ink/25"
+        }`}
+      >
+        <span
+          className={`absolute top-[1px] h-[14px] w-[14px] rounded-full bg-background border border-ink/15 transition-transform ${
+            checked ? "translate-x-[17px] bg-background" : "translate-x-[1px]"
+          }`}
+        />
+      </button>
+    </label>
   );
 }
 
