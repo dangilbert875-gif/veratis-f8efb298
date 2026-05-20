@@ -176,11 +176,25 @@ function CheckoutPage() {
 
               <div className="mt-6 pt-6 border-t border-border">
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Dispatch method</p>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <ShippingOption active={shippingMethod === "standard"} onClick={() => setShippingMethod("standard")}
-                    label="Standard cold-chain" detail="3–5 business days · insured" price={18} />
-                  <ShippingOption active={shippingMethod === "express"} onClick={() => setShippingMethod("express")}
-                    label="Express overnight" detail="1–2 business days · priority" price={45} />
+                <div className="p-4 border border-ink rounded-[3px] bg-mist/50">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[12.5px] text-ink">Standard cold-chain</p>
+                    <p className="text-[12px] tabular-nums text-ink">
+                      {shippingCost === 0 ? "Free" : `$${shippingCost}`}
+                    </p>
+                  </div>
+                  <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-1">
+                    3–5 business days · insured
+                  </p>
+                  {shippingCost === 0 ? (
+                    <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-emerald-700 mt-2">
+                      — Free shipping unlocked (orders over ${FREE_SHIPPING_THRESHOLD})
+                    </p>
+                  ) : (
+                    <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-2">
+                      — Free over ${FREE_SHIPPING_THRESHOLD} · add ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(0)} to qualify
+                    </p>
+                  )}
                 </div>
               </div>
 
