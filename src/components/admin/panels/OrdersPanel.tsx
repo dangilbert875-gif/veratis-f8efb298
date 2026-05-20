@@ -737,6 +737,61 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
               </div>
             </Section>
 
+            {/* D2. Customer-submitted proof of payment */}
+            <Section title="Customer payment proof">
+              {!o.payment_proof_url && !o.payment_tx_id ? (
+                <div className="text-[11.5px] text-foreground/45 py-2">
+                  No proof of payment submitted by the customer.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {o.payment_proof_url && (
+                    <div>
+                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">— Screenshot</div>
+                      <a
+                        href={o.payment_proof_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block border border-ink/15 bg-mist/30 hover:border-ink/40 transition-colors rounded-[3px] overflow-hidden max-w-md"
+                        title="Open full-size in new tab"
+                      >
+                        <img
+                          src={o.payment_proof_url}
+                          alt="Customer proof of payment"
+                          className="block w-full max-h-80 object-contain bg-background"
+                        />
+                      </a>
+                      <div className="mt-2 flex gap-2">
+                        <a
+                          href={o.payment_proof_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 border border-ink/15 text-[10.5px] tracking-[0.18em] uppercase text-foreground/70 hover:bg-mist/40"
+                        >
+                          Open
+                        </a>
+                        <GhostButton type="button" onClick={() => copy(o.payment_proof_url ?? "", "Proof URL")}>Copy URL</GhostButton>
+                      </div>
+                    </div>
+                  )}
+                  {o.payment_tx_id && (
+                    <div>
+                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">— Customer-provided TX ID / note</div>
+                      <div className="flex gap-2">
+                        <div className="flex-1 min-w-0 px-3 py-2 border border-ink/15 bg-mist/20 font-mono text-[11.5px] text-ink break-all whitespace-pre-wrap">
+                          {o.payment_tx_id}
+                        </div>
+                        <GhostButton type="button" onClick={() => copy(o.payment_tx_id ?? "", "TX ID")}>Copy</GhostButton>
+                        {!form.btc_tx_hash && (
+                          <GhostButton type="button" onClick={() => set("btc_tx_hash", o.payment_tx_id)}>Use as TX hash</GhostButton>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Section>
+
             {/* E. Items */}
             <Section title="Order items">
               {data.items.length === 0 ? (
