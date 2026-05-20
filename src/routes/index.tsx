@@ -53,18 +53,18 @@ function Home() {
     <Layout>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 pt-10 md:pt-14 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
+        <div className="mx-auto max-w-7xl px-6 pt-8 md:pt-14 pb-16 md:pb-36 grid md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 items-center">
           <div className="md:col-span-7">
             <LotTag lot="PP-2426" status="verified" linked />
-            <h1 className="mt-7 text-4xl text-ink leading-[1.05] tracking-[-0.02em] text-left font-extrabold md:text-[3.5rem]">
+            <h1 className="mt-6 md:mt-7 text-[2rem] sm:text-4xl md:text-[3.5rem] text-ink leading-[1.08] md:leading-[1.05] tracking-[-0.02em] text-left font-extrabold [text-wrap:balance]">
               Third-party tested,<br />
               research-grade peptides.
             </h1>
-            <p className="mt-8 max-w-xl text-[1.0625rem] text-muted-foreground leading-[1.7]">
+            <p className="mt-6 md:mt-8 max-w-xl text-[15px] sm:text-[1.0625rem] text-muted-foreground leading-[1.65] md:leading-[1.7]">
               Every batch undergoes independent HPLC and mass-spec analysis.
               Full certificates of analysis are published for every lot — signed, dated, public.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <div className="mt-8 md:mt-10 flex flex-wrap gap-3">
               <Link
                 to="/shop"
                 className="group inline-flex items-center gap-2.5 bg-ink text-background pl-6 pr-5 py-4 rounded-md text-[13px] font-medium tracking-wide hover:bg-ink/90 hover:-translate-y-px transition shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]"
@@ -80,7 +80,7 @@ function Home() {
                 View lab results
               </Link>
             </div>
-            <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
+            <ul className="mt-7 md:mt-8 flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-[11.5px] sm:text-[12px] text-muted-foreground">
               {[
                 { icon: BadgeCheck, label: "ISO 17025 verified" },
                 { icon: FlaskConical, label: "Batch-level COAs" },
@@ -93,15 +93,15 @@ function Home() {
                 </li>
               ))}
             </ul>
-            <dl className="mt-14 grid grid-cols-3 max-w-lg divide-x divide-border border-t border-border pt-8">
+            <dl className="mt-10 md:mt-14 grid grid-cols-3 max-w-lg divide-x divide-border border-t border-border pt-6 md:pt-8">
               {[
                 ["99.4%", "Average HPLC purity"],
                 ["ISO 17025", "Certified testing"],
                 ["48 hrs", "Ships within"],
               ].map(([v, k], i) => (
-                <div key={k} className={i === 0 ? "pr-6" : "px-6"}>
-                  <dt className="text-[1.75rem] text-ink font-display leading-none tabular-nums">{v}</dt>
-                  <dd className="text-[11px] text-muted-foreground mt-2.5 uppercase tracking-[0.16em]">{k}</dd>
+                <div key={k} className={i === 0 ? "pr-3 sm:pr-6" : "px-3 sm:px-6"}>
+                  <dt className="text-[1.05rem] sm:text-[1.5rem] md:text-[1.75rem] text-ink font-display leading-tight tabular-nums [text-wrap:balance]">{v}</dt>
+                  <dd className="text-[9.5px] sm:text-[10.5px] md:text-[11px] text-muted-foreground mt-2 sm:mt-2.5 uppercase tracking-[0.14em] sm:tracking-[0.16em] leading-snug">{k}</dd>
                 </div>
               ))}
             </dl>
@@ -175,17 +175,17 @@ function Home() {
       </section>
 
       {/* Featured products */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="flex items-end justify-between mb-10">
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="flex items-end justify-between mb-8 md:mb-10 gap-4">
           <div>
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Featured</p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight [text-wrap:balance]">Best-selling peptides</h2>
           </div>
-          <Link to="/shop" className="text-sm text-foreground/70 hover:text-foreground inline-flex items-center gap-1">
+          <Link to="/shop" className="text-[12px] sm:text-sm text-foreground/70 hover:text-foreground inline-flex items-center gap-1 whitespace-nowrap pb-1">
             Shop all <ArrowRight size={14} />
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 sm:gap-x-6 gap-y-12 sm:gap-y-12">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-4 gap-x-6 sm:gap-x-6 gap-y-14 sm:gap-y-12">
           {products.slice(0, 4).map((p) => <ProductCard key={p.slug} p={p} />)}
         </div>
       </section>
@@ -220,13 +220,13 @@ function Home() {
 
       {/* COA Preview */}
       <section className="border-y border-border bg-ink text-background">
-        <div className="mx-auto max-w-7xl px-6 py-28 md:py-36 grid md:grid-cols-12 gap-12 lg:gap-20 items-start">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:py-36 grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-20 items-start">
           <div className="md:col-span-5 md:pr-4">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary mb-4">— Signature system</p>
-            <h2 className="text-3xl md:text-[2.5rem] text-background leading-[1.1] tracking-[-0.02em]">
-              Authenticate any vial,<br />in under five seconds.
+            <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.5rem] text-background leading-[1.12] md:leading-[1.1] tracking-[-0.02em] [text-wrap:balance]">
+              Authenticate any vial, in under five seconds.
             </h2>
-            <p className="mt-6 text-background/70 leading-[1.75] max-w-md">
+            <p className="mt-5 md:mt-6 text-[14px] sm:text-[15px] text-background/70 leading-[1.7] md:leading-[1.75] max-w-md">
               Enter the lot printed on the label. The archive returns the original certificate — purity, identity, endotoxin — signed by an independent laboratory at the moment of release.
             </p>
             <ul className="mt-8 space-y-3.5 text-[13px] text-background/80">
@@ -246,17 +246,17 @@ function Home() {
                 <Archive size={14} /> Browse full archive <ArrowRight size={13} />
               </Link>
             </div>
-            <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-4 text-[10.5px] font-mono uppercase tracking-[0.16em] text-background/40">
+            <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-3 sm:gap-x-4 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.14em] sm:tracking-[0.16em] text-background/40">
               <div>
-                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">{batches.length}</p>
+                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">{batches.length}</p>
                 <p className="mt-1">Lots archived</p>
               </div>
               <div>
-                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">{avgPurity}%</p>
+                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">{avgPurity}%</p>
                 <p className="mt-1">Mean purity</p>
               </div>
               <div>
-                <p className="text-background tabular-nums text-[20px] font-display tracking-tight">100%</p>
+                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">100%</p>
                 <p className="mt-1">YTD pass rate</p>
               </div>
             </div>
@@ -268,25 +268,27 @@ function Home() {
       </section>
 
       {/* Categories */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="flex items-end justify-between mb-10">
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="flex items-end justify-between mb-8 md:mb-10">
           <div>
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Research areas</p>
-            <h2 className="text-3xl md:text-4xl text-ink">By research category</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">By research category</h2>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           {categories.map((c) => (
             <Link
               key={c.slug}
               to="/shop"
-              className="group relative bg-mist border border-border rounded-lg p-8 hover:border-ink/40 transition"
+              className="group relative bg-mist border border-border rounded-lg p-5 sm:p-8 pb-12 sm:pb-16 min-h-[120px] sm:min-h-[160px] flex flex-col hover:border-ink/40 transition"
             >
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55 tabular-nums">
+              <p className="text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 tabular-nums">
                 {String(c.count).padStart(2, "0")} compounds
               </p>
-              <h3 className="mt-2 text-2xl text-ink">{c.name}</h3>
-              <ArrowRight size={18} className="absolute bottom-6 right-6 text-foreground/40 group-hover:text-ink group-hover:translate-x-1 transition" />
+              <h3 className="mt-2 text-[1.0625rem] sm:text-2xl text-ink leading-[1.2] tracking-tight [text-wrap:balance] hyphens-auto break-words">
+                {c.name}
+              </h3>
+              <ArrowRight size={16} className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 text-foreground/40 group-hover:text-ink group-hover:translate-x-1 transition" />
             </Link>
           ))}
         </div>
@@ -295,12 +297,12 @@ function Home() {
       <WhyVeratis />
 
       {/* Operational metrics — replaces testimonials */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid md:grid-cols-12 gap-12 md:gap-20">
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="grid md:grid-cols-12 gap-10 md:gap-20">
           <div className="md:col-span-5">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Operational record</p>
-            <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
-              Measured in lots,<br />not in slogans.
+            <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.5rem] text-ink leading-[1.12] md:leading-[1.1] tracking-[-0.02em] [text-wrap:balance]">
+              Measured in lots, not in slogans.
             </h2>
             <p className="mt-6 text-muted-foreground leading-[1.75] max-w-md">
               The clearest signal of a serious peptide operation is its archive. Below is ours — every figure derived from production data, independently assayed, publicly retrievable.
@@ -324,13 +326,13 @@ function Home() {
                 <div
                   key={k}
                   className={[
-                    "py-7 px-1",
-                    i % 2 === 0 ? "pr-6 border-r border-border" : "pl-6",
+                    "py-5 sm:py-7 px-1 min-w-0",
+                    i % 2 === 0 ? "pr-3 sm:pr-6 border-r border-border" : "pl-3 sm:pl-6",
                     i >= 2 ? "border-t border-border" : "",
                   ].join(" ")}
                 >
-                  <dt className="font-display text-[1.75rem] md:text-[2rem] text-ink leading-none tabular-nums tracking-[-0.01em]">{v}</dt>
-                  <dd className="mt-3 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">{k}</dd>
+                  <dt className="font-display text-[1.125rem] sm:text-[1.5rem] md:text-[2rem] text-ink leading-tight tabular-nums tracking-[-0.01em] [text-wrap:balance]">{v}</dt>
+                  <dd className="mt-2 sm:mt-3 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 leading-snug">{k}</dd>
                 </div>
               ))}
             </dl>

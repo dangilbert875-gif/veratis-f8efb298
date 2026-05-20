@@ -32,14 +32,13 @@ export function ArchiveActivity() {
 
   return (
     <section className="border-y border-border bg-mist/30">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 grid md:grid-cols-12 gap-12 lg:gap-20">
+      <div className="mx-auto max-w-7xl px-6 py-14 md:py-24 grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-20">
         <div className="md:col-span-4">
           <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">
             — Live archive activity
           </p>
-          <h2 className="text-3xl md:text-[2.25rem] text-ink leading-[1.12] tracking-[-0.02em]">
-            The archive,<br />
-            updating in real time.
+          <h2 className="text-[1.625rem] sm:text-3xl md:text-[2.25rem] text-ink leading-[1.15] tracking-[-0.02em] [text-wrap:balance]">
+            The archive, updating in real time.
           </h2>
           <p className="mt-5 text-[14.5px] text-muted-foreground leading-[1.75] max-w-sm">
             A quiet, timestamped log of every release, assay, and verification event.
@@ -82,30 +81,33 @@ export function ArchiveActivity() {
               {entries.map((e, i) => (
                 <li
                   key={`${e.lot}-${i}`}
-                  className="grid grid-cols-[110px_1fr_auto] sm:grid-cols-[130px_140px_1fr_auto] items-baseline gap-x-5 px-5 py-3.5 border-b border-border/60 last:border-0 text-[12.5px] hover:bg-mist/40 transition-colors"
+                  className="grid grid-cols-[88px_1fr_auto] sm:grid-cols-[130px_140px_1fr_auto] items-baseline gap-x-3 sm:gap-x-5 px-4 sm:px-5 py-3 sm:py-3.5 border-b border-border/60 last:border-0 text-[12.5px] hover:bg-mist/40 transition-colors"
                 >
-                  <span className="font-mono text-[10.5px] tabular-nums uppercase tracking-[0.14em] text-foreground/50">
+                  <span className="font-mono text-[10px] sm:text-[10.5px] tabular-nums uppercase tracking-[0.1em] sm:tracking-[0.14em] text-foreground/50 whitespace-nowrap">
                     {relTime(batches[0].testedOn, e.offset)}
                   </span>
                   <span className="hidden sm:inline font-mono text-[10.5px] tabular-nums tracking-[0.08em] text-ink/80">
                     {e.lot}
                   </span>
                   <div className="col-span-1 sm:col-span-1 min-w-0">
-                    <p className="text-ink truncate">{e.kind}</p>
-                    <p className="text-[11.5px] text-muted-foreground truncate">{e.detail}</p>
+                    <p className="text-ink text-[12px] sm:text-[12.5px] leading-snug line-clamp-1">{e.kind}</p>
+                    <p className="text-[11px] sm:text-[11.5px] text-muted-foreground leading-snug line-clamp-2 sm:line-clamp-1 mt-0.5">
+                      <span className="sm:hidden font-mono tabular-nums tracking-[0.08em] text-ink/70 mr-1.5">{e.lot}</span>
+                      {e.detail}
+                    </p>
                   </div>
                   <Link
                     to="/verify"
-                    className="text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 hover:text-ink transition-colors whitespace-nowrap"
+                    className="text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/55 hover:text-ink transition-colors whitespace-nowrap self-center"
                   >
                     View →
                   </Link>
                 </li>
               ))}
             </ul>
-            <div className="px-5 h-10 flex items-center justify-between border-t border-border text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/45">
-              <span>Append-only · cryptographically sealed</span>
-              <span className="tabular-nums">{batches.length} entries · partition 01</span>
+            <div className="px-4 sm:px-5 min-h-10 py-2 flex items-center justify-between gap-3 border-t border-border text-[9.5px] sm:text-[10px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em] text-foreground/45">
+              <span className="truncate">Append-only · sealed</span>
+              <span className="tabular-nums whitespace-nowrap">{batches.length} entries</span>
             </div>
           </div>
         </div>

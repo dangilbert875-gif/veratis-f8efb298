@@ -92,7 +92,14 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { -webkit-font-smoothing: antialiased; }
+  html, body {
+    -webkit-font-smoothing: antialiased;
+    /* Eliminate accidental horizontal scrolling at every viewport. */
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  /* Defensive: stop any descendant from forcing the page wider than the viewport. */
+  img, svg, video, canvas { max-width: 100%; }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
