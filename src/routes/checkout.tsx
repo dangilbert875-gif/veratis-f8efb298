@@ -6,6 +6,7 @@ import { useCart } from "@/lib/cart";
 import { createCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import btcQr from "@/assets/btc-qr.jpg";
 
 const BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 
@@ -316,16 +317,25 @@ function CheckoutPage() {
 
                   <div>
                     <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— BTC address</p>
-                    <button
-                      type="button"
-                      onClick={() => copyVal("addr", BTC_ADDRESS)}
-                      className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
-                    >
-                      <span className="text-[12.5px] text-ink break-all font-mono">{BTC_ADDRESS}</span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
-                        {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
-                      </span>
-                    </button>
+                    <div className="flex items-stretch gap-3">
+                      <div className="shrink-0 p-2 bg-white border border-border rounded-[3px]">
+                        <img
+                          src={btcQr}
+                          alt={`Bitcoin payment QR code for ${BTC_ADDRESS}`}
+                          className="w-[112px] h-[112px] block"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => copyVal("addr", BTC_ADDRESS)}
+                        className="group flex-1 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                      >
+                        <span className="text-[12.5px] text-ink break-all font-mono">{BTC_ADDRESS}</span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+                          {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                        </span>
+                      </button>
+                    </div>
                   </div>
 
                   {btcAmount && (
