@@ -312,36 +312,8 @@ export function OrdersPanel() {
         title="Order management"
         hint="Payment reconciliation · fulfillment workflow · operational notes"
       >
-        {/* Toolbar */}
-        <div className="px-5 py-3 border-b border-ink/10 flex flex-wrap items-center gap-2">
-          <TextInput
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search order #, email, tracking, BTC tx, address…"
-            className="!h-8 !text-[12px] flex-1 min-w-[240px]"
-          />
-          <SelectInput value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value)} className="!h-8 !text-[11px] w-auto">
-            <option value="all">All payment</option>
-            {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
-          </SelectInput>
-          <SelectInput value={fulfillmentFilter} onChange={(e) => setFulfillmentFilter(e.target.value)} className="!h-8 !text-[11px] w-auto">
-            <option value="all">All fulfillment</option>
-            {FULFILLMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
-          </SelectInput>
-          <SelectInput value={quickFilter} onChange={(e) => setQuickFilter(e.target.value as any)} className="!h-8 !text-[11px] w-auto">
-            <option value="all">All orders</option>
-            <option value="unpaid">Unpaid</option>
-            <option value="unshipped">Unshipped</option>
-            <option value="flagged">Flagged</option>
-            <option value="refunded">Refunded</option>
-          </SelectInput>
-          <SelectInput value={sort} onChange={(e) => setSort(e.target.value as any)} className="!h-8 !text-[11px] w-auto">
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="value">Highest value</option>
-            <option value="awaiting">Awaiting payment first</option>
-            <option value="priority">Priority (alerts first)</option>
-          </SelectInput>
+        {/* Export action */}
+        <div className="px-5 py-2.5 border-b border-ink/10 flex justify-end">
           <GhostButton onClick={exportCsv} className="!h-8 !text-[10.5px]">Export CSV</GhostButton>
         </div>
 
