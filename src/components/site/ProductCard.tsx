@@ -44,7 +44,7 @@ export function ProductCard({ p }: { p: Product }) {
           <span aria-hidden className="absolute bottom-0 right-0 w-3 h-px bg-ink/25" />
           <span aria-hidden className="absolute bottom-0 right-0 w-px h-3 bg-ink/25" />
 
-          <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-3 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
+          <div className="absolute inset-0 flex items-center justify-center p-1.5 sm:p-3 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
             <VialImage
               name={p.name}
               dosage={p.dosage}
