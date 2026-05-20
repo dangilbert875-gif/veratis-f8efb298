@@ -72,7 +72,7 @@ export const listPublicLots = createServerFn({ method: "GET" }).handler(async ()
       .is("archived_at", null)
       .order("release_date", { ascending: false, nullsFirst: false });
     if (lotsErr) throw new Error(lotsErr.message);
-    for (const lot of lots ?? []) {
+    for (const lot of (lots as any[]) ?? []) {
       // Keep the first (most recent) lot we see per product.
       if (!lotsByProduct.has(lot.product_id)) {
         lotsByProduct.set(lot.product_id, lot);
