@@ -59,6 +59,38 @@ function StatusBadge({ tone, children }: { tone: Tone; children: React.ReactNode
   );
 }
 
+function InlineStatusSelect({
+  value, tone, options, onChange,
+}: {
+  value: string;
+  tone: Tone;
+  options: string[];
+  onChange: (next: string) => void | Promise<void>;
+}) {
+  const tones: Record<Tone, string> = {
+    neutral: "border-ink/15 text-foreground/65 bg-mist/30 hover:border-ink/30",
+    ok: "border-emerald-700/30 text-emerald-800 bg-emerald-50/40 hover:border-emerald-700/50",
+    warn: "border-amber-700/30 text-amber-800 bg-amber-50/40 hover:border-amber-700/50",
+    bad: "border-red-700/30 text-red-800 bg-red-50/40 hover:border-red-700/50",
+  };
+  return (
+    <span className={`relative inline-flex items-center gap-1.5 border h-6 pl-2 pr-1 text-[10px] tracking-[0.14em] uppercase transition-colors ${tones[tone]}`}>
+      <StatusDot tone={tone} />
+      <span>{humanize(value)}</span>
+      <select
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        aria-label="Change status"
+      >
+        {options.map((s) => (
+          <option key={s} value={s}>{humanize(s)}</option>
+        ))}
+      </select>
+    </span>
+  );
+}
+
 function humanize(s: string | null | undefined) {
   if (!s) return "—";
   return s.replace(/_/g, " ");
