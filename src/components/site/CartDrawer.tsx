@@ -21,7 +21,7 @@ export function CartDrawer() {
 
   function checkout() {
     closeCart();
-    navigate({ to: "/how-to-pay" });
+    navigate({ to: "/checkout" });
   }
 
   return (

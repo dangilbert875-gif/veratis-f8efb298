@@ -30,6 +30,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
+import { Route as CheckoutOrderNumberRouteImport } from './routes/checkout.$orderNumber'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
@@ -139,6 +140,11 @@ const ShopSlugRoute = ShopSlugRouteImport.update({
   path: '/shop/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutOrderNumberRoute = CheckoutOrderNumberRouteImport.update({
+  id: '/$orderNumber',
+  path: '/$orderNumber',
+  getParentRoute: () => CheckoutRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -160,7 +166,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/checkout/$orderNumber': typeof CheckoutOrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
 }
@@ -186,7 +193,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/checkout/$orderNumber': typeof CheckoutOrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
 }
@@ -213,7 +221,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRouteWithChildren
   '/blog': typeof BlogRouteWithChildren
-  '/checkout': typeof CheckoutRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/coa-archive': typeof CoaArchiveRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/checkout/$orderNumber': typeof CheckoutOrderNumberRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
 }
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
+    | '/checkout/$orderNumber'
     | '/shop/$slug'
     | '/shop/'
   fileRoutesByTo: FileRoutesByTo
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
+    | '/checkout/$orderNumber'
     | '/shop/$slug'
     | '/shop'
   id:
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/login'
     | '/blog/$slug'
+    | '/checkout/$orderNumber'
     | '/shop/$slug'
     | '/shop/'
   fileRoutesById: FileRoutesById
@@ -320,7 +332,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRouteWithChildren
   BlogRoute: typeof BlogRouteWithChildren
-  CheckoutRoute: typeof CheckoutRoute
+  CheckoutRoute: typeof CheckoutRouteWithChildren
   CoaArchiveRoute: typeof CoaArchiveRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
@@ -488,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/$orderNumber': {
+      id: '/checkout/$orderNumber'
+      path: '/$orderNumber'
+      fullPath: '/checkout/$orderNumber'
+      preLoaderRoute: typeof CheckoutOrderNumberRouteImport
+      parentRoute: typeof CheckoutRoute
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -534,12 +553,24 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface CheckoutRouteChildren {
+  CheckoutOrderNumberRoute: typeof CheckoutOrderNumberRoute
+}
+
+const CheckoutRouteChildren: CheckoutRouteChildren = {
+  CheckoutOrderNumberRoute: CheckoutOrderNumberRoute,
+}
+
+const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
+  CheckoutRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRouteWithChildren,
   BlogRoute: BlogRouteWithChildren,
-  CheckoutRoute: CheckoutRoute,
+  CheckoutRoute: CheckoutRouteWithChildren,
   CoaArchiveRoute: CoaArchiveRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
