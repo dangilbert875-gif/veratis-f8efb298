@@ -1041,7 +1041,7 @@ export type Database = {
     }
     Enums: {
       affiliate_status: "active" | "paused" | "suspended"
-      app_role: "admin" | "research_partner" | "customer"
+      app_role: "admin" | "research_partner" | "customer" | "super_admin"
       article_status: "draft" | "published" | "archived"
       customer_state:
         | "active"
@@ -1198,7 +1198,7 @@ export const Constants = {
   public: {
     Enums: {
       affiliate_status: ["active", "paused", "suspended"],
-      app_role: ["admin", "research_partner", "customer"],
+      app_role: ["admin", "research_partner", "customer", "super_admin"],
       article_status: ["draft", "published", "archived"],
       customer_state: [
         "active",
