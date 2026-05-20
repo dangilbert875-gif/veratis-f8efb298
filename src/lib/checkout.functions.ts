@@ -26,7 +26,7 @@ const checkoutSchema = z.object({
     zip: z.string().min(1).max(32),
     country: z.string().min(1).max(64),
   }),
-  shipping_method: z.enum(["standard", "express"]),
+  shipping_method: z.literal("standard"),
   notes: z.string().max(1024).optional().default(""),
   items: z.array(itemSchema).min(1).max(50),
 });
