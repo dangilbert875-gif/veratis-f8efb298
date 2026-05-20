@@ -53,18 +53,18 @@ function Home() {
     <Layout>
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 pt-10 md:pt-14 pb-24 md:pb-36 grid md:grid-cols-12 gap-16 lg:gap-20 items-center">
+        <div className="mx-auto max-w-7xl px-6 pt-8 md:pt-14 pb-16 md:pb-36 grid md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 items-center">
           <div className="md:col-span-7">
             <LotTag lot="PP-2426" status="verified" linked />
-            <h1 className="mt-7 text-4xl text-ink leading-[1.05] tracking-[-0.02em] text-left font-extrabold md:text-[3.5rem]">
+            <h1 className="mt-6 md:mt-7 text-[2rem] sm:text-4xl md:text-[3.5rem] text-ink leading-[1.08] md:leading-[1.05] tracking-[-0.02em] text-left font-extrabold [text-wrap:balance]">
               Third-party tested,<br />
               research-grade peptides.
             </h1>
-            <p className="mt-8 max-w-xl text-[1.0625rem] text-muted-foreground leading-[1.7]">
+            <p className="mt-6 md:mt-8 max-w-xl text-[15px] sm:text-[1.0625rem] text-muted-foreground leading-[1.65] md:leading-[1.7]">
               Every batch undergoes independent HPLC and mass-spec analysis.
               Full certificates of analysis are published for every lot — signed, dated, public.
             </p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <div className="mt-8 md:mt-10 flex flex-wrap gap-3">
               <Link
                 to="/shop"
                 className="group inline-flex items-center gap-2.5 bg-ink text-background pl-6 pr-5 py-4 rounded-md text-[13px] font-medium tracking-wide hover:bg-ink/90 hover:-translate-y-px transition shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]"
@@ -80,7 +80,7 @@ function Home() {
                 View lab results
               </Link>
             </div>
-            <ul className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-muted-foreground">
+            <ul className="mt-7 md:mt-8 flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-[11.5px] sm:text-[12px] text-muted-foreground">
               {[
                 { icon: BadgeCheck, label: "ISO 17025 verified" },
                 { icon: FlaskConical, label: "Batch-level COAs" },
@@ -93,15 +93,15 @@ function Home() {
                 </li>
               ))}
             </ul>
-            <dl className="mt-14 grid grid-cols-3 max-w-lg divide-x divide-border border-t border-border pt-8">
+            <dl className="mt-10 md:mt-14 grid grid-cols-3 max-w-lg divide-x divide-border border-t border-border pt-6 md:pt-8">
               {[
                 ["99.4%", "Average HPLC purity"],
                 ["ISO 17025", "Certified testing"],
                 ["48 hrs", "Ships within"],
               ].map(([v, k], i) => (
-                <div key={k} className={i === 0 ? "pr-6" : "px-6"}>
-                  <dt className="text-[1.75rem] text-ink font-display leading-none tabular-nums">{v}</dt>
-                  <dd className="text-[11px] text-muted-foreground mt-2.5 uppercase tracking-[0.16em]">{k}</dd>
+                <div key={k} className={i === 0 ? "pr-3 sm:pr-6" : "px-3 sm:px-6"}>
+                  <dt className="text-[1.05rem] sm:text-[1.5rem] md:text-[1.75rem] text-ink font-display leading-tight tabular-nums [text-wrap:balance]">{v}</dt>
+                  <dd className="text-[9.5px] sm:text-[10.5px] md:text-[11px] text-muted-foreground mt-2 sm:mt-2.5 uppercase tracking-[0.14em] sm:tracking-[0.16em] leading-snug">{k}</dd>
                 </div>
               ))}
             </dl>
