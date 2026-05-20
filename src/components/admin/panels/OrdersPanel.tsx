@@ -329,6 +329,12 @@ export function OrdersPanel() {
             <GhostButton onClick={() => doBulk("mark_shipped", "Mark shipped")} className="!h-7 !text-[10px]">Shipped</GhostButton>
             <GhostButton onClick={() => doBulk("mark_paid", "Mark paid")} className="!h-7 !text-[10px]">Paid</GhostButton>
             <GhostButton onClick={() => doBulk("archive", "Archive", true)} className="!h-7 !text-[10px]">Archive</GhostButton>
+            <GhostButton
+              onClick={() => doBulk("delete", `Permanently delete`, true)}
+              className="!h-7 !text-[10px] !border-red-700/30 !text-red-700 hover:!bg-red-700 hover:!text-background"
+            >
+              Delete
+            </GhostButton>
             <button onClick={() => setSelected(new Set())} className="text-[10px] tracking-[0.16em] uppercase text-foreground/50 hover:text-ink">Clear</button>
           </div>
         )}
