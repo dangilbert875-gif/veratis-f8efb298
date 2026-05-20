@@ -495,6 +495,7 @@ export function OrdersPanel() {
 function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; onClose: () => void; onChanged: () => void }) {
   const fetchDetail = useServerFn(getOrderDetail);
   const update = useServerFn(patchOrder);
+  const removeOrder = useServerFn(deleteOrder);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-order", orderId],
     queryFn: () => fetchDetail({ data: { id: orderId } }),
@@ -527,12 +528,35 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
       "payment_status","fulfillment_status","risk_flag","tracking_number","carrier",
       "shipping_method","shipped_at","delivered_at","payment_received_at","payment_expires_at",
       "btc_tx_hash","btc_confirmations","btc_amount","btc_address",
-      "customer_name","shipping_name","shipping_address_1","shipping_address_2",
+      "customer_name","customer_email","shipping_name","shipping_address_1","shipping_address_2",
       "shipping_city","shipping_state","shipping_zip","shipping_country","internal_notes",
     ];
     const patch: Record<string, any> = {};
-    keys.forEach((k) => { patch[k] = form[k] ?? null; });
+    keys.forEach((k) => {
+      let v = form[k];
+      if (k === "btc_amount" || k === "btc_confirmations") {
+        v = v === "" || v == null ? null : Number(v);
+        if (Number.isNaN(v)) v = null;
+      }
+      if (k === "customer_email") {
+        v = (v ?? "").trim();
+        if (!v) return; // email is required, skip if blank
+      }
+      patch[k] = v ?? null;
+    });
     await save(patch);
+  };
+
+  const handleDelete = async () => {
+    if (!confirm(`Delete order ${o?.order_number ?? ""}? This cannot be undone.`)) return;
+    try {
+      await removeOrder({ data: { id: orderId } });
+      toast.success("Order deleted");
+      onChanged();
+      onClose();
+    } catch (e: any) {
+      toast.error(e?.message ?? "Delete failed");
+    }
   };
 
   const copy = (text: string, label: string) => {
