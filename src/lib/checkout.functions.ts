@@ -26,7 +26,7 @@ const checkoutSchema = z.object({
     zip: z.string().min(1).max(32),
     country: z.string().min(1).max(64),
   }),
-  shipping_method: z.enum(["standard", "express"]),
+  shipping_method: z.literal("standard"),
   notes: z.string().max(1024).optional().default(""),
   items: z.array(itemSchema).min(1).max(50),
 });
@@ -47,7 +47,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       (s, i) => s + Number(i.price) * Number(i.quantity),
       0,
     );
-    const shippingCost = data.shipping_method === "express" ? 45 : 18;
+    const shippingCost = itemsTotal >= 150 ? 0 : 18;
     const total = Math.round((itemsTotal + shippingCost) * 100) / 100;
 
     // Generate a unique order number (retry on collision)

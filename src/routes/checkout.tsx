@@ -41,10 +41,10 @@ function CheckoutPage() {
   const [stateRegion, setStateRegion] = useState("");
   const [zip, setZip] = useState("");
   const [country, setCountry] = useState("United States");
-  const [shippingMethod, setShippingMethod] = useState<"standard" | "express">("standard");
   const [notes, setNotes] = useState("");
 
-  const shippingCost = shippingMethod === "express" ? 45 : 18;
+  const FREE_SHIPPING_THRESHOLD = 150;
+  const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 18;
   const total = subtotal + shippingCost;
 
   if (items.length === 0) {
@@ -104,7 +104,7 @@ function CheckoutPage() {
             name: shipName, address_1: addr1, address_2: addr2,
             city, state: stateRegion, zip, country,
           },
-          shipping_method: shippingMethod,
+          shipping_method: "standard",
           notes,
           items: items.map((i) => ({
             slug: i.slug, name: i.name, size: i.size,
@@ -176,11 +176,25 @@ function CheckoutPage() {
 
               <div className="mt-6 pt-6 border-t border-border">
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Dispatch method</p>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <ShippingOption active={shippingMethod === "standard"} onClick={() => setShippingMethod("standard")}
-                    label="Standard cold-chain" detail="3–5 business days · insured" price={18} />
-                  <ShippingOption active={shippingMethod === "express"} onClick={() => setShippingMethod("express")}
-                    label="Express overnight" detail="1–2 business days · priority" price={45} />
+                <div className="p-4 border border-ink rounded-[3px] bg-mist/50">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[12.5px] text-ink">Standard cold-chain</p>
+                    <p className="text-[12px] tabular-nums text-ink">
+                      {shippingCost === 0 ? "Free" : `$${shippingCost}`}
+                    </p>
+                  </div>
+                  <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-1">
+                    3–5 business days · insured
+                  </p>
+                  {shippingCost === 0 ? (
+                    <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-emerald-700 mt-2">
+                      — Free shipping unlocked (orders over ${FREE_SHIPPING_THRESHOLD})
+                    </p>
+                  ) : (
+                    <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-2">
+                      — Free over ${FREE_SHIPPING_THRESHOLD} · add ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(0)} to qualify
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -204,7 +218,7 @@ function CheckoutPage() {
                 <p className="text-foreground/70">{country}</p>
               </Review>
               <Review label="Dispatch">
-                <p>{shippingMethod === "express" ? "Express overnight" : "Standard cold-chain"} · ${shippingCost}</p>
+                <p>Standard cold-chain · {shippingCost === 0 ? "Free" : `$${shippingCost}`}</p>
               </Review>
               <Review label="Payment method">
                 <p>Bitcoin (BTC)</p>
@@ -260,7 +274,12 @@ function CheckoutPage() {
           </ul>
           <div className="px-5 py-4 border-t border-border space-y-2 text-[12px]">
             <Row label="Subtotal" value={`$${subtotal.toFixed(0)}`} />
-            <Row label={shippingMethod === "express" ? "Express overnight" : "Cold-chain shipping"} value={`$${shippingCost}`} />
+            <Row label="Cold-chain shipping" value={shippingCost === 0 ? "Free" : `$${shippingCost}`} />
+            {shippingCost > 0 && (
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55">
+                — Free over ${FREE_SHIPPING_THRESHOLD}
+              </p>
+            )}
             <div className="pt-2 mt-2 border-t border-border flex justify-between items-baseline">
               <span className="font-mono uppercase tracking-[0.18em] text-foreground/55 text-[10.5px]">Total</span>
               <span className="text-lg text-ink tabular-nums">${total.toFixed(0)}</span>
@@ -313,20 +332,6 @@ function Row({ label, value }: { label: string; value: string }) {
       <span className="text-foreground/65">{label}</span>
       <span className="tabular-nums text-ink">{value}</span>
     </div>
-  );
-}
-function ShippingOption({ active, onClick, label, detail, price }: {
-  active: boolean; onClick: () => void; label: string; detail: string; price: number;
-}) {
-  return (
-    <button type="button" onClick={onClick}
-      className={`text-left p-4 border rounded-[3px] transition-all ${active ? "border-ink bg-mist/50" : "border-border hover:border-ink/50"}`}>
-      <div className="flex items-center justify-between">
-        <p className="text-[12.5px] text-ink">{label}</p>
-        <p className="text-[12px] tabular-nums text-ink">${price}</p>
-      </div>
-      <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-1">{detail}</p>
-    </button>
   );
 }
 function StepRail({ step }: { step: Step }) {
