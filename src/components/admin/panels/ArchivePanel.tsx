@@ -494,6 +494,12 @@ const lotEmpty = {
   hplc_url: "",
   notes: "",
   active: true,
+  status: "draft" as LotStatus,
+  public_visible: false,
+  verify_lookup_enabled: false,
+  product_page_visible: false,
+  coa_download_enabled: false,
+  visibility_override: false,
 };
 
 function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => void; onSaved: () => void }) {
@@ -557,6 +563,14 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
   const submit = async () => {
     setError(null);
     if (!form.lot_number) { setError("Lot number is required."); return; }
+    if (form.status === "released" && !form.coa_url &&
+        !confirm("This lot has no COA. Publish as Released anyway?\n\nThe lot will be public but its COA will not be downloadable.")) {
+      return;
+    }
+    if ((form.status === "failed") &&
+        !confirm(`Mark lot ${form.lot_number} as Failed / Rejected?\n\nIt will be hidden from the storefront and public archive.`)) {
+      return;
+    }
     setSaving(true);
     try {
       const payload: any = { ...form };
@@ -580,6 +594,14 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
   };
 
   const derivedStatus = statusOf(form);
+
+  // When admin toggles a flag manually, mark override on.
+  const setFlag = (k: string, v: boolean) =>
+    setForm((f: any) => ({ ...f, [k]: v, visibility_override: true }));
+
+  // When status changes from the drawer, clear override so DB trigger re-derives.
+  const setStatus = (s: LotStatus) =>
+    setForm((f: any) => ({ ...f, status: s, visibility_override: false }));
 
   return (
     <div className="fixed inset-0 z-50 flex">
@@ -636,12 +658,56 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
               <Field label="Best before">
                 <TextInput type="date" value={form.best_before ?? ""} onChange={(e) => set("best_before", e.target.value)} />
               </Field>
-              <Field label="Active in archive">
-                <SelectInput value={form.active ? "yes" : "no"} onChange={(e) => set("active", e.target.value === "yes")}>
-                  <option value="yes">Yes — visible in public archive</option>
-                  <option value="no">No — hidden</option>
+              <Field label="Status">
+                <SelectInput value={form.status ?? "draft"} onChange={(e) => setStatus(e.target.value as LotStatus)}>
+                  {STATUS_OPTIONS.map((s) => (
+                    <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+                  ))}
                 </SelectInput>
               </Field>
+            </div>
+          </Section>
+
+          <Section title="Public visibility">
+            <div className="space-y-2.5">
+              {form.visibility_override ? (
+                <div className="text-[11px] tracking-[0.16em] uppercase text-amber-700 flex items-center justify-between">
+                  <span>Manual visibility override active</span>
+                  <button
+                    type="button"
+                    className="underline normal-case tracking-normal text-[12px] text-foreground/70 hover:text-ink"
+                    onClick={() => setForm((f: any) => ({ ...f, visibility_override: false }))}
+                  >
+                    Reset to status defaults
+                  </button>
+                </div>
+              ) : (
+                <div className="text-[11px] tracking-[0.16em] uppercase text-foreground/55">
+                  Visibility follows status — toggle a flag to override.
+                </div>
+              )}
+              <Toggle
+                label="Public archive visible"
+                checked={!!form.public_visible}
+                onChange={(v) => setFlag("public_visible", v)}
+              />
+              <Toggle
+                label="Verify lookup enabled"
+                checked={!!form.verify_lookup_enabled}
+                onChange={(v) => setFlag("verify_lookup_enabled", v)}
+              />
+              <Toggle
+                label="Product page visible"
+                checked={!!form.product_page_visible}
+                onChange={(v) => setFlag("product_page_visible", v)}
+              />
+              <Toggle
+                label="COA download enabled"
+                checked={!!form.coa_download_enabled}
+                onChange={(v) => setFlag("coa_download_enabled", v)}
+                disabled={!form.coa_url}
+                hint={!form.coa_url ? "No COA uploaded yet" : undefined}
+              />
             </div>
           </Section>
 
