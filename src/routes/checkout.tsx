@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
 import { createCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
-import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check } from "lucide-react";
+import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 
@@ -53,6 +54,51 @@ function CheckoutPage() {
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+
+  // Payment proof
+  const [proofOpen, setProofOpen] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [proofPreview, setProofPreview] = useState<string | null>(null);
+  const [proofUrl, setProofUrl] = useState<string | null>(null);
+  const [txId, setTxId] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const proofConfirmed = !!(proofUrl || txId.trim());
+
+  function onPickFile(f: File | null) {
+    setProofFile(f);
+    setProofUrl(null);
+    if (proofPreview) URL.revokeObjectURL(proofPreview);
+    setProofPreview(f ? URL.createObjectURL(f) : null);
+  }
+
+  async function confirmProof() {
+    setError(null);
+    if (!proofFile && !txId.trim()) {
+      setError("Upload a screenshot or enter the transaction ID.");
+      return;
+    }
+    let uploadedUrl: string | null = proofUrl;
+    if (proofFile && !uploadedUrl) {
+      setUploading(true);
+      try {
+        const ext = proofFile.name.split(".").pop() || "png";
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("payment-proofs")
+          .upload(path, proofFile, { contentType: proofFile.type, upsert: false });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("payment-proofs").getPublicUrl(path);
+        uploadedUrl = pub.publicUrl;
+        setProofUrl(uploadedUrl);
+      } catch (e: any) {
+        setError(e?.message || "Upload failed");
+        setUploading(false);
+        return;
+      }
+      setUploading(false);
+    }
+    setProofOpen(false);
+  }
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -123,6 +169,10 @@ function CheckoutPage() {
 
   async function placeOrder() {
     setError(null);
+    if (!proofConfirmed) {
+      setError("Please upload proof of payment or enter your transaction ID first.");
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await submit({
@@ -138,6 +188,8 @@ function CheckoutPage() {
             slug: i.slug, name: i.name, size: i.size,
             lot: i.lot, price: i.price, quantity: i.quantity,
           })),
+          payment_proof_url: proofUrl,
+          payment_tx_id: txId.trim() || null,
         },
       });
       clear();
@@ -320,10 +372,29 @@ function CheckoutPage() {
                 Continue <ArrowRight size={14} />
               </button>
             ) : (
-              <button onClick={placeOrder} disabled={submitting}
-                className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
-                {submitting ? "Placing order…" : "Place order"} {!submitting && <ArrowRight size={14} />}
-              </button>
+              <div className="flex items-center gap-3">
+                {proofConfirmed && (
+                  <button
+                    onClick={() => setProofOpen(true)}
+                    className="inline-flex items-center gap-2 h-11 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink border border-border rounded-[3px] transition-colors"
+                  >
+                    <Check size={12} className="text-emerald-700" /> Proof attached · Edit
+                  </button>
+                )}
+                {!proofConfirmed ? (
+                  <button
+                    onClick={() => setProofOpen(true)}
+                    className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
+                  >
+                    <Upload size={14} /> Upload Proof of Payment
+                  </button>
+                ) : (
+                  <button onClick={placeOrder} disabled={submitting}
+                    className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
+                    {submitting ? "Placing order…" : "Place order"} {!submitting && <ArrowRight size={14} />}
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -366,6 +437,86 @@ function CheckoutPage() {
           </ul>
         </aside>
       </section>
+
+      {proofOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm" onClick={() => !uploading && setProofOpen(false)}>
+          <div className="w-full max-w-lg bg-background border border-border rounded-[4px] shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">— Proof of payment</p>
+              <button onClick={() => !uploading && setProofOpen(false)} className="text-foreground/55 hover:text-ink" aria-label="Close">
+                <X size={16} />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-5">
+              <p className="text-[12.5px] text-foreground/75 leading-relaxed">
+                Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.
+              </p>
+
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Screenshot</p>
+                {proofPreview ? (
+                  <div className="relative border border-border rounded-[3px] overflow-hidden bg-mist/30">
+                    <img src={proofPreview} alt="Proof preview" className="w-full max-h-64 object-contain" />
+                    <button
+                      type="button"
+                      onClick={() => onPickFile(null)}
+                      className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-1 bg-background/90 border border-border rounded-[3px] text-[10px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-background"
+                    >
+                      <X size={11} /> Remove
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center gap-2 px-4 py-8 border border-dashed border-border rounded-[3px] bg-mist/30 cursor-pointer hover:border-ink/40 transition-colors">
+                    <ImageIcon size={18} className="text-foreground/55" strokeWidth={1.5} />
+                    <span className="text-[12px] text-foreground/70">Click to upload an image</span>
+                    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/45">PNG · JPG · up to 10MB</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
+                    />
+                  </label>
+                )}
+              </div>
+
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Transaction ID (optional)</p>
+                <textarea
+                  value={txId}
+                  onChange={(e) => setTxId(e.target.value)}
+                  rows={2}
+                  placeholder="e.g. 4a5e1e4b… (paste BTC tx hash or note)"
+                  className={`${inp} min-h-[64px] resize-y font-mono text-[12px]`}
+                />
+                <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/45">
+                  — Screenshot or TX ID required (one or both)
+                </p>
+              </div>
+
+              {error && proofOpen && (
+                <p className="text-[12px] text-red-700 font-mono">{error}</p>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-3">
+              <button
+                onClick={() => !uploading && setProofOpen(false)}
+                disabled={uploading}
+                className="h-10 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors disabled:opacity-60"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmProof}
+                disabled={uploading || (!proofFile && !txId.trim())}
+                className="inline-flex items-center gap-2 h-10 px-5 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 transition-all disabled:opacity-60"
+              >
+                {uploading ? "Uploading…" : "Attach & continue"} {!uploading && <Check size={13} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
