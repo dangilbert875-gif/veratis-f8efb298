@@ -35,13 +35,10 @@ const checkoutSchema = z.object({
   payment_tx_id: z.string().max(256).optional().nullable(),
 });
 
-function genOrderNumber() {
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let out = "";
-  for (let i = 0; i < 6; i++) {
-    out += alphabet[Math.floor(Math.random() * alphabet.length)];
-  }
-  return `VTS-${out}`;
+async function nextOrderNumber(): Promise<string> {
+  const { data, error } = await supabaseAdmin.rpc("next_order_number");
+  if (error) throw new Error(error.message);
+  return String(data);
 }
 
 export const createCheckoutOrder = createServerFn({ method: "POST" })
@@ -54,17 +51,8 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const shippingCost = itemsTotal >= 150 ? 0 : 18;
     const total = Math.round((itemsTotal + shippingCost) * 100) / 100;
 
-    // Generate a unique order number (retry on collision)
-    let order_number = genOrderNumber();
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const { data: existing } = await supabaseAdmin
-        .from("orders")
-        .select("id")
-        .eq("order_number", order_number)
-        .maybeSingle();
-      if (!existing) break;
-      order_number = genOrderNumber();
-    }
+    // Sequential order number starting at 1501 (1501, 1502, 1503…)
+    const order_number = await nextOrderNumber();
 
     const btcAddress = STATIC_BTC_ADDRESS;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
