@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { products, categories } from "@/data/products";
+import { categories } from "@/data/products";
+import { useCatalog } from "@/lib/use-catalog";
 import heroVial from "@/assets/hero-vial.jpg";
 import { FlaskConical, ShieldCheck, Lock, ArrowRight, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive } from "lucide-react";
 import { BatchVerify } from "@/components/site/BatchVerify";
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/")({
 function Home() {
   const recentLots = batches.slice(0, 8).map((b) => b.lot);
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
+  const { products } = useCatalog();
 
   return (
     <Layout>

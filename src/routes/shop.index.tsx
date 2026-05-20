@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { products, categories } from "@/data/products";
+import { useCatalog, deriveCategories } from "@/lib/use-catalog";
 import { batches, labPartner } from "@/data/batches";
 import { useState } from "react";
 
@@ -20,6 +20,8 @@ export const Route = createFileRoute("/shop/")({
 
 function ShopPage() {
   const [filter, setFilter] = useState<string>("All");
+  const { products, loading, source } = useCatalog();
+  const categories = deriveCategories(products);
   const filtered = filter === "All" ? products : products.filter((p) => p.category === filter);
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
 
@@ -80,6 +82,11 @@ function ShopPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
           {filtered.map((p) => <ProductCard key={p.slug} p={p} />)}
         </div>
+        {loading && source === "fallback" && (
+          <p className="mt-10 text-center text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/45">
+            Synchronising catalog…
+          </p>
+        )}
       </section>
     </Layout>
   );
