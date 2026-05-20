@@ -47,7 +47,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       (s, i) => s + Number(i.price) * Number(i.quantity),
       0,
     );
-    const shippingCost = data.shipping_method === "express" ? 45 : 18;
+    const shippingCost = itemsTotal >= 150 ? 0 : 18;
     const total = Math.round((itemsTotal + shippingCost) * 100) / 100;
 
     // Generate a unique order number (retry on collision)
