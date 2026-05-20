@@ -502,6 +502,8 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
 
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<any | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   // Lazy init form from server data
   const o = data?.order;
@@ -513,6 +515,9 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
     try {
       await update({ data: { id: orderId, patch } });
       onChanged();
+      toast.success("Saved");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Save failed");
     } finally { setSaving(false); }
   };
 
@@ -530,7 +535,11 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
     await save(patch);
   };
 
-  const alerts = o ? deriveAlerts(o) : [];
+  const copy = (text: string, label: string) => {
+    if (!text) { toast.error(`No ${label}`); return; }
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied`);
+  };
 
   return (
     <div className="fixed inset-0 z-40">
@@ -541,9 +550,10 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
             <div className="text-[10px] tracking-[0.24em] uppercase text-foreground/55">Order</div>
             <div className="mt-0.5 font-mono text-[14px] text-ink">{o?.order_number ?? "…"}</div>
             {o && (
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                 <StatusBadge tone={paymentTone(o.payment_status)}>{humanize(o.payment_status)}</StatusBadge>
                 <StatusBadge tone={fulfillmentTone(o.fulfillment_status)}>{humanize(o.fulfillment_status)}</StatusBadge>
+                {isComplete(o) && <StatusBadge tone="ok">Complete</StatusBadge>}
                 {o.risk_flag && <StatusBadge tone="bad">Flagged</StatusBadge>}
                 {o.archived_at && <StatusBadge tone="neutral">Archived</StatusBadge>}
               </div>
@@ -559,34 +569,62 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
           <div className="p-6 text-[12px] text-foreground/55">Loading…</div>
         ) : (
           <div className="p-5 space-y-5">
-            {alerts.length > 0 && (
-              <div className="border border-amber-700/30 bg-amber-50/30 px-4 py-3">
-                <div className="text-[10px] tracking-[0.2em] uppercase text-amber-900 mb-1.5">Operational alerts</div>
-                <ul className="text-[12px] text-amber-900 space-y-0.5">
-                  {alerts.map((a) => <li key={a} className="flex items-center gap-2"><StatusDot tone="warn" /> {a}</li>)}
-                </ul>
+            {/* A. Order summary */}
+            <Section title="Order summary">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <KV label="Order" value={<span className="font-mono text-[12px]">{o.order_number}</span>} />
+                <KV label="Total" value={formatUSD(o.total_usd)} />
+                <KV label="Created" value={formatDate(o.created_at)} />
+                <KV label="Status" value={isComplete(o) ? <span className="text-emerald-800">Complete</span> : humanize(o.status)} />
               </div>
-            )}
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <Field label="Payment status">
+                  <SelectInput value={form.payment_status ?? "awaiting_payment"} onChange={(e) => set("payment_status", e.target.value)}>
+                    {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+                  </SelectInput>
+                </Field>
+                <Field label="Fulfillment status">
+                  <SelectInput value={form.fulfillment_status ?? "not_started"} onChange={(e) => set("fulfillment_status", e.target.value)}>
+                    {FULFILLMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+                  </SelectInput>
+                </Field>
+              </div>
+              {/* Quick actions */}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <GhostButton onClick={() => save({ payment_status: "confirmed", payment_received_at: new Date().toISOString(), status: "paid" })}>Mark paid</GhostButton>
+                <GhostButton onClick={() => save({ fulfillment_status: "shipped", shipped_at: new Date().toISOString(), status: "shipped" })}>Mark shipped</GhostButton>
+                <GhostButton onClick={() => save({ payment_status: "refunded", status: "refunded" })}>Refund</GhostButton>
+                <GhostButton onClick={() => save({ fulfillment_status: "cancelled", status: "cancelled" })}>Cancel</GhostButton>
+                <div className="relative">
+                  <GhostButton onClick={(e: any) => { e.stopPropagation(); setMoreOpen((v) => !v); }}>More ⋯</GhostButton>
+                  {moreOpen && (
+                    <div className="absolute right-0 top-9 z-20 w-48 border border-ink/15 bg-background shadow-md text-[11.5px]">
+                      {[
+                        [o.risk_flag ? "Unflag" : "Flag", () => save({ risk_flag: !o.risk_flag })],
+                        ["Mark packed", () => save({ fulfillment_status: "packed" })],
+                        ["Mark delivered", () => save({ fulfillment_status: "delivered", delivered_at: new Date().toISOString(), status: "delivered" })],
+                        [o.archived_at ? "Unarchive" : "Archive", () => save({ archived_at: o.archived_at ? null : new Date().toISOString() })],
+                      ].map(([label, fn]) => (
+                        <button
+                          key={label as string}
+                          className="block w-full text-left px-3 py-2 hover:bg-mist/40 text-foreground/80"
+                          onClick={() => { setMoreOpen(false); (fn as any)(); }}
+                        >{label as string}</button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Section>
 
-            {/* Quick actions */}
-            <div className="flex flex-wrap gap-2">
-              <GhostButton onClick={() => save({ payment_status: "confirmed", payment_received_at: new Date().toISOString(), status: "paid" })}>Mark paid</GhostButton>
-              <GhostButton onClick={() => save({ fulfillment_status: "packed" })}>Mark packed</GhostButton>
-              <GhostButton onClick={() => save({ fulfillment_status: "shipped", shipped_at: new Date().toISOString(), status: "shipped" })}>Mark shipped</GhostButton>
-              <GhostButton onClick={() => save({ fulfillment_status: "delivered", delivered_at: new Date().toISOString(), status: "delivered" })}>Mark delivered</GhostButton>
-              <GhostButton onClick={() => save({ fulfillment_status: "cancelled", status: "cancelled" })}>Cancel</GhostButton>
-              <GhostButton onClick={() => save({ payment_status: "refunded", status: "refunded" })}>Refund</GhostButton>
-              <GhostButton onClick={() => save({ risk_flag: !o.risk_flag })}>{o.risk_flag ? "Unflag" : "Flag"}</GhostButton>
-              <GhostButton onClick={() => save({ archived_at: o.archived_at ? null : new Date().toISOString() })}>{o.archived_at ? "Unarchive" : "Archive"}</GhostButton>
-            </div>
-
+            {/* B. Customer */}
             <Section title="Customer">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Name"><TextInput value={form.customer_name ?? ""} onChange={(e) => set("customer_name", e.target.value)} /></Field>
                 <Field label="Email">
                   <div className="flex gap-2">
                     <TextInput value={o.customer_email ?? ""} readOnly />
-                    <GhostButton type="button" onClick={() => navigator.clipboard.writeText(o.customer_email ?? "")}>Copy</GhostButton>
+                    <GhostButton type="button" onClick={() => copy(o.customer_email ?? "", "Email")}>Copy</GhostButton>
                   </div>
                 </Field>
               </div>
@@ -599,12 +637,14 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
               )}
             </Section>
 
+            {/* C. Shipping */}
             <Section title="Shipping">
               <div className="grid grid-cols-2 gap-3">
                 <Field label="Recipient"><TextInput value={form.shipping_name ?? ""} onChange={(e) => set("shipping_name", e.target.value)} /></Field>
-                <Field label="Method"><TextInput value={form.shipping_method ?? ""} onChange={(e) => set("shipping_method", e.target.value)} placeholder="Standard / Express" /></Field>
                 <Field label="Address line 1"><TextInput value={form.shipping_address_1 ?? ""} onChange={(e) => set("shipping_address_1", e.target.value)} /></Field>
-                <Field label="Address line 2"><TextInput value={form.shipping_address_2 ?? ""} onChange={(e) => set("shipping_address_2", e.target.value)} /></Field>
+                {form.shipping_address_2 ? (
+                  <Field label="Address line 2"><TextInput value={form.shipping_address_2 ?? ""} onChange={(e) => set("shipping_address_2", e.target.value)} /></Field>
+                ) : null}
                 <Field label="City"><TextInput value={form.shipping_city ?? ""} onChange={(e) => set("shipping_city", e.target.value)} /></Field>
                 <Field label="State / Region"><TextInput value={form.shipping_state ?? ""} onChange={(e) => set("shipping_state", e.target.value)} /></Field>
                 <Field label="ZIP / Postal"><TextInput value={form.shipping_zip ?? ""} onChange={(e) => set("shipping_zip", e.target.value)} /></Field>
@@ -615,85 +655,104 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                     {["USPS","UPS","FedEx","DHL","Other"].map((c) => <option key={c} value={c}>{c}</option>)}
                   </SelectInput>
                 </Field>
-                <Field label="Tracking number"><TextInput value={form.tracking_number ?? ""} onChange={(e) => set("tracking_number", e.target.value)} /></Field>
-                <Field label="Shipped at"><TextInput type="datetime-local" value={toLocal(form.shipped_at)} onChange={(e) => set("shipped_at", fromLocal(e.target.value))} /></Field>
-                <Field label="Delivered at"><TextInput type="datetime-local" value={toLocal(form.delivered_at)} onChange={(e) => set("delivered_at", fromLocal(e.target.value))} /></Field>
+                <Field label="Tracking number">
+                  <div className="flex gap-2">
+                    <TextInput value={form.tracking_number ?? ""} onChange={(e) => set("tracking_number", e.target.value)} />
+                    <GhostButton type="button" onClick={() => copy(form.tracking_number ?? "", "Tracking")}>Copy</GhostButton>
+                  </div>
+                </Field>
               </div>
-              <div className="mt-2 flex gap-2">
-                <GhostButton type="button" onClick={() => navigator.clipboard.writeText(shipAddress(form))}>Copy full address</GhostButton>
+              <div className="mt-3 flex gap-2">
+                <GhostButton type="button" onClick={() => copy(shipAddress(form), "Address")}>Copy full address</GhostButton>
+                {!form.shipping_address_2 && (
+                  <GhostButton type="button" onClick={() => set("shipping_address_2", " ")}>+ Address line 2</GhostButton>
+                )}
               </div>
             </Section>
 
+            {/* D. BTC payment */}
+            <Section title="BTC payment">
+              <div className="grid grid-cols-2 gap-3">
+                <KV label="USD total" value={formatUSD(o.total_usd)} />
+                <KV label="BTC amount" value={form.btc_amount ?? "—"} />
+                <KV label="Payment status" value={<span className={paymentTone(o.payment_status) === "ok" ? "text-emerald-800" : ""}>{humanize(o.payment_status)}</span>} />
+                <KV label="Received at" value={o.payment_received_at ? formatDate(o.payment_received_at) : "—"} />
+              </div>
+              <div className="mt-3">
+                <Field label="Transaction hash">
+                  <div className="flex gap-2">
+                    <TextInput value={form.btc_tx_hash ?? ""} onChange={(e) => set("btc_tx_hash", e.target.value)} className="font-mono !text-[11.5px]" />
+                    <GhostButton type="button" onClick={() => copy(form.btc_tx_hash ?? "", "Tx hash")}>Copy</GhostButton>
+                  </div>
+                </Field>
+              </div>
+            </Section>
+
+            {/* E. Items */}
             <Section title="Order items">
               {data.items.length === 0 ? (
-                <div className="text-[12px] text-foreground/50 px-3 py-4 border border-dashed border-ink/15">
-                  No line items recorded. Items may live in the legacy <code>items</code> field.
-                </div>
+                <div className="text-[11.5px] text-foreground/45 py-2">No items.</div>
               ) : (
                 <table className="w-full text-[12px]">
                   <thead className="text-[10px] tracking-[0.16em] uppercase text-foreground/55 border-b border-ink/10">
                     <tr>
                       <th className="text-left py-2">Product</th>
-                      <th className="text-left py-2">Lot</th>
                       <th className="text-right py-2">Qty</th>
-                      <th className="text-right py-2">Unit</th>
-                      <th className="text-right py-2">Subtotal</th>
+                      <th className="text-right py-2">Price</th>
+                      <th className="text-left py-2">Lot</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.items.map((it: any) => (
                       <tr key={it.id} className="border-b border-ink/5">
-                        <td className="py-2">
-                          <div className="text-ink">{it.product_name ?? it.product_id}</div>
-                          {it.coa_url && <a href={it.coa_url} target="_blank" rel="noreferrer" className="text-[10.5px] underline text-foreground/55 hover:text-ink">COA</a>}
-                        </td>
-                        <td className="py-2 font-mono text-[11px]">{it.lot_number ?? "—"}</td>
+                        <td className="py-2 text-ink">{it.product_name ?? it.product_id}</td>
                         <td className="py-2 text-right tabular-nums">{it.quantity}</td>
                         <td className="py-2 text-right tabular-nums">{formatUSD(it.unit_price)}</td>
-                        <td className="py-2 text-right tabular-nums">{formatUSD(Number(it.unit_price) * Number(it.quantity))}</td>
+                        <td className="py-2 font-mono text-[11px] text-foreground/65">{it.lot_number ?? "—"}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               )}
-              <div className="mt-3 flex items-center justify-between border-t border-ink/10 pt-3 text-[12.5px]">
-                <span className="text-foreground/55 tracking-[0.16em] uppercase text-[10.5px]">Order total</span>
-                <span className="font-medium tabular-nums">{formatUSD(o.total_usd)}</span>
-              </div>
             </Section>
 
-            <Section title="BTC payment">
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Payment status">
-                  <SelectInput value={form.payment_status ?? "awaiting_payment"} onChange={(e) => set("payment_status", e.target.value)}>
-                    {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
-                  </SelectInput>
-                </Field>
-                <Field label="Fulfillment status">
-                  <SelectInput value={form.fulfillment_status ?? "not_started"} onChange={(e) => set("fulfillment_status", e.target.value)}>
-                    {FULFILLMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
-                  </SelectInput>
-                </Field>
-                <Field label="BTC amount"><TextInput type="number" step="0.00000001" value={form.btc_amount ?? ""} onChange={(e) => set("btc_amount", e.target.value ? Number(e.target.value) : null)} /></Field>
-                <Field label="BTC address"><TextInput value={form.btc_address ?? ""} onChange={(e) => set("btc_address", e.target.value)} /></Field>
-                <Field label="Transaction hash"><TextInput value={form.btc_tx_hash ?? ""} onChange={(e) => set("btc_tx_hash", e.target.value)} /></Field>
-                <Field label="Confirmations"><TextInput type="number" min="0" value={form.btc_confirmations ?? 0} onChange={(e) => set("btc_confirmations", Number(e.target.value || 0))} /></Field>
-                <Field label="Received at"><TextInput type="datetime-local" value={toLocal(form.payment_received_at)} onChange={(e) => set("payment_received_at", fromLocal(e.target.value))} /></Field>
-                <Field label="Expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
-              </div>
-            </Section>
-
-            <Section title="Operational notes">
-              <Field label="Order-level note (visible on order record)">
+            {/* F. Notes */}
+            <Section title="Notes">
+              <Field label="Internal note">
                 <textarea
                   className="w-full min-h-[60px] p-3 text-[13px] border border-ink/15 bg-background focus:border-ink/40 outline-none"
                   value={form.internal_notes ?? ""}
                   onChange={(e) => set("internal_notes", e.target.value)}
                 />
               </Field>
+              <div className="mt-4">
+                <InternalNotes entityType="order" entityId={orderId} />
+              </div>
             </Section>
 
-            <InternalNotes entityType="order" entityId={orderId} />
+            {/* G. Advanced */}
+            <section className="border border-ink/10 bg-background">
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen((v) => !v)}
+                className="w-full px-4 py-2.5 border-b border-ink/10 text-[10.5px] tracking-[0.22em] uppercase text-foreground/65 flex items-center justify-between hover:bg-mist/20"
+              >
+                <span>Advanced details</span>
+                <span className="text-foreground/45">{advancedOpen ? "−" : "+"}</span>
+              </button>
+              {advancedOpen && (
+                <div className="p-4 grid grid-cols-2 gap-3">
+                  <Field label="Shipping method"><TextInput value={form.shipping_method ?? ""} onChange={(e) => set("shipping_method", e.target.value)} placeholder="Standard / Express" /></Field>
+                  <Field label="Shipped at"><TextInput type="datetime-local" value={toLocal(form.shipped_at)} onChange={(e) => set("shipped_at", fromLocal(e.target.value))} /></Field>
+                  <Field label="Delivered at"><TextInput type="datetime-local" value={toLocal(form.delivered_at)} onChange={(e) => set("delivered_at", fromLocal(e.target.value))} /></Field>
+                  <Field label="BTC amount"><TextInput type="number" step="0.00000001" value={form.btc_amount ?? ""} onChange={(e) => set("btc_amount", e.target.value ? Number(e.target.value) : null)} /></Field>
+                  <Field label="BTC address"><TextInput value={form.btc_address ?? ""} onChange={(e) => set("btc_address", e.target.value)} /></Field>
+                  <Field label="Confirmations"><TextInput type="number" min="0" value={form.btc_confirmations ?? 0} onChange={(e) => set("btc_confirmations", Number(e.target.value || 0))} /></Field>
+                  <Field label="Payment received at"><TextInput type="datetime-local" value={toLocal(form.payment_received_at)} onChange={(e) => set("payment_received_at", fromLocal(e.target.value))} /></Field>
+                  <Field label="Payment expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
+                </div>
+              )}
+            </section>
           </div>
         )}
       </aside>
