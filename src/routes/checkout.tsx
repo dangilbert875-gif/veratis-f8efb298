@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder } from "@/lib/checkout.functions";
-import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft } from "lucide-react";
+import { createCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
+import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check } from "lucide-react";
+
+const BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -46,6 +48,32 @@ function CheckoutPage() {
   const FREE_SHIPPING_THRESHOLD = 150;
   const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 18;
   const total = subtotal + shippingCost;
+
+  const fetchRate = useServerFn(getBtcUsdRate);
+  const [btcRate, setBtcRate] = useState<number | null>(null);
+  const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
+  const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const r = await fetchRate();
+        if (!cancelled && r?.rate) {
+          setBtcRate(r.rate);
+          setRateFetchedAt(r.fetched_at);
+        }
+      } catch {}
+    }
+    load();
+    const id = setInterval(load, 60_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [fetchRate]);
+  const btcAmount = btcRate && total > 0 ? (total / btcRate).toFixed(8) : null;
+  function copyVal(kind: "addr" | "amt", value: string) {
+    navigator.clipboard?.writeText(value);
+    setCopied(kind);
+    setTimeout(() => setCopied(null), 1400);
+  }
 
   if (items.length === 0) {
     return (
@@ -221,10 +249,56 @@ function CheckoutPage() {
                 <p>Standard cold-chain · {shippingCost === 0 ? "Free" : `$${shippingCost}`}</p>
               </Review>
               <Review label="Payment method">
-                <p>Bitcoin (BTC)</p>
-                <p className="text-foreground/70 text-[11px] mt-1">
-                  Payment address and exact BTC amount will be issued on the next screen.
-                </p>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Bitcoin size={14} className="text-ink/70" strokeWidth={1.5} />
+                    <p>Bitcoin (BTC)</p>
+                  </div>
+                  <p className="text-foreground/75 text-[12px] leading-relaxed">
+                    Send{" "}
+                    <strong className="text-ink font-mono">
+                      {btcAmount ? `${btcAmount} BTC` : `the BTC equivalent of $${total.toFixed(2)}`}
+                    </strong>{" "}
+                    to the address below. Your order ships within 48 hours of on-chain confirmation.
+                  </p>
+
+                  <div>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— BTC address</p>
+                    <button
+                      type="button"
+                      onClick={() => copyVal("addr", BTC_ADDRESS)}
+                      className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                    >
+                      <span className="text-[12.5px] text-ink break-all font-mono">{BTC_ADDRESS}</span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+                        {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                      </span>
+                    </button>
+                  </div>
+
+                  {btcAmount && (
+                    <div>
+                      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Exact amount</p>
+                      <button
+                        type="button"
+                        onClick={() => copyVal("amt", btcAmount)}
+                        className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                      >
+                        <span className="text-[12.5px] text-ink break-all font-mono">{btcAmount} BTC</span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+                          {copied === "amt" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                        </span>
+                      </button>
+                    </div>
+                  )}
+
+                  <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
+                    — {btcRate
+                      ? `Rate: 1 BTC = $${btcRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot`
+                      : "Fetching live BTC/USD rate from Coinbase…"}
+                    {rateFetchedAt && btcRate ? ` · ${new Date(rateFetchedAt).toLocaleTimeString()}` : ""}
+                  </p>
+                </div>
               </Review>
             </Panel>
           )}
