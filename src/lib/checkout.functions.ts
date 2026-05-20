@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
+
 const itemSchema = z.object({
   slug: z.string().min(1).max(128),
   name: z.string().min(1).max(256),
@@ -62,7 +64,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       order_number = genOrderNumber();
     }
 
-    const btcAddress = process.env.BTC_PAYMENT_ADDRESS ?? null;
+    const btcAddress = STATIC_BTC_ADDRESS;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     const { data: order, error } = await supabaseAdmin
@@ -130,5 +132,23 @@ export const getCheckoutOrder = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!order) throw new Error("Order not found");
-    return order;
+    return { ...order, btc_address: order.btc_address ?? STATIC_BTC_ADDRESS };
   });
+
+export const getBtcUsdRate = createServerFn({ method: "GET" }).handler(
+  async () => {
+    try {
+      const res = await fetch(
+        "https://api.coinbase.com/v2/prices/BTC-USD/spot",
+        { headers: { Accept: "application/json" } },
+      );
+      if (!res.ok) throw new Error(`Coinbase ${res.status}`);
+      const json = (await res.json()) as { data?: { amount?: string } };
+      const rate = Number(json?.data?.amount);
+      if (!Number.isFinite(rate) || rate <= 0) throw new Error("bad rate");
+      return { rate, fetched_at: new Date().toISOString() };
+    } catch (e) {
+      return { rate: null as number | null, fetched_at: new Date().toISOString(), error: (e as Error).message };
+    }
+  },
+);
