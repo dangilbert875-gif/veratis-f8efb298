@@ -331,26 +331,35 @@ export type Database = {
       }
       order_items: {
         Row: {
+          coa_url: string | null
           created_at: string
           id: string
+          lot_number: string | null
           order_id: string
           product_id: string | null
+          product_name: string | null
           quantity: number
           unit_price: number
         }
         Insert: {
+          coa_url?: string | null
           created_at?: string
           id?: string
+          lot_number?: string | null
           order_id: string
           product_id?: string | null
+          product_name?: string | null
           quantity?: number
           unit_price?: number
         }
         Update: {
+          coa_url?: string | null
           created_at?: string
           id?: string
+          lot_number?: string | null
           order_id?: string
           product_id?: string | null
+          product_name?: string | null
           quantity?: number
           unit_price?: number
         }
@@ -376,20 +385,37 @@ export type Database = {
           archived_at: string | null
           btc_address: string | null
           btc_amount: number | null
+          btc_confirmations: number
+          btc_tx_hash: string | null
+          carrier: string | null
           created_at: string
           created_by: string | null
           customer_email: string
           customer_id: string | null
+          customer_name: string | null
+          delivered_at: string | null
+          fulfillment_status: string
           id: string
           internal_notes: string | null
           invoice_number: string | null
           items: Json
           notes: string | null
           order_number: string
+          payment_expires_at: string | null
           payment_method: string | null
+          payment_received_at: string | null
           payment_status: string
           risk_flag: boolean
+          shipped_at: string | null
+          shipping_address_1: string | null
+          shipping_address_2: string | null
+          shipping_city: string | null
+          shipping_country: string | null
+          shipping_method: string | null
+          shipping_name: string | null
+          shipping_state: string | null
           shipping_status: string
+          shipping_zip: string | null
           status: Database["public"]["Enums"]["order_status"]
           total_usd: number
           tracking_number: string | null
@@ -401,20 +427,37 @@ export type Database = {
           archived_at?: string | null
           btc_address?: string | null
           btc_amount?: number | null
+          btc_confirmations?: number
+          btc_tx_hash?: string | null
+          carrier?: string | null
           created_at?: string
           created_by?: string | null
           customer_email: string
           customer_id?: string | null
+          customer_name?: string | null
+          delivered_at?: string | null
+          fulfillment_status?: string
           id?: string
           internal_notes?: string | null
           invoice_number?: string | null
           items?: Json
           notes?: string | null
           order_number: string
+          payment_expires_at?: string | null
           payment_method?: string | null
+          payment_received_at?: string | null
           payment_status?: string
           risk_flag?: boolean
+          shipped_at?: string | null
+          shipping_address_1?: string | null
+          shipping_address_2?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_method?: string | null
+          shipping_name?: string | null
+          shipping_state?: string | null
           shipping_status?: string
+          shipping_zip?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total_usd?: number
           tracking_number?: string | null
@@ -426,20 +469,37 @@ export type Database = {
           archived_at?: string | null
           btc_address?: string | null
           btc_amount?: number | null
+          btc_confirmations?: number
+          btc_tx_hash?: string | null
+          carrier?: string | null
           created_at?: string
           created_by?: string | null
           customer_email?: string
           customer_id?: string | null
+          customer_name?: string | null
+          delivered_at?: string | null
+          fulfillment_status?: string
           id?: string
           internal_notes?: string | null
           invoice_number?: string | null
           items?: Json
           notes?: string | null
           order_number?: string
+          payment_expires_at?: string | null
           payment_method?: string | null
+          payment_received_at?: string | null
           payment_status?: string
           risk_flag?: boolean
+          shipped_at?: string | null
+          shipping_address_1?: string | null
+          shipping_address_2?: string | null
+          shipping_city?: string | null
+          shipping_country?: string | null
+          shipping_method?: string | null
+          shipping_name?: string | null
+          shipping_state?: string | null
           shipping_status?: string
+          shipping_zip?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total_usd?: number
           tracking_number?: string | null

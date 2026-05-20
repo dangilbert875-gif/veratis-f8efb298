@@ -123,9 +123,124 @@ export const listOrders = createServerFn({ method: "GET" })
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false })
-      .limit(200);
+      .limit(500);
     if (error) throw new Error(error.message);
     return data ?? [];
+  });
+
+export const getOrderDetail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const { data: order, error } = await supabase
+      .from("orders").select("*").eq("id", data.id).maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!order) throw new Error("Order not found");
+
+    const { data: items } = await supabase
+      .from("order_items").select("*").eq("order_id", data.id);
+
+    let customerStats: any = null;
+    if (order.customer_id || order.user_id) {
+      const cid = order.customer_id ?? order.user_id;
+      const { data: hist } = await supabase
+        .from("orders")
+        .select("id, total_usd, created_at, status")
+        .or(`customer_id.eq.${cid},user_id.eq.${cid}`);
+      const rows = hist ?? [];
+      customerStats = {
+        total_orders: rows.length,
+        lifetime_spend: rows
+          .filter((r: any) => ["paid","shipped","delivered"].includes(r.status))
+          .reduce((s: number, r: any) => s + Number(r.total_usd ?? 0), 0),
+        first_order_at: rows.length
+          ? rows.map((r: any) => r.created_at).sort()[0]
+          : null,
+      };
+    }
+
+    return { order, items: items ?? [], customerStats };
+  });
+
+const orderPatchInput = z.object({
+  id: z.string().uuid(),
+  patch: z.object({
+    payment_status: z.string().max(32).optional(),
+    fulfillment_status: z.string().max(32).optional(),
+    status: z.enum(["pending","awaiting_payment","paid","shipped","delivered","cancelled","refunded"]).optional(),
+    risk_flag: z.boolean().optional(),
+    tracking_number: z.string().max(128).nullable().optional(),
+    carrier: z.string().max(64).nullable().optional(),
+    shipping_method: z.string().max(64).nullable().optional(),
+    shipped_at: z.string().nullable().optional(),
+    delivered_at: z.string().nullable().optional(),
+    payment_received_at: z.string().nullable().optional(),
+    payment_expires_at: z.string().nullable().optional(),
+    btc_tx_hash: z.string().max(128).nullable().optional(),
+    btc_confirmations: z.number().int().min(0).optional(),
+    btc_amount: z.number().nullable().optional(),
+    btc_address: z.string().max(128).nullable().optional(),
+    customer_name: z.string().max(128).nullable().optional(),
+    shipping_name: z.string().max(128).nullable().optional(),
+    shipping_address_1: z.string().max(256).nullable().optional(),
+    shipping_address_2: z.string().max(256).nullable().optional(),
+    shipping_city: z.string().max(128).nullable().optional(),
+    shipping_state: z.string().max(64).nullable().optional(),
+    shipping_zip: z.string().max(32).nullable().optional(),
+    shipping_country: z.string().max(64).nullable().optional(),
+    internal_notes: z.string().max(4096).nullable().optional(),
+    archived_at: z.string().nullable().optional(),
+  }),
+});
+
+export const patchOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => orderPatchInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase
+      .from("orders")
+      .update({ ...data.patch, updated_at: new Date().toISOString() })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+const bulkOrderInput = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(200),
+  action: z.enum([
+    "mark_processing","mark_packed","mark_shipped","mark_delivered",
+    "mark_paid","archive","unarchive","delete",
+  ]),
+});
+
+export const bulkOrderAction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => bulkOrderInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+    const now = new Date().toISOString();
+    let patch: Record<string, any> = {};
+    if (data.action === "mark_processing") patch = { fulfillment_status: "processing" };
+    else if (data.action === "mark_packed") patch = { fulfillment_status: "packed" };
+    else if (data.action === "mark_shipped") patch = { fulfillment_status: "shipped", shipped_at: now, status: "shipped" };
+    else if (data.action === "mark_delivered") patch = { fulfillment_status: "delivered", delivered_at: now, status: "delivered" };
+    else if (data.action === "mark_paid") patch = { payment_status: "confirmed", payment_received_at: now, status: "paid" };
+    else if (data.action === "archive") patch = { archived_at: now };
+    else if (data.action === "unarchive") patch = { archived_at: null };
+    else if (data.action === "delete") {
+      const { error } = await supabase.from("orders").delete().in("id", data.ids);
+      if (error) throw new Error(error.message);
+      return { ok: true, count: data.ids.length };
+    }
+    patch.updated_at = now;
+    const { error } = await supabase.from("orders").update(patch).in("id", data.ids);
+    if (error) throw new Error(error.message);
+    return { ok: true, count: data.ids.length };
   });
 
 const orderInput = z.object({
