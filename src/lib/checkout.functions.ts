@@ -1,0 +1,134 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+const itemSchema = z.object({
+  slug: z.string().min(1).max(128),
+  name: z.string().min(1).max(256),
+  size: z.string().max(64).optional().default(""),
+  lot: z.string().max(64).optional().default(""),
+  price: z.number().min(0).max(100000),
+  quantity: z.number().int().min(1).max(50),
+});
+
+const checkoutSchema = z.object({
+  customer: z.object({
+    email: z.string().email().max(255),
+    name: z.string().min(1).max(128),
+    phone: z.string().max(32).optional().default(""),
+  }),
+  shipping: z.object({
+    name: z.string().min(1).max(128),
+    address_1: z.string().min(1).max(256),
+    address_2: z.string().max(256).optional().default(""),
+    city: z.string().min(1).max(128),
+    state: z.string().min(1).max(64),
+    zip: z.string().min(1).max(32),
+    country: z.string().min(1).max(64),
+  }),
+  shipping_method: z.enum(["standard", "express"]),
+  notes: z.string().max(1024).optional().default(""),
+  items: z.array(itemSchema).min(1).max(50),
+});
+
+function genOrderNumber() {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < 6; i++) {
+    out += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return `VTS-${out}`;
+}
+
+export const createCheckoutOrder = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => checkoutSchema.parse(d))
+  .handler(async ({ data }) => {
+    const itemsTotal = data.items.reduce(
+      (s, i) => s + Number(i.price) * Number(i.quantity),
+      0,
+    );
+    const shippingCost = data.shipping_method === "express" ? 45 : 18;
+    const total = Math.round((itemsTotal + shippingCost) * 100) / 100;
+
+    // Generate a unique order number (retry on collision)
+    let order_number = genOrderNumber();
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { data: existing } = await supabaseAdmin
+        .from("orders")
+        .select("id")
+        .eq("order_number", order_number)
+        .maybeSingle();
+      if (!existing) break;
+      order_number = genOrderNumber();
+    }
+
+    const btcAddress = process.env.BTC_PAYMENT_ADDRESS ?? null;
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .insert({
+        order_number,
+        customer_email: data.customer.email.trim().toLowerCase(),
+        customer_name: data.customer.name.trim(),
+        status: "awaiting_payment",
+        payment_status: "pending",
+        payment_method: "btc",
+        fulfillment_status: "not_started",
+        total_usd: total,
+        btc_address: btcAddress,
+        payment_expires_at: expiresAt,
+        shipping_name: data.shipping.name.trim(),
+        shipping_address_1: data.shipping.address_1.trim(),
+        shipping_address_2: data.shipping.address_2?.trim() || null,
+        shipping_city: data.shipping.city.trim(),
+        shipping_state: data.shipping.state.trim(),
+        shipping_zip: data.shipping.zip.trim(),
+        shipping_country: data.shipping.country.trim(),
+        shipping_method: data.shipping_method,
+        notes: data.notes?.trim() || null,
+        items: data.items as any,
+      })
+      .select("id, order_number")
+      .single();
+
+    if (error) throw new Error(error.message);
+
+    // Best-effort line items
+    if (order?.id) {
+      await supabaseAdmin.from("order_items").insert(
+        data.items.map((i) => ({
+          order_id: order.id,
+          product_name: i.name,
+          lot_number: i.lot || null,
+          quantity: i.quantity,
+          unit_price: i.price,
+        })),
+      );
+    }
+
+    return {
+      order_number: order!.order_number,
+      total_usd: total,
+      shipping_cost: shippingCost,
+      btc_address: btcAddress,
+      expires_at: expiresAt,
+    };
+  });
+
+export const getCheckoutOrder = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ order_number: z.string().min(3).max(32) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .select(
+        "order_number, customer_email, customer_name, status, payment_status, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
+      )
+      .eq("order_number", data.order_number.toUpperCase())
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!order) throw new Error("Order not found");
+    return order;
+  });
