@@ -316,23 +316,23 @@ function CheckoutPage() {
                   </p>
 
                   <div>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— BTC address</p>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan or copy BTC address</p>
                     <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
-                      <div className="self-center sm:self-auto shrink-0 p-2 bg-white border border-border rounded-[3px]">
+                      <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
                         <img
                           src={btcQr}
                           alt={`Bitcoin payment QR code for ${BTC_ADDRESS}`}
-                          className="w-[160px] h-[160px] sm:w-[112px] sm:h-[112px] block"
+                          className="w-[200px] h-[200px] sm:w-[120px] sm:h-[120px] block"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => copyVal("addr", BTC_ADDRESS)}
-                        className="group w-full sm:flex-1 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                        className="group w-full sm:flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left min-h-[56px]"
                       >
-                        <span className="text-[12.5px] text-ink break-all font-mono">{BTC_ADDRESS}</span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
-                          {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                        <span className="text-[12.5px] text-ink break-all font-mono leading-relaxed">{BTC_ADDRESS}</span>
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0 self-end sm:self-auto">
+                          {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Tap to copy</>}
                         </span>
                       </button>
                     </div>
@@ -369,24 +369,24 @@ function CheckoutPage() {
             <p className="mt-4 text-[12px] text-red-700 font-mono">{error}</p>
           )}
 
-          <div className="mt-8 flex items-center justify-between gap-4">
+          <div className="mt-8 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
             {step > 1 ? (
               <button onClick={() => setStep((step - 1) as Step)}
-                className="inline-flex items-center gap-2 h-11 px-5 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors">
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors">
                 <ArrowLeft size={14} /> Back
               </button>
-            ) : <span />}
+            ) : <span className="hidden sm:block" />}
             {step < 3 ? (
               <button onClick={next}
-                className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all">
+                className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all">
                 Continue <ArrowRight size={14} />
               </button>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
                 {proofConfirmed && (
                   <button
                     onClick={() => setProofOpen(true)}
-                    className="inline-flex items-center gap-2 h-11 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink border border-border rounded-[3px] transition-colors"
+                    className="inline-flex items-center justify-center gap-2 h-11 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink border border-border rounded-[3px] transition-colors"
                   >
                     <Check size={12} className="text-emerald-700" /> Proof attached · Edit
                   </button>
@@ -394,13 +394,13 @@ function CheckoutPage() {
                 {!proofConfirmed ? (
                   <button
                     onClick={() => setProofOpen(true)}
-                    className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
                   >
-                    <Upload size={14} /> Upload Proof of Payment
+                    <Upload size={14} /> I've sent payment — upload proof
                   </button>
                 ) : (
                   <button onClick={placeOrder} disabled={submitting}
-                    className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
                     {submitting ? "Placing order…" : "Place order"} {!submitting && <ArrowRight size={14} />}
                   </button>
                 )}
