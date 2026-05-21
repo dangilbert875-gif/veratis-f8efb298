@@ -19,7 +19,6 @@ import { Route as ResearchUseRouteImport } from './routes/research-use'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PaymentPolicyRouteImport } from './routes/payment-policy'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as LabTestingRouteImport } from './routes/lab-testing'
 import { Route as HowToPayRouteImport } from './routes/how-to-pay'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -93,11 +92,6 @@ const PaymentPolicyRoute = PaymentPolicyRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LabTestingRoute = LabTestingRouteImport.update({
-  id: '/lab-testing',
-  path: '/lab-testing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HowToPayRoute = HowToPayRouteImport.update({
@@ -235,7 +229,6 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
-  '/lab-testing': typeof LabTestingRoute
   '/login': typeof LoginRoute
   '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
@@ -272,7 +265,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
-  '/lab-testing': typeof LabTestingRoute
   '/login': typeof LoginRoute
   '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
@@ -310,7 +302,6 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/how-to-pay': typeof HowToPayRoute
-  '/lab-testing': typeof LabTestingRoute
   '/login': typeof LoginRoute
   '/payment-policy': typeof PaymentPolicyRoute
   '/privacy': typeof PrivacyRoute
@@ -349,7 +340,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/how-to-pay'
-    | '/lab-testing'
     | '/login'
     | '/payment-policy'
     | '/privacy'
@@ -386,7 +376,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/how-to-pay'
-    | '/lab-testing'
     | '/login'
     | '/payment-policy'
     | '/privacy'
@@ -423,7 +412,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/faq'
     | '/how-to-pay'
-    | '/lab-testing'
     | '/login'
     | '/payment-policy'
     | '/privacy'
@@ -461,7 +449,6 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   HowToPayRoute: typeof HowToPayRoute
-  LabTestingRoute: typeof LabTestingRoute
   LoginRoute: typeof LoginRoute
   PaymentPolicyRoute: typeof PaymentPolicyRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -553,13 +540,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lab-testing': {
-      id: '/lab-testing'
-      path: '/lab-testing'
-      fullPath: '/lab-testing'
-      preLoaderRoute: typeof LabTestingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/how-to-pay': {
@@ -781,7 +761,6 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   HowToPayRoute: HowToPayRoute,
-  LabTestingRoute: LabTestingRoute,
   LoginRoute: LoginRoute,
   PaymentPolicyRoute: PaymentPolicyRoute,
   PrivacyRoute: PrivacyRoute,

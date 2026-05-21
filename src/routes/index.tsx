@@ -75,11 +75,11 @@ function Home() {
                 <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
               </Link>
               <Link
-                to="/lab-testing"
+                to="/coa-archive"
                 className="group inline-flex items-center gap-2 border border-border bg-background px-6 py-4 rounded-md text-[13px] font-medium tracking-wide text-ink hover:border-ink/30 hover:bg-mist transition"
               >
                 <ShieldCheck size={15} className="text-primary" strokeWidth={2} />
-                View lab results
+                View COA archive
               </Link>
             </div>
             <ul className="mt-7 md:mt-8 flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-[11.5px] sm:text-[12px] text-muted-foreground">

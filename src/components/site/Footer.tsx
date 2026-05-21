@@ -75,7 +75,6 @@ export function Footer() {
           ["Verify a batch", "/verify"],
           ["COA archive", "/coa-archive"],
           ["Testing standards", "/standards"],
-          ["Lab partner", "/lab-testing"],
         ]} />
         <FooterCol title="Standards" links={[
           ["Privacy policy", "/privacy"],
