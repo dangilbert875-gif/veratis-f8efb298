@@ -3,9 +3,12 @@ import { Layout, PageHeader } from "@/components/site/Layout";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useCatalog, deriveCategories } from "@/lib/use-catalog";
 import { batches, labPartner } from "@/data/batches";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/shop/")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Shop Peptides — VERATIS" },
@@ -19,9 +22,21 @@ export const Route = createFileRoute("/shop/")({
 });
 
 function ShopPage() {
-  const [filter, setFilter] = useState<string>("All");
+  const { category } = Route.useSearch();
   const { products, loading, source } = useCatalog();
   const categories = deriveCategories(products);
+  // Match search param case-insensitively against derived category names
+  const initial = (() => {
+    if (!category) return "All";
+    const match = categories.find(
+      (c) => c.name.toLowerCase() === category.toLowerCase(),
+    );
+    return match?.name ?? "All";
+  })();
+  const [filter, setFilter] = useState<string>(initial);
+  useEffect(() => {
+    setFilter(initial);
+  }, [initial]);
   const filtered = filter === "All" ? products : products.filter((p) => p.category === filter);
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
 
