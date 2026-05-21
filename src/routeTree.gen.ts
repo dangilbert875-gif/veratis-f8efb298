@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as StandardsRouteImport } from './routes/standards'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -45,6 +46,11 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/verify': typeof VerifyRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -260,6 +267,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/verify': typeof VerifyRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -295,6 +303,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/standards': typeof StandardsRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/verify': typeof VerifyRoute
   '/admin/account': typeof AdminAccountRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -331,6 +340,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/standards'
     | '/terms'
+    | '/unsubscribe'
     | '/verify'
     | '/admin/account'
     | '/admin/dashboard'
@@ -365,6 +375,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/standards'
     | '/terms'
+    | '/unsubscribe'
     | '/verify'
     | '/admin/account'
     | '/admin/dashboard'
@@ -399,6 +410,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/standards'
     | '/terms'
+    | '/unsubscribe'
     | '/verify'
     | '/admin/account'
     | '/admin/dashboard'
@@ -434,6 +446,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StandardsRoute: typeof StandardsRoute
   TermsRoute: typeof TermsRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   VerifyRoute: typeof VerifyRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ShopSlugRoute: typeof ShopSlugRoute
@@ -451,6 +464,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -730,6 +750,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StandardsRoute: StandardsRoute,
   TermsRoute: TermsRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   VerifyRoute: VerifyRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ShopSlugRoute: ShopSlugRoute,
