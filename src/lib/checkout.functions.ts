@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 
@@ -99,6 +100,37 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
           unit_price: i.price,
         })),
       );
+    }
+
+    // Best-effort order confirmation email — never fail the order if email errors.
+    try {
+      const siteOrigin =
+        process.env.SITE_URL || "https://veratis.lovable.app";
+      await enqueueTransactionalEmail({
+        templateName: "order-confirmation",
+        recipientEmail: data.customer.email,
+        idempotencyKey: `order-confirmation-${order!.order_number}`,
+        templateData: {
+          orderNumber: order!.order_number,
+          customerName: data.customer.name,
+          items: data.items,
+          subtotal: itemsTotal,
+          shipping: shippingCost,
+          total,
+          shippingAddress: {
+            name: data.shipping.name,
+            address_1: data.shipping.address_1,
+            address_2: data.shipping.address_2 || null,
+            city: data.shipping.city,
+            state: data.shipping.state,
+            zip: data.shipping.zip,
+            country: data.shipping.country,
+          },
+          orderUrl: `${siteOrigin}/checkout/thank-you/${order!.order_number}`,
+        },
+      });
+    } catch (e) {
+      console.error("Order confirmation email failed", e);
     }
 
     return {
