@@ -36,6 +36,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminAccountRouteImport } from './routes/admin.account'
 import { Route as CheckoutThankYouOrderNumberRouteImport } from './routes/checkout.thank-you.$orderNumber'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -173,6 +174,12 @@ const CheckoutThankYouOrderNumberRoute =
     path: '/thank-you/$orderNumber',
     getParentRoute: () => CheckoutRoute,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -231,6 +239,7 @@ export interface FileRoutesByTo {
   '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -261,6 +270,7 @@ export interface FileRoutesById {
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/shop/'
     | '/checkout/thank-you/$orderNumber'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/shop'
     | '/checkout/thank-you/$orderNumber'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -350,6 +362,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/shop/'
     | '/checkout/thank-you/$orderNumber'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -374,6 +387,7 @@ export interface RootRouteChildren {
   VerifyRoute: typeof VerifyRoute
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -567,6 +581,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutThankYouOrderNumberRouteImport
       parentRoute: typeof CheckoutRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -630,6 +651,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyRoute: VerifyRoute,
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
