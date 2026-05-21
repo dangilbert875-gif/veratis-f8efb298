@@ -86,7 +86,8 @@ const OrderShippedEmail = ({
 
           <Hr style={hr} />
           <Text style={footer}>
-            Questions? Reply to this email or reach us at support@veratisbio.com.
+            Questions? Reply to this email, reach us at support@veratisbio.com, or contact us on Telegram{' '}
+            <a href="https://t.me/verstisbio" style={link}>@verstisbio</a>.
           </Text>
           <Text style={footer}>— The {SITE_NAME} team</Text>
         </Container>

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
@@ -77,6 +77,7 @@ function Contact() {
           {[
             [Mail, "Email", "support@veratisbio.com"],
             [Phone, "Phone", "+1 (415) 555-0142"],
+            [MessageCircle, "Telegram", "@verstisbio"],
             [MapPin, "Lab", "1148 Mission St, Suite 220\nSan Francisco, CA 94103"],
           ].map(([Icon, label, value], i) => {
             const I = Icon as typeof Mail;
