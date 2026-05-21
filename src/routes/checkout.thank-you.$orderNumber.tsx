@@ -168,6 +168,21 @@ function ThankYouPage() {
             </Link>
           </div>
         </div>
+
+        {/* Contact */}
+        <div className="text-center pt-4 print:hidden">
+          <p className="text-[11.5px] text-foreground/55">
+            Questions? Contact us on Telegram{" "}
+            <a
+              href="https://t.me/verstisbio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink underline underline-offset-2 hover:text-foreground/80 transition-colors"
+            >
+              @verstisbio
+            </a>
+          </p>
+        </div>
       </section>
     </Layout>
   );
