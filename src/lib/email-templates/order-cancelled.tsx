@@ -103,3 +103,4 @@ const sectionLabel = {
 }
 const bodyText = { fontSize: '14px', color: '#444', lineHeight: '1.6', margin: '0 0 14px' }
 const footer = { fontSize: '12px', color: '#888', margin: '6px 0', lineHeight: '1.5' }
+const link = { color: '#0a0a0a', textDecoration: 'underline' }
