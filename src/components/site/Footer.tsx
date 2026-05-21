@@ -66,10 +66,11 @@ export function Footer() {
 
         <FooterCol title="Catalog" links={[
           ["All peptides", "/shop"],
-          ["Tissue recovery", "/shop"],
-          ["Neuro research", "/shop"],
-          ["Cellular longevity", "/shop"],
-          ["Performance research", "/shop"],
+          ["Tissue recovery", "/shop?category=Tissue%20Recovery"],
+          ["Regenerative", "/shop?category=Regenerative"],
+          ["Growth hormone", "/shop?category=Growth%20Hormone"],
+          ["Metabolic", "/shop?category=Metabolic"],
+          ["Mitochondrial", "/shop?category=Mitochondrial"],
         ]} />
         <FooterCol title="Verification" links={[
           ["Verify a batch", "/verify"],
@@ -124,16 +125,23 @@ function FooterCol({ title, links }: { title: string; links: [string, string][] 
         {title}
       </h4>
       <ul className="space-y-3.5 text-[13px]">
-        {links.map(([label, to]) => (
-          <li key={label}>
-            <Link
-              to={to}
-              className="group inline-flex items-center gap-1.5 text-background/75 hover:text-background transition-colors"
-            >
-              <span className="border-b border-transparent group-hover:border-background/40 transition-colors">{label}</span>
-            </Link>
-          </li>
-        ))}
+        {links.map(([label, to]) => {
+          const [pathname, query] = to.split("?");
+          const search = query
+            ? Object.fromEntries(new URLSearchParams(query).entries())
+            : undefined;
+          return (
+            <li key={label}>
+              <Link
+                to={pathname}
+                search={search as any}
+                className="group inline-flex items-center gap-1.5 text-background/75 hover:text-background transition-colors"
+              >
+                <span className="border-b border-transparent group-hover:border-background/40 transition-colors">{label}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
