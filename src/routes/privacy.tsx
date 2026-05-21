@@ -108,15 +108,15 @@ function Page() {
           You may request a copy of the personal information we hold about you,
           request a correction, or request deletion. Requests are answered
           within thirty days. To make a request, contact{" "}
-          <span className="text-primary">privacy@veratisbio.com</span>.
+          <span className="text-primary">support@veratisbio.com</span>.
         </p>
       </DocSection>
 
       <DocSection number="10" title="Contact">
         <p>
-          Privacy inquiries: <span className="text-primary">privacy@veratisbio.com</span>
+          Privacy inquiries: <span className="text-primary">support@veratisbio.com</span>
           <br />
-          General inquiries: <span className="text-primary">hello@veratisbio.com</span>
+          General inquiries: <span className="text-primary">support@veratisbio.com</span>
         </p>
       </DocSection>
     </LegalDoc>

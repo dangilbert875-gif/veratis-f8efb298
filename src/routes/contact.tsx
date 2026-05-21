@@ -28,7 +28,7 @@ function Contact() {
       `Name: ${data.get("name") ?? ""}\nEmail: ${data.get("email") ?? ""}\n\n${data.get("message") ?? ""}`,
     );
     // Open the user's mail client as a graceful submission fallback.
-    window.location.href = `mailto:hello@veratisbio.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:support@veratisbio.com?subject=${subject}&body=${body}`;
     setSent(true);
     form.reset();
   }
@@ -75,7 +75,7 @@ function Contact() {
         </form>
         <aside className="md:col-span-2 space-y-6 text-sm">
           {[
-            [Mail, "Email", "hello@veratisbio.com"],
+            [Mail, "Email", "support@veratisbio.com"],
             [Phone, "Phone", "+1 (415) 555-0142"],
             [MapPin, "Lab", "1148 Mission St, Suite 220\nSan Francisco, CA 94103"],
           ].map(([Icon, label, value], i) => {

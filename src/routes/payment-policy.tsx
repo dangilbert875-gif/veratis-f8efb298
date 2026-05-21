@@ -96,7 +96,7 @@ function Page() {
       <DocSection number="07" title="Chargebacks">
         <p>
           Before initiating a chargeback, contact{" "}
-          <span className="text-primary">billing@veratisbio.com</span>. Almost
+          <span className="text-primary">support@veratisbio.com</span>. Almost
           every billing question is resolved within one business day. Because
           Bitcoin settlements are final at the network layer, on-chain
           transactions are not reversible; disputes are handled through
