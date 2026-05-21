@@ -338,6 +338,9 @@ export const bulkOrderAction = createServerFn({ method: "POST" })
     patch.updated_at = now;
     const { error } = await supabase.from("orders").update(patch).in("id", data.ids);
     if (error) throw new Error(error.message);
+    if (data.action === "mark_shipped") {
+      for (const id of data.ids) await sendOrderStatusEmail(id, "shipped");
+    }
     return { ok: true, count: data.ids.length };
   });
 
