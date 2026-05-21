@@ -2,6 +2,55 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
+
+async function sendOrderStatusEmail(orderId: string, newStatus: string, priorStatus?: string | null) {
+  if (priorStatus === newStatus) return;
+  if (newStatus !== "shipped" && newStatus !== "cancelled") return;
+  try {
+    const { data: order } = await supabaseAdmin
+      .from("orders")
+      .select("order_number, customer_email, customer_name, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, tracking_number, carrier")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (!order?.customer_email) return;
+    const orderNumber = String(order.order_number ?? "");
+    if (newStatus === "shipped") {
+      await enqueueTransactionalEmail({
+        templateName: "order-shipped",
+        recipientEmail: order.customer_email,
+        idempotencyKey: `order-shipped-${orderId}-${order.tracking_number ?? ""}`,
+        templateData: {
+          orderNumber,
+          customerName: order.customer_name || order.shipping_name || undefined,
+          trackingNumber: order.tracking_number || undefined,
+          carrier: order.carrier || undefined,
+          shippingAddress: order.shipping_address_1 ? {
+            name: order.shipping_name,
+            address_1: order.shipping_address_1,
+            address_2: order.shipping_address_2,
+            city: order.shipping_city,
+            state: order.shipping_state,
+            zip: order.shipping_zip,
+            country: order.shipping_country,
+          } : undefined,
+        },
+      });
+    } else if (newStatus === "cancelled") {
+      await enqueueTransactionalEmail({
+        templateName: "order-cancelled",
+        recipientEmail: order.customer_email,
+        idempotencyKey: `order-cancelled-${orderId}`,
+        templateData: {
+          orderNumber,
+          customerName: order.customer_name || order.shipping_name || undefined,
+        },
+      });
+    }
+  } catch (err) {
+    console.warn("[orders] status email enqueue failed:", (err as any)?.message ?? err);
+  }
+}
 
 type Role = "admin" | "research_partner" | "customer";
 
@@ -250,6 +299,11 @@ export const patchOrder = createServerFn({ method: "POST" })
       console.warn("[orders] audit log write failed:", (err as any)?.message ?? err);
     }
 
+    // Trigger status-change customer emails (shipped / cancelled)
+    if (data.patch.status && data.patch.status !== (prior as any)?.status) {
+      await sendOrderStatusEmail(data.id, data.patch.status, (prior as any)?.status);
+    }
+
     return { ok: true };
   });
 
@@ -284,6 +338,9 @@ export const bulkOrderAction = createServerFn({ method: "POST" })
     patch.updated_at = now;
     const { error } = await supabase.from("orders").update(patch).in("id", data.ids);
     if (error) throw new Error(error.message);
+    if (data.action === "mark_shipped") {
+      for (const id of data.ids) await sendOrderStatusEmail(id, "shipped");
+    }
     return { ok: true, count: data.ids.length };
   });
 
