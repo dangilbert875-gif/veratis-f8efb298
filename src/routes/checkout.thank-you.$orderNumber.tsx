@@ -50,7 +50,7 @@ function ThankYouPage() {
             </p>
           </div>
           <div className="inline-flex items-center gap-3 px-5 py-2.5 border border-border rounded-[3px] bg-mist/40">
-            <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Reference</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Order number</span>
             <span className="text-[14px] font-display tracking-tight text-ink">{orderNumber}</span>
           </div>
         </div>
@@ -144,7 +144,7 @@ function ThankYouPage() {
         {/* Footer actions */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 print:hidden">
           <div className="flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-            <ShieldCheck size={12} strokeWidth={1.5} /> Save your reference number for future inquiries
+            <ShieldCheck size={12} strokeWidth={1.5} /> Save your order number for future inquiries
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
             <button
@@ -167,6 +167,21 @@ function ThankYouPage() {
               Continue browsing
             </Link>
           </div>
+        </div>
+
+        {/* Contact */}
+        <div className="text-center pt-4 print:hidden">
+          <p className="text-[11.5px] text-foreground/55">
+            Questions? Contact us on Telegram{" "}
+            <a
+              href="https://t.me/verstisbio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink underline underline-offset-2 hover:text-foreground/80 transition-colors"
+            >
+              @verstisbio
+            </a>
+          </p>
         </div>
       </section>
     </Layout>
