@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
@@ -18,10 +18,20 @@ export const Route = createFileRoute("/checkout")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: CheckoutPage,
+  component: CheckoutRouteComponent,
 });
 
 type Step = 1 | 2 | 3;
+
+function CheckoutRouteComponent() {
+  const location = useLocation();
+
+  if (location.pathname !== "/checkout") {
+    return <Outlet />;
+  }
+
+  return <CheckoutPage />;
+}
 
 function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
