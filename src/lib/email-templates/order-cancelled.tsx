@@ -52,7 +52,8 @@ const OrderCancelledEmail = ({
 
         <Hr style={hr} />
         <Text style={footer}>
-          Questions? Reply to this email or reach us at support@veratisbio.com.
+          Questions? Reply to this email, reach us at support@veratisbio.com, or contact us on Telegram{' '}
+          <a href="https://t.me/verstisbio" style={link}>@verstisbio</a>.
         </Text>
         <Text style={footer}>— The {SITE_NAME} team</Text>
       </Container>
@@ -102,3 +103,4 @@ const sectionLabel = {
 }
 const bodyText = { fontSize: '14px', color: '#444', lineHeight: '1.6', margin: '0 0 14px' }
 const footer = { fontSize: '12px', color: '#888', margin: '6px 0', lineHeight: '1.5' }
+const link = { color: '#0a0a0a', textDecoration: 'underline' }

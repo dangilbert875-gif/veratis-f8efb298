@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
@@ -77,16 +77,29 @@ function Contact() {
           {[
             [Mail, "Email", "support@veratisbio.com"],
             [Phone, "Phone", "+1 (415) 555-0142"],
+            [MessageCircle, "Telegram", "@verstisbio"],
             [MapPin, "Lab", "1148 Mission St, Suite 220\nSan Francisco, CA 94103"],
           ].map(([Icon, label, value], i) => {
             const I = Icon as typeof Mail;
+            const isTelegram = label === "Telegram";
             return (
               <div key={i} className="border border-border rounded-lg p-5 bg-mist/40">
                 <div className="flex items-center gap-2 text-primary">
                   <I size={16} />
                   <p className="text-xs uppercase tracking-[0.18em]">{label as string}</p>
                 </div>
-                <p className="mt-2 text-ink whitespace-pre-line">{value as string}</p>
+                {isTelegram ? (
+                  <a
+                    href="https://t.me/verstisbio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 text-ink whitespace-pre-line block hover:underline"
+                  >
+                    {value as string}
+                  </a>
+                ) : (
+                  <p className="mt-2 text-ink whitespace-pre-line">{value as string}</p>
+                )}
               </div>
             );
           })}
