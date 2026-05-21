@@ -369,24 +369,24 @@ function CheckoutPage() {
             <p className="mt-4 text-[12px] text-red-700 font-mono">{error}</p>
           )}
 
-          <div className="mt-8 flex items-center justify-between gap-4">
+          <div className="mt-8 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
             {step > 1 ? (
               <button onClick={() => setStep((step - 1) as Step)}
-                className="inline-flex items-center gap-2 h-11 px-5 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors">
+                className="inline-flex items-center justify-center gap-2 h-11 px-5 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors">
                 <ArrowLeft size={14} /> Back
               </button>
-            ) : <span />}
+            ) : <span className="hidden sm:block" />}
             {step < 3 ? (
               <button onClick={next}
-                className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all">
+                className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all">
                 Continue <ArrowRight size={14} />
               </button>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
                 {proofConfirmed && (
                   <button
                     onClick={() => setProofOpen(true)}
-                    className="inline-flex items-center gap-2 h-11 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink border border-border rounded-[3px] transition-colors"
+                    className="inline-flex items-center justify-center gap-2 h-11 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink border border-border rounded-[3px] transition-colors"
                   >
                     <Check size={12} className="text-emerald-700" /> Proof attached · Edit
                   </button>
@@ -394,13 +394,13 @@ function CheckoutPage() {
                 {!proofConfirmed ? (
                   <button
                     onClick={() => setProofOpen(true)}
-                    className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
                   >
-                    <Upload size={14} /> Upload Proof of Payment
+                    <Upload size={14} /> I've sent payment — upload proof
                   </button>
                 ) : (
                   <button onClick={placeOrder} disabled={submitting}
-                    className="inline-flex items-center gap-2 h-11 px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
                     {submitting ? "Placing order…" : "Place order"} {!submitting && <ArrowRight size={14} />}
                   </button>
                 )}
