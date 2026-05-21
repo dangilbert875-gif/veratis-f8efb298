@@ -336,7 +336,7 @@ function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) 
           ))}
         </dl>
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Link to="/lab-testing" className="inline-flex items-center gap-2 text-[13px] text-ink border border-border rounded-md px-4 py-2 hover:border-ink/40 transition">
+          <Link to="/coa-archive" className="inline-flex items-center gap-2 text-[13px] text-ink border border-border rounded-md px-4 py-2 hover:border-ink/40 transition">
             <FileText size={13} /> Download full COA (PDF)
           </Link>
           <Link
