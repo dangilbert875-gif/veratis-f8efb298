@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { getCheckoutOrder } from "@/lib/checkout.functions";
-import { Check, Mail, Clock, Package, ShieldCheck, ArrowRight } from "lucide-react";
+import { Check, Mail, Clock, Package, ShieldCheck, ArrowRight, Printer } from "lucide-react";
 
 export const Route = createFileRoute("/checkout/thank-you/$orderNumber")({
   head: () => ({
@@ -24,11 +24,16 @@ function ThankYouPage() {
     queryFn: () => fetcher({ data: { order_number: orderNumber } }),
   });
 
+  const items = (data?.items as any[]) || [];
+  const itemsTotal = items.reduce((s, i) => s + Number(i.price) * Number(i.quantity), 0);
+  const total = Number(data?.total_usd || 0);
+  const shippingCost = Math.max(0, total - itemsTotal);
+
   return (
     <Layout>
       <PageHeader eyebrow="— Order received" title="Thank you" />
 
-      <section className="px-6 lg:px-12 py-12 max-w-3xl mx-auto space-y-10">
+      <section className="px-6 lg:px-12 py-12 max-w-3xl mx-auto space-y-10 print:py-4">
         {/* Confirmation hero */}
         <div className="text-center space-y-5">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200">
@@ -49,6 +54,66 @@ function ThankYouPage() {
             <span className="text-[14px] font-display tracking-tight text-ink">{orderNumber}</span>
           </div>
         </div>
+
+        {/* Receipt */}
+        {data && (
+          <div className="border border-border rounded-[3px] bg-background">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">— Receipt</p>
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+                {new Date(data.created_at as any).toLocaleDateString()}
+              </p>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              {items.length > 0 && (
+                <ul className="divide-y divide-border">
+                  {items.map((i, idx) => (
+                    <li key={idx} className="py-3 flex items-start justify-between gap-4 text-[12.5px]">
+                      <div className="min-w-0">
+                        <p className="text-ink truncate">{i.name}</p>
+                        <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-0.5">
+                          {i.size ? `${i.size} · ` : ""}{i.lot ? `Lot ${i.lot} · ` : ""}Qty {i.quantity}
+                        </p>
+                      </div>
+                      <p className="tabular-nums text-ink shrink-0">
+                        ${(Number(i.price) * Number(i.quantity)).toFixed(2)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div className="pt-3 border-t border-border space-y-1.5 text-[12.5px]">
+                <Row label="Subtotal" value={`$${itemsTotal.toFixed(2)}`} />
+                <Row
+                  label="Shipping · standard cold-chain"
+                  value={shippingCost === 0 ? "Free" : `$${shippingCost.toFixed(2)}`}
+                />
+                <div className="flex items-center justify-between pt-2 mt-1 border-t border-border">
+                  <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-ink">Total · USD</span>
+                  <span className="text-[15px] tabular-nums text-ink font-display">${total.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Customer + shipping summary */}
+        {data && (
+          <div className="grid sm:grid-cols-2 gap-5">
+            <SummaryCard title="Contact">
+              <p className="text-ink">{data.customer_name}</p>
+              <p>{data.customer_email}</p>
+            </SummaryCard>
+            <SummaryCard title="Shipping to">
+              <p className="text-ink">{data.shipping_name}</p>
+              <p>{data.shipping_address_1}{data.shipping_address_2 ? `, ${data.shipping_address_2}` : ""}</p>
+              <p>{data.shipping_city}, {data.shipping_state} {data.shipping_zip}</p>
+              <p>{data.shipping_country}</p>
+            </SummaryCard>
+          </div>
+        )}
 
         {/* What happens next */}
         <div className="border border-border rounded-[3px] bg-background">
@@ -77,11 +142,17 @@ function ThankYouPage() {
         </div>
 
         {/* Footer actions */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 print:hidden">
           <div className="flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
             <ShieldCheck size={12} strokeWidth={1.5} /> Save your reference number for future inquiries
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3 justify-center">
+            <button
+              onClick={() => window.print()}
+              className="inline-flex items-center gap-2 h-11 px-5 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/70 hover:text-ink border border-border rounded-[3px] transition-colors"
+            >
+              <Printer size={13} /> Print receipt
+            </button>
             <Link
               to="/checkout/$orderNumber"
               params={{ orderNumber }}
@@ -99,6 +170,26 @@ function ThankYouPage() {
         </div>
       </section>
     </Layout>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between text-foreground/75">
+      <span>{label}</span>
+      <span className="tabular-nums text-ink">{value}</span>
+    </div>
+  );
+}
+
+function SummaryCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="border border-border rounded-[3px] bg-background">
+      <div className="px-5 py-3 border-b border-border">
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {title}</p>
+      </div>
+      <div className="px-5 py-4 text-[12px] text-foreground/75 space-y-0.5">{children}</div>
+    </div>
   );
 }
 
