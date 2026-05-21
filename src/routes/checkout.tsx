@@ -317,18 +317,18 @@ function CheckoutPage() {
 
                   <div>
                     <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— BTC address</p>
-                    <div className="flex items-stretch gap-3">
-                      <div className="shrink-0 p-2 bg-white border border-border rounded-[3px]">
+                    <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
+                      <div className="self-center sm:self-auto shrink-0 p-2 bg-white border border-border rounded-[3px]">
                         <img
                           src={btcQr}
                           alt={`Bitcoin payment QR code for ${BTC_ADDRESS}`}
-                          className="w-[112px] h-[112px] block"
+                          className="w-[160px] h-[160px] sm:w-[112px] sm:h-[112px] block"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => copyVal("addr", BTC_ADDRESS)}
-                        className="group flex-1 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                        className="group w-full sm:flex-1 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
                       >
                         <span className="text-[12.5px] text-ink break-all font-mono">{BTC_ADDRESS}</span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
