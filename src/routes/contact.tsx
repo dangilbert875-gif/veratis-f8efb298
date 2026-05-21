@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { Mail, MessageCircle, Megaphone } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
@@ -75,31 +75,25 @@ function Contact() {
         </form>
         <aside className="md:col-span-2 space-y-6 text-sm">
           {[
-            [Mail, "Email", "support@veratisbio.com"],
-            [Phone, "Phone", "+1 (415) 555-0142"],
-            [MessageCircle, "Telegram", "@verstisbio"],
-            [MapPin, "Lab", "1148 Mission St, Suite 220\nSan Francisco, CA 94103"],
-          ].map(([Icon, label, value], i) => {
+            [Mail, "Email", "support@veratisbio.com", "mailto:support@veratisbio.com"],
+            [MessageCircle, "Telegram", "@veratisbio", "https://t.me/veratisbio"],
+            [Megaphone, "Telegram channel", "@VeratisUpdates — product drops & new releases", "https://t.me/VeratisUpdates"],
+          ].map(([Icon, label, value, href], i) => {
             const I = Icon as typeof Mail;
-            const isTelegram = label === "Telegram";
             return (
               <div key={i} className="border border-border rounded-lg p-5 bg-mist/40">
                 <div className="flex items-center gap-2 text-primary">
                   <I size={16} />
                   <p className="text-xs uppercase tracking-[0.18em]">{label as string}</p>
                 </div>
-                {isTelegram ? (
-                  <a
-                    href="https://t.me/verstisbio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 text-ink whitespace-pre-line block hover:underline"
-                  >
-                    {value as string}
-                  </a>
-                ) : (
-                  <p className="mt-2 text-ink whitespace-pre-line">{value as string}</p>
-                )}
+                <a
+                  href={href as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 text-ink whitespace-pre-line block hover:underline"
+                >
+                  {value as string}
+                </a>
               </div>
             );
           })}

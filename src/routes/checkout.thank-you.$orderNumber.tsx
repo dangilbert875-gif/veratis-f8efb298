@@ -174,12 +174,12 @@ function ThankYouPage() {
           <p className="text-[11.5px] text-foreground/55">
             Questions? Contact us on Telegram{" "}
             <a
-              href="https://t.me/verstisbio"
+              href="https://t.me/veratisbio"
               target="_blank"
               rel="noopener noreferrer"
               className="text-ink underline underline-offset-2 hover:text-foreground/80 transition-colors"
             >
-              @verstisbio
+              @veratisbio
             </a>
           </p>
         </div>
