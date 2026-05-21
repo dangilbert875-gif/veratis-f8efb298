@@ -66,10 +66,11 @@ export function Footer() {
 
         <FooterCol title="Catalog" links={[
           ["All peptides", "/shop"],
-          ["Tissue recovery", "/shop"],
-          ["Neuro research", "/shop"],
-          ["Cellular longevity", "/shop"],
-          ["Performance research", "/shop"],
+          ["Tissue recovery", "/shop?category=Tissue%20Recovery"],
+          ["Regenerative", "/shop?category=Regenerative"],
+          ["Growth hormone", "/shop?category=Growth%20Hormone"],
+          ["Metabolic", "/shop?category=Metabolic"],
+          ["Mitochondrial", "/shop?category=Mitochondrial"],
         ]} />
         <FooterCol title="Verification" links={[
           ["Verify a batch", "/verify"],
