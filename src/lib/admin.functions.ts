@@ -299,6 +299,11 @@ export const patchOrder = createServerFn({ method: "POST" })
       console.warn("[orders] audit log write failed:", (err as any)?.message ?? err);
     }
 
+    // Trigger status-change customer emails (shipped / cancelled)
+    if (data.patch.status && data.patch.status !== (prior as any)?.status) {
+      await sendOrderStatusEmail(data.id, data.patch.status, (prior as any)?.status);
+    }
+
     return { ok: true };
   });
 
