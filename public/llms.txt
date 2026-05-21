@@ -11,7 +11,6 @@ VERATIS manufactures lyophilized research peptides under cGMP and releases every
 - [COA Archive](/coa-archive): Searchable archive of every certificate of analysis ever issued.
 - [Verify Batch](/verify): Authenticate a vial by entering its lot number.
 - [Testing Standards](/standards): Analytical methods, release specifications, and storage protocols.
-- [Lab Testing](/lab-testing): How batch testing and COA issuance work.
 - [Education](/blog): Reference articles on peptide handling, storage, and laboratory protocol.
 - [About](/about): Company background and laboratory partners.
 - [FAQ](/faq): Answers about purity testing, shipping, storage, and intended use.
