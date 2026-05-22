@@ -697,12 +697,12 @@ function CheckoutPage() {
           </div>
           <ul className="divide-y divide-border">
             {items.map((i) => (
-              <li key={i.slug} className="px-5 py-3 flex justify-between gap-3 text-[12px]">
-                <div className="min-w-0">
+              <li key={i.slug} className="px-4 sm:px-5 py-3 flex justify-between gap-3 text-[12px]">
+                <div className="min-w-0 flex-1">
                   <Link
                     to="/shop/$slug"
                     params={{ slug: i.slug }}
-                    className="text-ink truncate hover:underline block"
+                    className="text-ink truncate hover:underline block min-w-0"
                     title="Open product page to re-verify this lot"
                   >
                     {i.name}
@@ -721,7 +721,7 @@ function CheckoutPage() {
               </li>
             ))}
           </ul>
-          <div className="px-5 py-4 border-t border-border space-y-2 text-[12px]">
+          <div className="px-4 sm:px-5 py-4 border-t border-border space-y-2 text-[12px]">
             <Row label="Subtotal" value={`$${subtotal.toFixed(0)}`} />
             <Row label="Cold-chain shipping" value={shippingCost === 0 ? "Free" : `$${shippingCost}`} />
             {shippingCost > 0 && (
@@ -740,7 +740,7 @@ function CheckoutPage() {
               <span className="text-lg text-ink tabular-nums">${totalAfterDiscount.toFixed(2)}</span>
             </div>
           </div>
-          <ul className="px-5 py-4 border-t border-border flex flex-wrap gap-x-4 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/55">
+          <ul className="px-4 sm:px-5 py-4 border-t border-border flex flex-wrap gap-x-4 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/55">
             <li className="inline-flex items-center gap-1.5"><Snowflake size={11} strokeWidth={1.5} /> Cold-chain</li>
             <li className="inline-flex items-center gap-1.5"><ShieldCheck size={11} strokeWidth={1.5} /> Lot-verified</li>
             <li className="inline-flex items-center gap-1.5"><Lock size={11} strokeWidth={1.5} /> BTC-secured</li>
