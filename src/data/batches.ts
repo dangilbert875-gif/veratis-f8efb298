@@ -27,7 +27,7 @@ export type Batch = {
 };
 
 export const labPartner = {
-  name: "Northbridge Analytical",
+  name: "Janoshik Labs",
   iso: "ISO/IEC 17025:2017",
   accreditation: "A2LA Cert. #4128.01",
   city: "Boston, MA",
