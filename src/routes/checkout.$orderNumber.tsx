@@ -2,9 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { getCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
-import { Bitcoin, Copy, Check, Mail, Clock, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { getCheckoutOrder } from "@/lib/checkout.functions";
 
 export const Route = createFileRoute("/checkout/$orderNumber")({
   head: () => ({
