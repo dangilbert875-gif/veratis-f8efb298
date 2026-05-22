@@ -12,8 +12,9 @@ export const Route = createFileRoute("/blog")({
       { name: "description", content: "A working reference library for peptide handling, HPLC analysis, lyophilization, cold-chain storage, endotoxin standards, mass spectrometry, and laboratory protocol." },
       { property: "og:title", content: "Reference Library — VERATIS" },
       { property: "og:description", content: "Long-form notes on HPLC, mass spectrometry, lyophilization, cold-chain storage, and verification systems." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/blog" },
+      { property: "og:url", content: "https://veratisbio.com/blog" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/blog" }],
   }),
   component: Blog,
 });
@@ -101,6 +102,7 @@ function Blog() {
           <label className="relative w-full md:w-80">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/45" strokeWidth={1.75} />
             <input
+              aria-label="Search reference library"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by topic, method, term…"
