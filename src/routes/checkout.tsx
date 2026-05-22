@@ -740,7 +740,7 @@ function Row({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-function StepRail({ step }: { step: Step }) {
+function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) {
   const steps = ["Contact", "Shipping", "Review"];
   return (
     <ol className="flex items-center gap-3 mb-6 text-[10.5px] font-mono uppercase tracking-[0.2em]">
@@ -748,12 +748,21 @@ function StepRail({ step }: { step: Step }) {
         const n = (i + 1) as Step;
         const done = step > n;
         const active = step === n;
+        const tappable = done && !!onJump;
         return (
           <li key={s} className="flex items-center gap-3">
-            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full border ${active ? "bg-ink text-background border-ink" : done ? "bg-ink/10 border-ink/30 text-ink" : "border-border text-foreground/40"} tabular-nums text-[10px]`}>
-              {n}
-            </span>
-            <span className={active ? "text-ink" : done ? "text-foreground/70" : "text-foreground/40"}>{s}</span>
+            <button
+              type="button"
+              disabled={!tappable}
+              onClick={() => tappable && onJump!(n)}
+              className={`inline-flex items-center gap-2 ${tappable ? "cursor-pointer hover:opacity-80" : "cursor-default"}`}
+              aria-current={active ? "step" : undefined}
+            >
+              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full border ${active ? "bg-ink text-background border-ink" : done ? "bg-ink/10 border-ink/30 text-ink" : "border-border text-foreground/40"} tabular-nums text-[10px]`}>
+                {n}
+              </span>
+              <span className={active ? "text-ink" : done ? "text-foreground/70" : "text-foreground/40"}>{s}</span>
+            </button>
             {i < steps.length - 1 && <span className="w-8 h-px bg-border" />}
           </li>
         );
