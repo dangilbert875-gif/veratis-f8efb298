@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { Mail, MessageCircle, Megaphone, MapPin, Clock, HelpCircle, Package, CheckCircle2, Zap, ArrowRight } from "lucide-react";
+import { Mail, MessageCircle, Megaphone, Clock, HelpCircle, Package, CheckCircle2, Zap, ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
@@ -266,12 +266,6 @@ function Contact() {
             value="support@veratisbio.com"
             href="mailto:support@veratisbio.com"
             helper="Also available for written inquiries. Typical reply within one business day. Tracked and logged."
-          />
-          <ContactCard
-            Icon={MapPin}
-            label="Office"
-            value={"VERATIS Bio\n2261 Market Street #4421\nSan Francisco, CA 94114\nUnited States"}
-            helper="Registered mailing address. Shipments dispatched from partner facilities."
           />
 
           <p className="text-xs text-muted-foreground leading-relaxed pt-2">
