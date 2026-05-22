@@ -404,7 +404,7 @@ function CheckoutPage() {
               <Review label="Dispatch">
                 <p>Standard cold-chain · {shippingCost === 0 ? "Free" : `$${shippingCost}`}</p>
               </Review>
-              <Review label="Promo code">
+              <Review label="Referral code">
                 {promo ? (
                   <div className="space-y-1.5">
                     <p className="font-mono">
@@ -429,7 +429,8 @@ function CheckoutPage() {
                       <input
                         value={promoInput}
                         onChange={(e) => { setPromoInput(e.target.value); setPromoError(null); }}
-                        placeholder="Promo, discount, or referral code"
+                        placeholder=""
+                        aria-label="Referral code"
                         className={`${inp} mt-0 flex-1 uppercase font-mono`}
                         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
                       />
