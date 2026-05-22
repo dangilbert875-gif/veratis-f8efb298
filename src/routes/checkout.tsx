@@ -169,7 +169,7 @@ function CheckoutPage() {
     const id = setInterval(load, 60_000);
     return () => { cancelled = true; clearInterval(id); };
   }, [fetchRate]);
-  const btcAmount = btcRate && total > 0 ? (total / btcRate).toFixed(8) : null;
+  const btcAmount = btcRate && totalAfterDiscount > 0 ? (totalAfterDiscount / btcRate).toFixed(8) : null;
   function copyVal(kind: "addr" | "amt", value: string) {
     navigator.clipboard?.writeText(value);
     setCopied(kind);
@@ -356,6 +356,50 @@ function CheckoutPage() {
               <Review label="Dispatch">
                 <p>Standard cold-chain · {shippingCost === 0 ? "Free" : `$${shippingCost}`}</p>
               </Review>
+              <Review label="Promo code">
+                {promo ? (
+                  <div className="space-y-1.5">
+                    <p className="font-mono">
+                      {promo.code} ·{" "}
+                      <span className="text-emerald-700">
+                        {promo.discount_type === "fixed"
+                          ? `$${promo.discount_amount.toFixed(2)} off`
+                          : `${promo.discount_amount}% off`}
+                      </span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => { setPromo(null); setPromoInput(""); setPromoError(null); }}
+                      className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55 hover:text-ink"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex gap-2">
+                      <input
+                        value={promoInput}
+                        onChange={(e) => { setPromoInput(e.target.value); setPromoError(null); }}
+                        placeholder="Promo, discount, or referral code"
+                        className={`${inp} mt-0 flex-1 uppercase font-mono`}
+                        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
+                      />
+                      <button
+                        type="button"
+                        onClick={applyPromo}
+                        disabled={promoChecking || !promoInput.trim()}
+                        className="inline-flex items-center justify-center px-4 h-11 text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/30 rounded-[3px] hover:bg-ink hover:text-background transition-all disabled:opacity-50"
+                      >
+                        {promoChecking ? "Checking…" : "Apply"}
+                      </button>
+                    </div>
+                    {promoError && (
+                      <p className="mt-2 text-[11px] text-red-700 font-mono">{promoError}</p>
+                    )}
+                  </div>
+                )}
+              </Review>
               <Review label="Payment method">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
@@ -365,7 +409,7 @@ function CheckoutPage() {
                   <p className="text-foreground/75 text-[12px] leading-relaxed">
                     Send{" "}
                     <strong className="text-ink font-mono">
-                      {btcAmount ? `${btcAmount} BTC` : `the BTC equivalent of $${total.toFixed(2)}`}
+                      {btcAmount ? `${btcAmount} BTC` : `the BTC equivalent of $${totalAfterDiscount.toFixed(2)}`}
                     </strong>{" "}
                     to the address below. Your order ships within 48 hours of on-chain confirmation.
                   </p>
@@ -490,9 +534,15 @@ function CheckoutPage() {
                 — Free over ${FREE_SHIPPING_THRESHOLD}
               </p>
             )}
+            {promo && discountAmount > 0 && (
+              <Row
+                label={`Promo · ${promo.code}`}
+                value={`−$${discountAmount.toFixed(2)}`}
+              />
+            )}
             <div className="pt-2 mt-2 border-t border-border flex justify-between items-baseline">
               <span className="font-mono uppercase tracking-[0.18em] text-foreground/55 text-[10.5px]">Total</span>
-              <span className="text-lg text-ink tabular-nums">${total.toFixed(0)}</span>
+              <span className="text-lg text-ink tabular-nums">${totalAfterDiscount.toFixed(2)}</span>
             </div>
           </div>
           <ul className="px-5 py-4 border-t border-border flex flex-wrap gap-x-4 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/55">
