@@ -734,13 +734,17 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
           <Section title="Documentation">
             <div className="space-y-3">
               <FileSlot
-                label="COA (PDF)"
+                label="COA (PDF, PNG, JPG)"
                 path={form.coa_url}
                 busy={uploading === "coa_url"}
                 onUpload={(f) => handleUpload(f, "coa-pdfs", "coa_url")}
                 onPeek={(p) => peek("coa-pdfs", p)}
                 onClear={() => set("coa_url", "")}
-                accept="application/pdf"
+                accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
+                getPreviewUrl={async (p) => {
+                  const r = await sign({ data: { bucket: "coa-pdfs", path: p } });
+                  return (r as any).url as string;
+                }}
               />
               <FileSlot
                 label="LC-MS chromatogram"
@@ -834,7 +838,7 @@ function Toggle({
 }
 
 function FileSlot({
-  label, path, onUpload, onPeek, onClear, accept, busy,
+  label, path, onUpload, onPeek, onClear, accept, busy, getPreviewUrl,
 }: {
   label: string;
   path: string | null;
@@ -843,8 +847,19 @@ function FileSlot({
   onClear: () => void;
   accept: string;
   busy?: boolean;
+  getPreviewUrl?: (path: string) => Promise<string>;
 }) {
   const [drag, setDrag] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const isImage = !!path && /\.(png|jpe?g)$/i.test(path);
+  useEffect(() => {
+    let cancelled = false;
+    setPreviewUrl(null);
+    if (path && isImage && getPreviewUrl) {
+      getPreviewUrl(path).then((u) => { if (!cancelled) setPreviewUrl(u); }).catch(() => {});
+    }
+    return () => { cancelled = true; };
+  }, [path, isImage, getPreviewUrl]);
   return (
     <div
       className={`border border-dashed px-4 py-3 transition-colors ${drag ? "border-ink/60 bg-ink/[0.04]" : "border-ink/15"}`}
@@ -858,6 +873,11 @@ function FileSlot({
       }}
     >
       <div className="text-[9.5px] tracking-[0.24em] uppercase text-foreground/55 mb-1.5">{label}</div>
+      {path && isImage && previewUrl && (
+        <a href={previewUrl} target="_blank" rel="noopener" className="block mb-2">
+          <img src={previewUrl} alt={label} className="max-h-40 border border-ink/15 object-contain bg-ink/[0.02]" />
+        </a>
+      )}
       <div className="flex items-center gap-3 flex-wrap">
         {path ? (
           <>
