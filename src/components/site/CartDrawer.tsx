@@ -153,6 +153,9 @@ export function CartDrawer() {
             <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/50">
               Median dispatch · 48 hrs · taxes calculated at checkout
             </p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.14em] text-amber-900 bg-amber-50/60 border border-amber-200/70 rounded-[3px] px-2.5 py-2 leading-snug">
+              For research use only · not for human or veterinary consumption
+            </p>
             <button
               onClick={checkout}
               className="w-full bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.18em] px-6 py-3.5 hover:bg-ink/90 active:scale-[0.99] transition-all duration-200 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]"

@@ -74,6 +74,7 @@ export function Footer() {
         ]} />
         <FooterCol title="Verification" links={[
           ["Verify a batch", "/verify"],
+          ["How we verify", "/verification"],
           ["COA archive", "/coa-archive"],
           ["Testing standards", "/standards"],
         ]} />
