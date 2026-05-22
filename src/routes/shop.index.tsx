@@ -366,7 +366,7 @@ function ShopPage() {
             {filtered.length === 0 ? (
               <EmptyCategory category={filter} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-14 md:gap-y-16 justify-items-center md:justify-items-stretch">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-14 md:gap-y-16">
                 {visible.map((p) => {
                   const stock = stockForSlug(p.slug);
                   return (
