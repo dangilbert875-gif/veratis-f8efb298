@@ -348,3 +348,28 @@ function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) 
     </div>
   );
 }
+
+function CoaDownloadButton({ batch }: { batch: Batch }) {
+  const [busy, setBusy] = useState(false);
+  const extRaw = coaExtension(batch.coaUrl);
+  const ext = extRaw ? extRaw.toUpperCase() : null;
+  const label = busy
+    ? "Preparing…"
+    : `Download signed COA${ext ? ` (${ext})` : ""}`;
+  return (
+    <button
+      type="button"
+      disabled={busy}
+      onClick={async () => {
+        setBusy(true);
+        try { await downloadCoa(batch); } finally { setBusy(false); }
+      }}
+      className="inline-flex items-center gap-2 text-[11.5px] font-medium uppercase tracking-[0.16em] text-ink bg-background border border-background rounded-[3px] px-5 h-10 hover:bg-background/90 active:scale-[0.985] transition-all duration-200 disabled:opacity-60 disabled:cursor-wait"
+    >
+      {busy
+        ? <Loader2 size={12} className="animate-spin" />
+        : <FileText size={12} />}
+      {label}
+    </button>
+  );
+}
