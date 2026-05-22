@@ -849,8 +849,26 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
               </div>
             </Section>
 
-            {/* D. BTC payment */}
-            <Section title="BTC payment">
+            {/* D. Payment — Venmo or BTC */}
+            <Section title={o.payment_method === "venmo" ? "Venmo payment" : "BTC payment"}>
+              {o.payment_method === "venmo" ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <KV label="Order #" value={o.order_number} />
+                  <KV label="USD total" value={formatUSD(o.total_usd)} />
+                  <Field label="Payment status">
+                    <SelectInput value={form.payment_status ?? "awaiting_payment"} onChange={(e) => set("payment_status", e.target.value)}>
+                      {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+                    </SelectInput>
+                  </Field>
+                  <Field label="Received at">
+                    <TextInput
+                      type="datetime-local"
+                      value={form.payment_received_at ? new Date(form.payment_received_at).toISOString().slice(0,16) : ""}
+                      onChange={(e) => set("payment_received_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                    />
+                  </Field>
+                </div>
+              ) : (
               <div className="grid grid-cols-2 gap-3">
                 <KV label="USD total" value={formatUSD(o.total_usd)} />
                 <Field label="Payment status">
@@ -892,6 +910,8 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   />
                 </Field>
               </div>
+              )}
+              {o.payment_method !== "venmo" && (
               <div className="mt-3 grid grid-cols-1 gap-3">
                 <Field label="BTC address">
                   <div className="flex gap-2">
@@ -910,6 +930,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   </div>
                 </Field>
               </div>
+              )}
             </Section>
 
             {/* D2. Customer-submitted proof of payment */}
@@ -951,13 +972,15 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   )}
                   {o.payment_tx_id && (
                     <div>
-                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">— Customer-provided TX ID / note</div>
+                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">
+                        — {o.payment_method === "venmo" ? "Customer note" : "Customer-provided TX ID / note"}
+                      </div>
                       <div className="flex gap-2">
                         <div className="flex-1 min-w-0 px-3 py-2 border border-ink/15 bg-mist/20 font-mono text-[11.5px] text-ink break-all whitespace-pre-wrap">
                           {o.payment_tx_id}
                         </div>
-                        <GhostButton type="button" onClick={() => copy(o.payment_tx_id ?? "", "TX ID")}>Copy</GhostButton>
-                        {!form.btc_tx_hash && (
+                        <GhostButton type="button" onClick={() => copy(o.payment_tx_id ?? "", o.payment_method === "venmo" ? "Note" : "TX ID")}>Copy</GhostButton>
+                        {o.payment_method !== "venmo" && !form.btc_tx_hash && (
                           <GhostButton type="button" onClick={() => set("btc_tx_hash", o.payment_tx_id)}>Use as TX hash</GhostButton>
                         )}
                       </div>
@@ -1024,11 +1047,13 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   <Field label="Shipping method"><TextInput value={form.shipping_method ?? ""} onChange={(e) => set("shipping_method", e.target.value)} placeholder="Standard / Express" /></Field>
                   <Field label="Shipped at"><TextInput type="datetime-local" value={toLocal(form.shipped_at)} onChange={(e) => set("shipped_at", fromLocal(e.target.value))} /></Field>
                   <Field label="Delivered at"><TextInput type="datetime-local" value={toLocal(form.delivered_at)} onChange={(e) => set("delivered_at", fromLocal(e.target.value))} /></Field>
-                  <Field label="BTC amount"><TextInput type="number" step="0.00000001" value={form.btc_amount ?? ""} onChange={(e) => set("btc_amount", e.target.value ? Number(e.target.value) : null)} /></Field>
-                  <Field label="BTC address"><TextInput value={form.btc_address ?? ""} onChange={(e) => set("btc_address", e.target.value)} /></Field>
-                  <Field label="Confirmations"><TextInput type="number" min="0" value={form.btc_confirmations ?? 0} onChange={(e) => set("btc_confirmations", Number(e.target.value || 0))} /></Field>
+                  {o.payment_method !== "venmo" && (<>
+                    <Field label="BTC amount"><TextInput type="number" step="0.00000001" value={form.btc_amount ?? ""} onChange={(e) => set("btc_amount", e.target.value ? Number(e.target.value) : null)} /></Field>
+                    <Field label="BTC address"><TextInput value={form.btc_address ?? ""} onChange={(e) => set("btc_address", e.target.value)} /></Field>
+                    <Field label="Confirmations"><TextInput type="number" min="0" value={form.btc_confirmations ?? 0} onChange={(e) => set("btc_confirmations", Number(e.target.value || 0))} /></Field>
+                    <Field label="Payment expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
+                  </>)}
                   <Field label="Payment received at"><TextInput type="datetime-local" value={toLocal(form.payment_received_at)} onChange={(e) => set("payment_received_at", fromLocal(e.target.value))} /></Field>
-                  <Field label="Payment expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
                 </div>
               )}
             </section>
