@@ -276,6 +276,7 @@ function ShopPage() {
               <div className="mb-4 relative max-w-md">
                 <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/45" />
                 <input
+                  aria-label="Search products by compound or lot number"
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}

@@ -8,8 +8,9 @@ export const Route = createFileRoute("/shipping-returns")({
       { name: "description", content: "Shipping rates, transit times, and our straightforward return policy. Currently shipping within the continental United States only." },
       { property: "og:title", content: "Shipping & Returns — VERATIS" },
       { property: "og:description", content: "Cold-chain insulated dispatch within 48 hours within the continental US. Free shipping over $150. 14-day return window on unopened vials." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/shipping-returns" },
+      { property: "og:url", content: "https://veratisbio.com/shipping-returns" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/shipping-returns" }],
   }),
   component: Page,
 });

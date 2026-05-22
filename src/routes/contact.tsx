@@ -12,6 +12,7 @@ export const Route = createFileRoute("/contact")({
       { property: "og:description", content: "Talk to a chemist, not a script. Batch questions, custom assays, and wholesale inquiries answered within one business day." },
       { property: "og:url", content: "https://veratisbio.com/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/contact" }],
   }),
   component: Contact,
 });

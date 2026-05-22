@@ -8,8 +8,9 @@ export const Route = createFileRoute("/research-use")({
       { name: "description", content: "VERATIS products are supplied strictly for in-vitro laboratory and research use. Not for human or veterinary consumption." },
       { property: "og:title", content: "Research Use Disclaimer — VERATIS" },
       { property: "og:description", content: "Formal positioning, purchaser responsibilities, and compliance expectations for VERATIS research material." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/research-use" },
+      { property: "og:url", content: "https://veratisbio.com/research-use" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/research-use" }],
   }),
   component: Page,
 });
