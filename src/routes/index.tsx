@@ -128,6 +128,12 @@ function Home() {
                 View COA archive
               </Link>
             </div>
+            <Link
+              to="/verification"
+              className="mt-4 inline-flex items-center gap-2 text-[12px] font-mono uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition"
+            >
+              How we verify every lot <ArrowRight size={12} />
+            </Link>
             <p className="mt-4 text-[12.5px] text-muted-foreground tabular-nums">
               From $25 per vial <span className="text-foreground/30 mx-1">·</span> Free shipping over $150
             </p>
