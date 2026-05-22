@@ -96,6 +96,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
   const [diagOpen, setDiagOpen] = useState(false);
   const [lastSync, setLastSync] = useState<Date>(() => new Date());
   const [, force] = useState(0);
+  const [ordersInitialFilter, setOrdersInitialFilter] = useState<"all"|"unpaid"|"unshipped"|"flagged"|"refunded">("all");
   const navigate = useNavigate();
 
   // Re-render every 10s so the "last synchronized" timestamp ticks.
@@ -128,6 +129,13 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
     const { error } = await supabase.auth.signOut();
     if (error) console.error("[Admin Auth] Sign out failed", error);
     navigate({ to: "/admin/login", replace: true });
+  };
+
+  const handleNavigate = (s: SectionId, opts?: { ordersFilter?: "unshipped"|"unpaid"|"flagged"|"refunded" }) => {
+    if (s === "orders" && opts?.ordersFilter) {
+      setOrdersInitialFilter(opts.ordersFilter);
+    }
+    setActive(s);
   };
 
   return (
@@ -211,6 +219,14 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
                 <option key={s.id} value={s.id}>{s.label}</option>
               ))}
             </select>
+            <button
+              type="button"
+              onClick={signOut}
+              className="inline-flex items-center h-9 px-3 border border-ink/15 bg-background text-[11px] tracking-[0.18em] uppercase text-foreground/70 hover:bg-ink hover:text-background hover:border-ink transition-colors"
+              title="Sign out of admin"
+            >
+              Sign out
+            </button>
           </div>
         </header>
         <div className="p-6 md:p-10">
@@ -227,10 +243,10 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
               {diagOpen && <AdminAuthDebugPanel debug={debug} />}
             </div>
           )}
-          {active === "overview" && <OverviewPanel onNavigate={setActive} />}
+          {active === "overview" && <OverviewPanel onNavigate={handleNavigate} />}
           {active === "activity" && <ActivityPanel />}
           {active === "audit" && <AuditLogPanel />}
-          {active === "orders" && <OrdersPanel />}
+          {active === "orders" && <OrdersPanel initialQuickFilter={ordersInitialFilter} />}
           {active === "referrals" && <ReferralsPanel />}
           {active === "payouts" && <PayoutsPanel />}
           {active === "products" && <ProductsPanel />}
