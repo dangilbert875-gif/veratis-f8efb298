@@ -22,24 +22,17 @@ function ConfirmationPage() {
     queryFn: () => fetcher({ data: { order_number: orderNumber } }),
     refetchInterval: 30_000,
   });
-  const rateFetcher = useServerFn(getBtcUsdRate);
-  const { data: rateData } = useQuery({
-    queryKey: ["btc-usd-rate"],
-    queryFn: () => rateFetcher(),
-    refetchInterval: 60_000,
-    staleTime: 30_000,
-  });
 
   if (isLoading) {
     return (
-      <Layout>
+      <Layout hideFooter>
         <PageHeader eyebrow="— Order" title="Loading order…" />
       </Layout>
     );
   }
   if (error || !data) {
     return (
-      <Layout>
+      <Layout hideFooter>
         <PageHeader eyebrow="— Order" title="Order not found" />
         <section className="px-6 lg:px-12 py-16 max-w-3xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">
@@ -52,15 +45,6 @@ function ConfirmationPage() {
       </Layout>
     );
   }
-
-  const expiresAt = data.payment_expires_at ? new Date(data.payment_expires_at) : null;
-  const paid = data.payment_status === "confirmed" || data.payment_received_at;
-  const liveRate = rateData?.rate ?? null;
-  const liveBtcAmount =
-    liveRate && Number(data.total_usd) > 0
-      ? (Number(data.total_usd) / liveRate).toFixed(8)
-      : null;
-  const displayBtcAmount = liveBtcAmount ?? (data.btc_amount ? String(data.btc_amount) : null);
 
   return (
     <Layout hideFooter>
