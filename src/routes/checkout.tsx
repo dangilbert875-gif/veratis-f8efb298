@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
+import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
@@ -62,9 +62,53 @@ function CheckoutPage() {
   const total = subtotal + shippingCost;
 
   const fetchRate = useServerFn(getBtcUsdRate);
+  const checkPromo = useServerFn(validatePromoCode);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+
+  // Promo / referral code
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<{
+    code: string;
+    discount_type: "percent" | "fixed";
+    discount_amount: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoChecking, setPromoChecking] = useState(false);
+
+  async function applyPromo() {
+    setPromoError(null);
+    const raw = promoInput.trim();
+    if (!raw) return;
+    setPromoChecking(true);
+    try {
+      const res = await checkPromo({ data: { code: raw } });
+      if (!res.valid) {
+        setPromo(null);
+        setPromoError(res.error || "Invalid code");
+      } else {
+        setPromo({
+          code: res.code,
+          discount_type: res.discount_type,
+          discount_amount: res.discount_amount,
+        });
+      }
+    } catch (e: any) {
+      setPromoError(e?.message || "Could not validate code");
+    } finally {
+      setPromoChecking(false);
+    }
+  }
+
+  const discountAmount = (() => {
+    if (!promo) return 0;
+    const raw = promo.discount_type === "fixed"
+      ? Math.min(promo.discount_amount, subtotal)
+      : Math.min((subtotal * promo.discount_amount) / 100, subtotal);
+    return Math.round(raw * 100) / 100;
+  })();
+  const totalAfterDiscount = Math.max(0, total - discountAmount);
 
   // Payment proof
   const [proofOpen, setProofOpen] = useState(false);
@@ -201,6 +245,7 @@ function CheckoutPage() {
           })),
           payment_proof_url: proofUrl,
           payment_tx_id: txId.trim() || null,
+          promo_code: promo?.code ?? null,
         },
       });
       clear();
