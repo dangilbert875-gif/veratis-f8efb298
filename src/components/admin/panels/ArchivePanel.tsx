@@ -734,13 +734,17 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
           <Section title="Documentation">
             <div className="space-y-3">
               <FileSlot
-                label="COA (PDF)"
+                label="COA (PDF, PNG, JPG)"
                 path={form.coa_url}
                 busy={uploading === "coa_url"}
                 onUpload={(f) => handleUpload(f, "coa-pdfs", "coa_url")}
                 onPeek={(p) => peek("coa-pdfs", p)}
                 onClear={() => set("coa_url", "")}
-                accept="application/pdf"
+                accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
+                getPreviewUrl={async (p) => {
+                  const r = await sign({ data: { bucket: "coa-pdfs", path: p } });
+                  return (r as any).url as string;
+                }}
               />
               <FileSlot
                 label="LC-MS chromatogram"
