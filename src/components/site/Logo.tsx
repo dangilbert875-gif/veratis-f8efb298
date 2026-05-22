@@ -12,7 +12,7 @@ type Props = {
  * re-typing the brand name in markup so the logo stays consistent
  * across header, footer, age gate, packaging mockups, etc.
  */
-export function Logo({ className = "", height, alt = "VERATIS" }: Props) {
+export function Logo({ className = "", height, alt = "VERATIS research peptides logo" }: Props) {
   return (
     <img
       src={logoUrl}
