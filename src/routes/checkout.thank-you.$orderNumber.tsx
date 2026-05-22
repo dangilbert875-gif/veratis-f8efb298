@@ -9,7 +9,7 @@ export const Route = createFileRoute("/checkout/thank-you/$orderNumber")({
   head: () => ({
     meta: [
       { title: "Thank you — VERATIS" },
-      { name: "description", content: "Your order has been received. Awaiting Bitcoin payment verification." },
+      { name: "description", content: "Your order has been received and payment is being verified." },
       { name: "robots", content: "noindex" },
     ],
   }),
