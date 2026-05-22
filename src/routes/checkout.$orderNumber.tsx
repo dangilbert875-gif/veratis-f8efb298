@@ -69,7 +69,11 @@ function ConfirmationPage() {
         <div className="border border-border rounded-[3px] bg-background">
           <div className="px-6 py-5 space-y-3">
             <p className="text-[12.5px] text-foreground/80 leading-relaxed">
-              Thank you for your order. We've received your payment and are verifying it on-chain now. You'll receive a confirmation email at{" "}
+              Thank you for your order.{" "}
+              {(data as any).payment_method === "venmo"
+                ? "We've received your Venmo payment submission and will verify it shortly."
+                : "We've received your payment and are verifying it on-chain now."}{" "}
+              You'll receive a confirmation email at{" "}
               <span className="font-mono text-ink">{data.customer_email}</span>{" "}
               within 48 hours once your order ships.
             </p>
