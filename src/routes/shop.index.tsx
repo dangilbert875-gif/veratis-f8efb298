@@ -111,7 +111,7 @@ function ShopPage() {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const mq = window.matchMedia("(max-width: 639px)");
+    const mq = window.matchMedia("(max-width: 767px)");
     const update = () => setIsMobile(mq.matches);
     update();
     mq.addEventListener("change", update);
@@ -395,7 +395,7 @@ function ShopPage() {
             {filtered.length === 0 ? (
               <EmptyCategory category={filter} />
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-12 md:gap-y-16">
                 {visible.map((p) => {
                   const stock = stockForSlug(p.slug);
                   return (
