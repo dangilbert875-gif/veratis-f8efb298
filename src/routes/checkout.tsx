@@ -863,9 +863,9 @@ function Field({ label, required, children }: { label: string; required?: boolea
 }
 function Review({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="py-3 border-b border-border last:border-b-0 grid grid-cols-[120px_1fr] gap-4 text-[12.5px]">
-      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {label}</p>
-      <div className="text-ink space-y-0.5">{children}</div>
+    <div className="py-3 border-b border-border last:border-b-0 grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)] gap-2 sm:gap-4 text-[12.5px]">
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-foreground/55">— {label}</p>
+      <div className="text-ink space-y-0.5 min-w-0">{children}</div>
     </div>
   );
 }
