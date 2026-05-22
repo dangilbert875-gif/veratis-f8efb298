@@ -1031,9 +1031,9 @@ function VenmoPaymentBlock({
 
       {/* QR */}
       <div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan Venmo QR code</p>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
-          <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2 text-center sm:text-left">— Scan Venmo QR code</p>
+        <div className="flex flex-col items-center sm:flex-row sm:items-center gap-3 min-w-0">
+          <div className="shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
             <QRCodeSVG
               value={VENMO_DEEPLINK}
               size={128}
@@ -1041,7 +1041,7 @@ function VenmoPaymentBlock({
               marginSize={0}
             />
           </div>
-          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1 min-w-0">
+          <p className="text-[11.5px] text-foreground/70 leading-relaxed text-center sm:text-left sm:flex-1 min-w-0">
             Scan with your Venmo app or tap the handle above to copy. The QR opens the{" "}
             <span className="font-mono text-ink">@{VENMO_HANDLE}</span> Venmo profile.
           </p>
