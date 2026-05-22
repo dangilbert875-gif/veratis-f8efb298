@@ -105,7 +105,7 @@ export function ProductCard({
   const pricePerMg = totalMg > 0 ? p.price / totalMg : null;
 
   return (
-    <article className="group w-full max-w-full min-w-0 mx-auto">
+    <article className={`group w-full max-w-full min-w-0 mx-auto ${compactImage ? "max-[639px]:max-w-[340px]" : ""}`}>
       <Link
         to="/shop/$slug"
         params={{ slug: p.slug }}
