@@ -1,59 +1,77 @@
-# Phase 2.5 — Operational UX & Workflow
+## Veratis Operations Console — Refinement Plan
 
-Scope is 17 sections — too large to land in one safe pass without regressions. Proposing **4 sub-phases**, each independently shippable, preserving the existing VERATIS monochrome aesthetic. No public storefront changes.
+This is a large change touching the overview, quick actions, header, orders panel, order detail, plus two brand-new pages. To keep each step verifiable, I'll ship it in 4 phases. After each phase the console remains fully usable.
 
-## Sub-phase A — Shell & Foundation (ship first)
+---
 
-1. **Admin shell upgrade** (`src/routes/admin.tsx`)
-   - Persistent top bar with global command bar trigger (⌘K).
-   - Subtle status token system added to `src/styles.css`: `--state-success`, `--state-warning`, `--state-danger`, `--state-archived` (all muted/desaturated).
-2. **Global Command Bar** (§1)
-   - `cmdk` palette; fuzzy search over products, orders, customers, articles, lots, affiliates, research partners.
-   - Quick actions: new product, upload COA, publish article, create affiliate, create customer note, create order.
-   - Recent searches + recently viewed (localStorage).
-3. **Dashboard prioritization + Quick Actions + Alerts** (§2, §13, §14)
-   - Reorder dashboard: Orders → Verification/COAs → Inventory → Customers → secondary.
-   - Quick-action row at top.
-   - Alerts strip: low inventory, expired lots, pending payouts, failed uploads.
-4. **Improved empty states** (§5) across all existing panels.
+### Phase 1 — Overview + Quick Actions + ⌘K hint
 
-## Sub-phase B — Activity, Audit, Relationships
+**Files:** `OverviewPanel.tsx`, `QuickActions.tsx`, `AdminDashboard.tsx`, `admin.functions.ts` (extend `getAdminOverview`)
 
-5. **Operational activity feed** (§3) — reads `audit_logs` + `verification_logs` + `article_views`, filterable.
-6. **Audit log viewer** (§15) — dedicated panel with before/after diff (already captured by `log_audit_change`).
-7. **Relational linking** (§6) — show linked entities on product/customer/article/COA detail drawers; all clickable.
-8. **Internal notes** (§8) — new `internal_notes` table (polymorphic: entity_type + entity_id), with pinning + markdown.
+- Add global time-scope toggle: `Today / 7d / 30d / All time`. Passed to overview server fn; recomputes revenue, orders, new customers for the chosen window.
+- Reorder hero into three rows:
+  - **Row 1 — Action required** (large, clickable → orders panel pre-filtered): Orders to Ship, Awaiting Payment, Flagged, Active Alerts (count).
+  - **Row 2 — Time-scoped**: Revenue, Orders, New Customers (scope toggle applies).
+  - **Row 3 — Inventory health**: Low-stock SKUs, Lots expiring ≤30d, COAs pending upload. Each navigates to inventory / coa panels.
+- Rewrite `QuickActions`:
+  - **Fulfillment row**: Print Today's Labels (badge = today's unshipped paid count), Today's Picking List (same count, navigates to new page), Mark Batch Shipped (opens bulk modal), Process Refunds (badge = refund-requested count).
+  - **Inventory row**: Upload COA (badge = pending), Add New Lot, Adjust Stock.
+  - **Admin row** (collapsed under "Show admin actions"): existing 6 creator actions.
+- `AdminDashboard` header: add `⌘K to search` muted mono pill on all pages (currently only on overview as wide search). Keep existing search input on desktop; show compact `⌘K` chip on smaller widths and for non-overview sections.
 
-## Sub-phase C — Tables, Bulk, Exports
+---
 
-9. **Table UX** (§12) — reusable `<DataTable>` with pagination, sticky headers, sorting, inline search, page size; applied to products/orders/customers/articles/lots.
-10. **Bulk actions** (§7) — checkbox selection + bulk publish/archive/tag/ship/export.
-11. **CSV/JSON exports + backup history** (§11) — server function streaming exports; `export_history` table.
+### Phase 2 — Orders table upgrade
 
-## Sub-phase D — Roles, Media, Polish
+**Files:** `OrdersPanel.tsx` (substantial rewrite), `admin.functions.ts` (extend `listOrders` with search/pagination/sort/filter; add `getCustomerLifetime`).
 
-12. **Expanded admin roles** (§10) — extend `app_role` enum: `super_admin`, `operations`, `fulfillment`, `editor`, `affiliate_manager`, `research_manager`. Role-permission matrix + management UI. Existing `admin` maps to `super_admin`.
-13. **Centralized media library** (§9) — unified browser over `product-images`, `article-images`, `coa-pdfs`, `chromatograms`, `raw-lab-data` with tagging table.
-14. **Performance polish** (§16) — skeletons, optimistic updates via TanStack Query, debounced search.
+- Stat cards become clickable filter chips; active filter renders as chip with `[×]` above table.
+- Search bar (order #, customer name, email) + Filter button opening side panel (payment multi, fulfillment multi, date range, country, product, flagged only, >$500 only).
+- Columns: `☐  Order#  Date(rel)  Customer  Items(chip+hover)  Total  Payment  Fulfillment  Country(flag)  Actions(hover)`. Sortable column headers, default Date desc.
+- Row-hover action cluster: View · Mark Paid · Print Label · `⋯` menu.
+- Pagination: prev/next + page-size (25/50/100).
+- Sticky bulk-action bar when ≥1 row checked: Mark Paid · Mark Shipped · Print Labels · Print Packing Slips · Export CSV · Cancel · `×`.
 
-## Technical notes
+---
 
-- New tables (Sub-phase B/C/D):
-  - `internal_notes(id, entity_type, entity_id, author_id, body_md, pinned, created_at, updated_at)`
-  - `export_history(id, kind, format, generated_by, row_count, file_path, created_at)`
-  - `media_tags(asset_path, bucket, tags[], uploaded_by, created_at)`
-- Enum extension for roles requires careful migration (Postgres `ALTER TYPE ... ADD VALUE`, non-transactional).
-- Activity feed driven entirely by existing `audit_logs` — no schema change needed.
-- All new UI components reuse `src/components/admin/ui.tsx` primitives.
+### Phase 3 — Order detail rebuild
 
-## What I will NOT do
+**File:** `OrdersPanel.tsx` detail subview (or split into `OrderDetail.tsx`).
 
-- Touch public storefront, marketing pages, branding.
-- Add bright SaaS colors, charts, or animations beyond subtle transitions.
-- Introduce dashboards-with-graphs aesthetic.
+- Three-column desktop layout (40 / 35 / 25), single-column mobile.
+- **LEFT**: Order summary, **new Line Items table** with per-line Lot dropdown (writes to `order_items.lot_number`), subtotal/shipping/tax/total, status action buttons (Mark Paid, Mark Shipped). Remove redundant status dropdowns — action buttons only.
+- **CENTER**: Customer (name clickable → side panel with lifetime stats from new `getCustomerLifetime` fn), Shipping, Billing. Email shows explicit copy icon (replaces underline).
+- **RIGHT**: Vertical timeline (placed → payment → fulfillment → delivery, ● complete / ○ pending), Internal Notes (reuse existing `InternalNotes`), Flag strip (first-time, international, ship≠bill, >$500, flagged).
+- Top-right actions: Print Packing Slip, Print Shipping Label, explicit More dropdown (Duplicate, Resend confirmation, Add to do-not-ship, Export PDF, Archive).
+- Toast feedback on all mutations; undo toast for destructive actions (cancel/refund) within 6s.
+- "Last updated" timestamp under order header.
 
-## Recommended execution order
+---
 
-Ship **Sub-phase A** now (shell + command bar + dashboard reorg + alerts + empty states). This is the highest leverage and unblocks everything else visually. After your approval of A, I continue with B, C, D in sequence.
+### Phase 4 — New pages + small UX
 
-Reply **"proceed with A"** (or specify a different sub-phase / subset) to start.
+**New files:** `panels/PickingListPanel.tsx`, `panels/InventoryPanel.tsx`. **Edited:** `AdminDashboard.tsx` (nav entries), `admin.functions.ts` (`getPickingList`, `getLotInventory`).
+
+- **Picking List** (`Console → Picking list`, also linked from Quick Actions): aggregates today's unshipped paid orders into SKU → total qty → lots required table. Print Picking List / All Labels / All Packing Slips buttons. Below: per-order checklist (Packed → Shipped progression, persists via `patchOrder`).
+- **Inventory** (`Operations → Inventory`): lot table — Lot, SKU, Stock, Status (Active / LOW / OUT, color dot), COA (Live / Missing). Low-stock threshold editable inline (writes to `products.low_stock_threshold`). Out-of-stock auto-toggles `products.stock_status='out_of_stock'`.
+- Keyboard shortcut hints in order detail (`P` = mark paid, `S` = mark shipped, `L` = print label) shown as muted kbd hints.
+
+---
+
+### Notes on scope & constraints
+
+- Preserves serif headers, mono labels, monochrome palette; accents only for status (amber/green/red/blue dots and pills).
+- No gradients, shadows, or skeuomorphism.
+- Print actions in Phase 1–4 are wired to a `window.print()` route variant — actual label PDF generation is out of scope and can be a follow-up; buttons trigger placeholder print views that render the appropriate document.
+- Customer history side panel surfaces aggregate stats only (no new PII exposure).
+- All server-side reads continue to use `requireSupabaseAuth` + `assertAdmin`.
+
+---
+
+### Out of scope for this pass
+
+- Real shipping-carrier API integration (label PDF generation stays as printable HTML view).
+- Fixing the unrelated security-scan findings shown in the Security view (payment-proofs bucket, public BTC wallet read, checkout order PII enumeration, etc.) — happy to do those next; flag if you want them folded in.
+- Migrating order/lot data; uses existing schema.
+
+Ship Phase 1 first, then I'll proceed through 2 → 4 unless you want to reorder.
