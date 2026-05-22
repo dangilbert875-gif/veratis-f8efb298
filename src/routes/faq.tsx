@@ -45,8 +45,9 @@ export const Route = createFileRoute("/faq")({
       { name: "description", content: "Answers about purity testing, shipping, storage, and intended use of our research peptides." },
       { property: "og:title", content: "FAQ — VERATIS" },
       { property: "og:description", content: "Common questions on purity verification, cold-chain shipping, storage, and intended laboratory use." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/faq" },
+      { property: "og:url", content: "https://veratisbio.com/faq" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/faq" }],
     scripts: [
       {
         type: "application/ld+json",
