@@ -759,7 +759,9 @@ function CheckoutPage() {
             </div>
             <div className="px-6 py-5 space-y-5">
               <p className="text-[12.5px] text-foreground/75 leading-relaxed">
-                Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.
+                {paymentMethod === "venmo"
+                  ? <>Attach a screenshot of your completed Venmo payment showing the amount, recipient <span className="font-mono text-ink">@{VENMO_HANDLE}</span>, and your Order&nbsp;# in the note. A transaction ID is optional.</>
+                  : <>Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.</>}
               </p>
 
               <div>
@@ -779,10 +781,10 @@ function CheckoutPage() {
                   <label className="flex flex-col items-center justify-center gap-2 px-4 py-8 border border-dashed border-border rounded-[3px] bg-mist/30 cursor-pointer hover:border-ink/40 transition-colors">
                     <ImageIcon size={18} className="text-foreground/55" strokeWidth={1.5} />
                     <span className="text-[12px] text-foreground/70">Click to upload an image</span>
-                    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/45">PNG · JPG · up to 10MB</span>
+                    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/45">PNG · JPG · PDF · up to 10MB</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf"
                       className="hidden"
                       onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
                     />
