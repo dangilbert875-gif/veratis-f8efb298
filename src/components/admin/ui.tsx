@@ -18,14 +18,19 @@ export function Card({ title, hint, children, action }: { title?: string; hint?:
   );
 }
 
-export function Stat({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
-  return (
-    <div className="group border border-ink/10 bg-background p-5 transition-colors hover:border-ink/25">
+export function Stat({ label, value, sub, onClick }: { label: string; value: ReactNode; sub?: string; onClick?: () => void }) {
+  const className = "group border border-ink/10 bg-background p-5 transition-colors hover:border-ink/25 text-left w-full";
+  const content = (
+    <>
       <div className="text-[9.5px] tracking-[0.28em] uppercase text-foreground/50">{label}</div>
       <div className="mt-2 text-[26px] font-medium tracking-tight tabular-nums text-ink">{value}</div>
       {sub && <div className="mt-1 text-[11px] text-foreground/55">{sub}</div>}
-    </div>
+    </>
   );
+  if (onClick) {
+    return <button type="button" onClick={onClick} className={className + " cursor-pointer hover:bg-mist/30"}>{content}</button>;
+  }
+  return <div className={className}>{content}</div>;
 }
 
 /** Dominant operational KPI card. Slightly larger, anchors the dashboard. */
