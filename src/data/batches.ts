@@ -24,6 +24,9 @@ export type Batch = {
   method: string;
   released: boolean;
   notes?: string;
+  /** Storage path inside the private `coa-pdfs` bucket. Empty when only a
+   *  generated, unsigned COA exists (legacy / fallback rows). */
+  coaUrl?: string;
 };
 
 export const labPartner = {

@@ -25,6 +25,7 @@ export function mapDbLot(row: any): Batch {
     method: row.identity_method ?? "—",
     released: true,
     notes: undefined,
+    coaUrl: row.coa_url ?? undefined,
   };
 }
 

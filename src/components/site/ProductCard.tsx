@@ -255,7 +255,7 @@ export function ProductCard({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              downloadCoa({
+              void downloadCoa({
                 lot,
                 product: title,
                 size: sizeFor(p.size),
