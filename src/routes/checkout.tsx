@@ -992,9 +992,9 @@ function VenmoPaymentBlock({
         <button
           type="button"
           onClick={() => onCopy("venmoHandle", `@${VENMO_HANDLE}`)}
-          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+          className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
         >
-          <span className="text-[13px] text-ink font-mono">@{VENMO_HANDLE}</span>
+          <span className="text-[13px] text-ink font-mono break-all min-w-0">@{VENMO_HANDLE}</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
             {copied === "venmoHandle" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
           </span>
@@ -1007,9 +1007,9 @@ function VenmoPaymentBlock({
         <button
           type="button"
           onClick={() => onCopy("venmoAmt", amountStr)}
-          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+          className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
         >
-          <span className="text-[13px] text-ink font-mono tabular-nums">${amountStr}</span>
+          <span className="text-[13px] text-ink font-mono tabular-nums break-all min-w-0">${amountStr}</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
             {copied === "venmoAmt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
           </span>
@@ -1022,9 +1022,9 @@ function VenmoPaymentBlock({
         <button
           type="button"
           onClick={() => onCopy("venmoOrder", orderNumber)}
-          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-ink/60 rounded-[3px] bg-mist/50 hover:bg-mist/70 transition-colors text-left"
+          className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-ink/60 rounded-[3px] bg-mist/50 hover:bg-mist/70 transition-colors text-left"
         >
-          <span className="text-[13px] text-ink font-mono tabular-nums">{orderNumber}</span>
+          <span className="text-[13px] text-ink font-mono tabular-nums break-all min-w-0">{orderNumber}</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
             {copied === "venmoOrder" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
           </span>
