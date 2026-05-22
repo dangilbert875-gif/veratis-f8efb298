@@ -157,7 +157,7 @@ function ProductPage() {
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
   return (
     <Layout>
-      <div className="mx-auto max-w-7xl px-6 pt-10 pb-6 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 pt-8 sm:pt-10 pb-6 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 truncate">
         <Link to="/" className="hover:text-ink transition">Home</Link>
         <span className="mx-2 text-foreground/55">/</span>
         <Link to="/shop" className="hover:text-ink transition">Catalog</Link>
@@ -165,10 +165,10 @@ function ProductPage() {
         <span className="text-ink">{title}</span>
       </div>
 
-      <section className="mx-auto max-w-7xl px-6 pb-20 grid md:grid-cols-12 gap-12 lg:gap-20">
+      <section className="mx-auto max-w-7xl px-5 sm:px-6 pb-20 grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-20">
         {/* Specimen frame with registration ticks + spec footer */}
         <div className="md:col-span-7">
-          <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border">
+          <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border w-full max-w-[320px] sm:max-w-none mx-auto">
             {[
               "top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0",
             ].map((pos) => (
@@ -184,24 +184,24 @@ function ProductPage() {
                 alt={`${title} — lyophilized research vial`}
               />
             </div>
-            <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/55">
-              <span>Specimen · {title}</span>
-              <span className="tabular-nums">LOT {lotId}</span>
+            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em] text-foreground/55">
+              <span className="truncate">Specimen · {title}</span>
+              <span className="tabular-nums whitespace-nowrap">LOT {lotId}</span>
             </div>
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/50">
-              <span>{sizeLabel} · Lyophilized · {p.purity} HPLC</span>
-              <span>Format A · 1:1</span>
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em] sm:tracking-[0.16em] text-foreground/50">
+              <span className="truncate">{sizeLabel} · {p.purity} HPLC</span>
+              <span className="whitespace-nowrap hidden sm:inline">Format A · 1:1</span>
             </div>
           </div>
         </div>
 
         <div className="md:col-span-5">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center flex-wrap gap-x-3 gap-y-2">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">{p.category}</p>
             <span className="h-px w-6 bg-foreground/20" />
             <LotTag lot={lotId} status="verified" linked />
           </div>
-          <h1 className="mt-5 text-4xl md:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.022em]">{title}</h1>
+          <h1 className="mt-5 text-3xl sm:text-4xl md:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.022em] [text-wrap:balance] break-words">{title}</h1>
           <p className="mt-5 text-[15px] text-muted-foreground leading-relaxed">{p.short}</p>
 
           <div className="mt-9 flex items-baseline gap-3 pb-6 border-b border-border">
@@ -209,7 +209,7 @@ function ProductPage() {
             <span className="text-[12px] font-mono uppercase tracking-[0.16em] text-foreground/55">/ {sizeLabel}</span>
           </div>
 
-          <p className="mt-4 inline-flex items-center gap-2 px-3 py-2 rounded-[3px] border border-amber-200/70 bg-amber-50/60 text-[11px] font-mono uppercase tracking-[0.14em] text-amber-900">
+          <p className="mt-4 inline-flex items-start sm:items-center gap-2 px-3 py-2 rounded-[3px] border border-amber-200/70 bg-amber-50/60 text-[10.5px] sm:text-[11px] font-mono uppercase tracking-[0.12em] sm:tracking-[0.14em] text-amber-900 leading-snug">
             For research use only · not for human or veterinary consumption
           </p>
 
@@ -226,27 +226,27 @@ function ProductPage() {
               ["Lot", lotId],
               ["Assayed by", `${labPartner.name} · ${labPartner.iso}`],
             ].map(([k, v]) => (
-              <div key={k} className="grid grid-cols-[140px_1fr] gap-4 text-[12.5px] px-5 py-3">
-                <dt className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 self-center">{k}</dt>
-                <dd className="text-ink tabular-nums">{v}</dd>
+              <div key={k} className="grid grid-cols-[110px_1fr] sm:grid-cols-[140px_1fr] gap-3 sm:gap-4 text-[12px] sm:text-[12.5px] px-4 sm:px-5 py-3">
+                <dt className="text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/50 self-center">{k}</dt>
+                <dd className="text-ink tabular-nums break-words min-w-0">{v}</dd>
               </div>
             ))}
           </dl>
 
-          <div className="mt-7 flex gap-3">
-            <div className="flex items-center border border-border rounded-[3px]">
+          <div className="mt-7 flex flex-wrap sm:flex-nowrap gap-3">
+            <div className="flex items-center border border-border rounded-[3px] h-12 sm:h-auto">
               <button
                 onClick={() => setQty((q) => Math.max(1, q - 1))}
                 aria-label="Decrease quantity"
-                className="px-4 py-3 text-foreground/70 hover:text-ink transition"
+                className="inline-flex items-center justify-center w-11 h-11 sm:w-auto sm:h-auto sm:px-4 sm:py-3 text-foreground/70 hover:text-ink transition"
               >
                 −
               </button>
-              <span className="px-3 text-sm tabular-nums">{qty}</span>
+              <span className="px-3 text-sm tabular-nums min-w-[2ch] text-center">{qty}</span>
               <button
                 onClick={() => setQty((q) => q + 1)}
                 aria-label="Increase quantity"
-                className="px-4 py-3 text-foreground/70 hover:text-ink transition"
+                className="inline-flex items-center justify-center w-11 h-11 sm:w-auto sm:h-auto sm:px-4 sm:py-3 text-foreground/70 hover:text-ink transition"
               >
                 +
               </button>
@@ -254,13 +254,13 @@ function ProductPage() {
             <button
               onClick={() => available && addItem(p, qty)}
               disabled={!available}
-              className="flex-1 bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.16em] px-6 py-3.5 hover:bg-ink/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 min-w-full sm:min-w-0 bg-ink text-background rounded-[3px] text-[12px] font-medium uppercase tracking-[0.16em] px-6 h-12 sm:h-auto sm:py-3.5 hover:bg-ink/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {available ? `Add to Cart · $${(p.price * qty).toFixed(0)}` : "Reserved"}
             </button>
           </div>
 
-          <div className="mt-5 flex items-center justify-between text-[11px] text-muted-foreground">
+          <div className="mt-5 flex items-center justify-between flex-wrap gap-y-2 gap-x-4 text-[11px] text-muted-foreground">
             <Link to="/verify" className="inline-flex items-center gap-2 text-ink hover:text-primary transition">
               <FileText size={13} /> Retrieve COA for lot {lotId}
             </Link>
@@ -306,7 +306,7 @@ function ProductPage() {
       )}
 
       {/* Details accordion */}
-      <section className="mx-auto max-w-4xl px-6 py-20">
+      <section className="mx-auto max-w-4xl px-5 sm:px-6 py-16 sm:py-20">
         <Accordion type="multiple" className="border-t border-border">
           {[
             {
@@ -348,8 +348,8 @@ function ProductPage() {
       {/* Related products */}
       {relatedList.length > 0 && (
         <section className="border-t border-border">
-          <div className="mx-auto max-w-7xl px-6 py-20">
-            <div className="flex items-end justify-between mb-10">
+          <div className="mx-auto max-w-7xl px-5 sm:px-6 py-16 sm:py-20">
+            <div className="flex items-end justify-between mb-10 gap-4">
               <div>
                 <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Related compounds</p>
                 <h2 className="text-2xl md:text-3xl text-ink">In the same research area</h2>
@@ -358,7 +358,7 @@ function ProductPage() {
                 Shop all →
               </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-5 sm:gap-x-8 gap-y-12">
               {relatedList.map((rp) => <ProductCard key={rp.slug} p={rp} />)}
             </div>
           </div>
