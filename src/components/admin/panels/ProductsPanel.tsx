@@ -191,44 +191,54 @@ function ProductRow({
     row.status === "out_of_stock" ? "warn" : "bad";
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 px-5 py-3 hover:bg-mist/30">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="grid grid-cols-[auto_minmax(0,1fr)_auto] md:grid-cols-[auto_minmax(0,1fr)_auto_auto_auto_auto] items-center gap-x-3 gap-y-2 px-5 py-3 hover:bg-mist/30"
+    >
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-foreground/40 hover:text-ink px-1 text-[14px]"
+        className="cursor-grab active:cursor-grabbing text-foreground/40 hover:text-ink px-1 text-[14px] self-start md:self-center"
         aria-label="Drag to reorder"
       >
         ⋮⋮
       </button>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-3">
-          <button onClick={onEdit} className="text-[13px] font-medium tracking-tight text-ink hover:underline truncate">
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={onEdit} className="text-[13px] font-medium tracking-tight text-ink hover:underline truncate max-w-full">
             {row.name}
           </button>
-          <StatusPill tone={tone as any}>{row.status}</StatusPill>
           {row.featured && <StatusPill tone="neutral">Featured</StatusPill>}
         </div>
         <div className="mt-0.5 text-[11px] text-foreground/55 font-mono truncate">
           {row.slug} · {row.category ?? "uncategorised"}
         </div>
       </div>
-      <div className="text-right tabular-nums text-[12.5px] w-24">{formatUSD(row.price_usd)}</div>
-      <div className="text-right tabular-nums text-[11px] text-foreground/60 w-16">
+      <div className="text-right tabular-nums text-[12.5px] md:w-24 whitespace-nowrap">
+        {formatUSD(row.price_usd)}
+        <span className="md:hidden ml-2 text-[11px] text-foreground/55">· {row.inventory_count ?? 0} in stock</span>
+      </div>
+      <div className="hidden md:block text-right tabular-nums text-[11px] text-foreground/60 w-16">
         {row.inventory_count ?? 0}
       </div>
-      <select
-        value={row.status}
-        onChange={(e) => onStatusChange(e.target.value)}
-        className="h-8 px-2 text-[11px] border border-ink/15 bg-background"
-      >
-        <option value="draft">Draft</option>
-        <option value="published">Published</option>
-        <option value="out_of_stock">Out of stock</option>
-        <option value="archived">Archived</option>
-      </select>
-      <GhostButton onClick={onEdit}>Edit</GhostButton>
-      <GhostButton onClick={onDuplicate}>Copy</GhostButton>
-      <GhostButton onClick={onArchive}>Archive</GhostButton>
+      <div className="col-span-3 md:col-span-1 md:w-auto">
+        <select
+          value={row.status}
+          onChange={(e) => onStatusChange(e.target.value)}
+          className={`h-8 px-2 text-[11px] border bg-background w-full md:w-36 ${tone === "ok" ? "border-emerald-700/30" : tone === "warn" ? "border-amber-700/30" : tone === "bad" ? "border-red-700/30" : "border-ink/15"}`}
+        >
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="out_of_stock">Out of stock</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+      <div className="col-span-3 md:col-span-1 flex flex-wrap gap-2 justify-end">
+        <GhostButton onClick={onEdit}>Edit</GhostButton>
+        <GhostButton onClick={onDuplicate}>Copy</GhostButton>
+        <GhostButton onClick={onArchive}>Archive</GhostButton>
+      </div>
     </div>
   );
 }
