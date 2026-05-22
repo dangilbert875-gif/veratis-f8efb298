@@ -1,10 +1,10 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
 import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
-import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon } from "lucide-react";
+import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
 
@@ -67,6 +67,20 @@ function CheckoutPage() {
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+  const [rateRefreshing, setRateRefreshing] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  // Draft order reference shown to the buyer for support purposes before the
+  // real order_number is issued on submit. Persisted for the tab session.
+  const draftRef = useMemo(() => {
+    if (typeof window === "undefined") return "DRAFT-000000";
+    const key = "veratis:checkout:draft-ref";
+    const existing = window.sessionStorage.getItem(key);
+    if (existing) return existing;
+    const ref = "DRAFT-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    window.sessionStorage.setItem(key, ref);
+    return ref;
+  }, []);
 
   // Promo / referral code
   const [promoInput, setPromoInput] = useState("");
@@ -170,6 +184,35 @@ function CheckoutPage() {
     const id = setInterval(load, 60_000);
     return () => { cancelled = true; clearInterval(id); };
   }, [fetchRate]);
+
+  // Tick every second so the "Quote valid for …" countdown updates live.
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  async function refreshRate() {
+    setRateRefreshing(true);
+    try {
+      const r = await fetchRate();
+      if (r?.rate) {
+        setBtcRate(r.rate);
+        setRateFetchedAt(r.fetched_at);
+      }
+    } catch {}
+    setRateRefreshing(false);
+  }
+
+  const QUOTE_TTL_MS = 60_000;
+  const quoteMsLeft = rateFetchedAt
+    ? Math.max(0, QUOTE_TTL_MS - (now - new Date(rateFetchedAt).getTime()))
+    : 0;
+  const quoteCountdown = (() => {
+    const s = Math.ceil(quoteMsLeft / 1000);
+    const mm = String(Math.floor(s / 60)).padStart(2, "0");
+    const ss = String(s % 60).padStart(2, "0");
+    return `${mm}:${ss}`;
+  })();
   const btcAmount = btcRate && totalAfterDiscount > 0 ? (totalAfterDiscount / btcRate).toFixed(8) : null;
   function copyVal(kind: "addr" | "amt", value: string) {
     navigator.clipboard?.writeText(value);
@@ -179,7 +222,7 @@ function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <Layout>
+      <Layout hideFooter>
         <PageHeader eyebrow="— Checkout" title="Your cart is empty" />
         <section className="px-6 lg:px-12 py-20 max-w-3xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">Add specimens from the catalog before proceeding to checkout.</p>
@@ -262,13 +305,13 @@ function CheckoutPage() {
   }
 
   return (
-    <Layout>
+    <Layout hideFooter>
       <PageHeader eyebrow="— Checkout" title="Complete your order" />
 
       <section className="px-6 lg:px-12 py-12 max-w-6xl mx-auto grid lg:grid-cols-[1fr_380px] gap-12">
         {/* LEFT: form */}
         <div>
-          <StepRail step={step} />
+          <StepRail step={step} onJump={(n) => { if (n < step) setStep(n); }} />
 
           {step === 1 && (
             <Panel title="Contact information">
@@ -347,6 +390,18 @@ function CheckoutPage() {
           )}
 
           {step === 3 && (
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Reference (pre-payment)</p>
+                <p className="mt-0.5 font-mono text-[12.5px] text-ink tabular-nums">{draftRef}</p>
+              </div>
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 max-w-[260px] text-right">
+                Quote this if you need support before the payment confirms.
+              </p>
+            </div>
+          )}
+
+          {step === 3 && (
             <Panel title="Review & confirm">
               <Review label="Contact">
                 <p>{name}</p>
@@ -361,7 +416,7 @@ function CheckoutPage() {
               <Review label="Dispatch">
                 <p>Standard cold-chain · {shippingCost === 0 ? "Free" : `$${shippingCost}`}</p>
               </Review>
-              <Review label="Promo code">
+              <Review label="Referral code">
                 {promo ? (
                   <div className="space-y-1.5">
                     <p className="font-mono">
@@ -386,7 +441,8 @@ function CheckoutPage() {
                       <input
                         value={promoInput}
                         onChange={(e) => { setPromoInput(e.target.value); setPromoError(null); }}
-                        placeholder="Promo, discount, or referral code"
+                        placeholder=""
+                        aria-label="Referral code"
                         className={`${inp} mt-0 flex-1 uppercase font-mono`}
                         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
                       />
@@ -436,10 +492,14 @@ function CheckoutPage() {
                       >
                         <span className="text-[12.5px] text-ink break-all font-mono leading-relaxed">{BTC_ADDRESS}</span>
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0 self-end sm:self-auto">
-                          {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Tap to copy</>}
+                          {copied === "addr" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
                         </span>
                       </button>
                     </div>
+                    <p className="mt-2 flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
+                      <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
+                      Send the exact amount. Wrong amounts or batched exchange withdrawals may delay confirmation.
+                    </p>
                   </div>
 
                   {btcAmount && (
@@ -452,18 +512,34 @@ function CheckoutPage() {
                       >
                         <span className="text-[12.5px] text-ink break-all font-mono">{btcAmount} BTC</span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
-                          {copied === "amt" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                          {copied === "amt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
                         </span>
                       </button>
                     </div>
                   )}
 
-                  <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-                    — {btcRate
-                      ? `Rate: 1 BTC = $${btcRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot`
-                      : "Fetching live BTC/USD rate from Coinbase…"}
-                    {rateFetchedAt && btcRate ? ` · ${new Date(rateFetchedAt).toLocaleTimeString()}` : ""}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
+                    <span>
+                      — {btcRate
+                        ? `Rate: 1 BTC = $${btcRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot`
+                        : "Fetching live BTC/USD rate from Coinbase…"}
+                      {rateFetchedAt && btcRate ? ` · ${new Date(rateFetchedAt).toLocaleTimeString()}` : ""}
+                    </span>
+                    {btcRate && (
+                      <span className={`tabular-nums ${quoteMsLeft < 10_000 ? "text-amber-800" : "text-foreground/55"}`}>
+                        · Quote valid for {quoteCountdown}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={refreshRate}
+                      disabled={rateRefreshing}
+                      className="inline-flex items-center gap-1 text-foreground/70 hover:text-ink disabled:opacity-50"
+                    >
+                      <RefreshCw size={11} className={rateRefreshing ? "animate-spin" : ""} />
+                      {rateRefreshing ? "Refreshing" : "Refresh quote"}
+                    </button>
+                  </div>
                 </div>
               </Review>
             </Panel>
@@ -515,7 +591,9 @@ function CheckoutPage() {
                 {!proofConfirmed ? (
                   <button
                     onClick={() => setProofOpen(true)}
-                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
+                    disabled={!researchAffirmed}
+                    title={!researchAffirmed ? "Confirm the research-use affirmation first" : undefined}
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-ink"
                   >
                     <Upload size={14} /> I've sent payment — upload proof
                   </button>
@@ -540,9 +618,22 @@ function CheckoutPage() {
             {items.map((i) => (
               <li key={i.slug} className="px-5 py-3 flex justify-between gap-3 text-[12px]">
                 <div className="min-w-0">
-                  <p className="text-ink truncate">{i.name}</p>
+                  <Link
+                    to="/shop/$slug"
+                    params={{ slug: i.slug }}
+                    className="text-ink truncate hover:underline block"
+                    title="Open product page to re-verify this lot"
+                  >
+                    {i.name}
+                  </Link>
                   <p className="text-foreground/55 text-[10.5px] font-mono tabular-nums">
-                    LOT {i.lot} · ×{i.quantity}
+                    <Link
+                      to="/shop/$slug"
+                      params={{ slug: i.slug }}
+                      className="hover:text-ink hover:underline underline-offset-2"
+                    >
+                      LOT {i.lot}
+                    </Link>{" "}· ×{i.quantity}
                   </p>
                 </div>
                 <p className="tabular-nums text-ink shrink-0">${(i.price * i.quantity).toFixed(0)}</p>
@@ -697,7 +788,7 @@ function Row({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-function StepRail({ step }: { step: Step }) {
+function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) {
   const steps = ["Contact", "Shipping", "Review"];
   return (
     <ol className="flex items-center gap-3 mb-6 text-[10.5px] font-mono uppercase tracking-[0.2em]">
@@ -705,12 +796,21 @@ function StepRail({ step }: { step: Step }) {
         const n = (i + 1) as Step;
         const done = step > n;
         const active = step === n;
+        const tappable = done && !!onJump;
         return (
           <li key={s} className="flex items-center gap-3">
-            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full border ${active ? "bg-ink text-background border-ink" : done ? "bg-ink/10 border-ink/30 text-ink" : "border-border text-foreground/40"} tabular-nums text-[10px]`}>
-              {n}
-            </span>
-            <span className={active ? "text-ink" : done ? "text-foreground/70" : "text-foreground/40"}>{s}</span>
+            <button
+              type="button"
+              disabled={!tappable}
+              onClick={() => tappable && onJump!(n)}
+              className={`inline-flex items-center gap-2 ${tappable ? "cursor-pointer hover:opacity-80" : "cursor-default"}`}
+              aria-current={active ? "step" : undefined}
+            >
+              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full border ${active ? "bg-ink text-background border-ink" : done ? "bg-ink/10 border-ink/30 text-ink" : "border-border text-foreground/40"} tabular-nums text-[10px]`}>
+                {n}
+              </span>
+              <span className={active ? "text-ink" : done ? "text-foreground/70" : "text-foreground/40"}>{s}</span>
+            </button>
             {i < steps.length - 1 && <span className="w-8 h-px bg-border" />}
           </li>
         );
