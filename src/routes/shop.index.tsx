@@ -178,7 +178,7 @@ function ShopPage() {
 
       {/* Hero trust stat — mean purity promoted to top of catalog */}
       <section className="border-y border-border bg-mist/25">
-        <div className="mx-auto max-w-7xl px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="flex items-baseline gap-5">
             <span className="font-display text-[3rem] md:text-[3.75rem] leading-none text-ink tabular-nums">
               {avgPurity}%
@@ -229,7 +229,7 @@ function ShopPage() {
 
       {/* Operational metadata band */}
       <section className="border-y border-border bg-background">
-        <div className="mx-auto max-w-7xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-6 sm:gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
           <div className="flex items-center gap-3">
             <span className="text-foreground/60">Active SKUs</span>
             <span className="text-ink tabular-nums">{String(products.length).padStart(2, "0")}</span>
@@ -264,7 +264,7 @@ function ShopPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-14 md:py-20">
+      <section className="mx-auto max-w-7xl px-5 sm:px-6 py-14 md:py-20">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
           {/* Main column */}
           <div className="lg:col-span-9">
@@ -366,7 +366,7 @@ function ShopPage() {
             {filtered.length === 0 ? (
               <EmptyCategory category={filter} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-12 md:gap-y-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-14 md:gap-y-16">
                 {visible.map((p) => {
                   const stock = stockForSlug(p.slug);
                   return (
@@ -424,7 +424,7 @@ function ShopPage() {
 
       {/* Need help choosing? */}
       <section className="border-y border-border bg-mist/30">
-        <div className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-16 md:py-24">
           <div className="max-w-2xl">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Catalog tools</p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">Need help choosing?</h2>
@@ -457,7 +457,7 @@ function ShopPage() {
 
       {/* Catalog help bar — sits above footer */}
       <section className="bg-background border-t border-border">
-        <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[12.5px] text-foreground/75">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[12.5px] text-foreground/75">
           <p>Questions about purity, dosing, or COAs?</p>
           <div className="flex items-center gap-5 text-[12px]">
             <Link to="/faq" className="inline-flex items-center gap-1 text-ink hover:text-primary transition">
