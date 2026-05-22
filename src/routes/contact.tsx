@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { Mail, MessageCircle, Megaphone, MapPin, Clock, HelpCircle, Package, CheckCircle2 } from "lucide-react";
+import { Mail, MessageCircle, Megaphone, MapPin, Clock, HelpCircle, Package, CheckCircle2, Zap, ArrowRight } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
@@ -98,7 +98,7 @@ function Contact() {
       <PageHeader
         eyebrow="Contact"
         title="Talk to a chemist, not a script."
-        lead="Whether it's a batch question, a custom assay, or a wholesale inquiry — we respond within one business day."
+        lead="Reach us on Telegram for the fastest response. Email works too — we reply within one business day."
       />
 
       {/* Self-serve prompt */}
@@ -235,19 +235,23 @@ function Contact() {
             </p>
           </div>
 
-          <ContactCard
-            Icon={Mail}
-            label="Email"
-            value="support@veratisbio.com"
-            href="mailto:support@veratisbio.com"
-            helper="For all written inquiries. Tracked and logged."
-          />
+          {/* Channel notice */}
+          <div className="flex items-start gap-2 border border-primary/20 bg-primary/5 rounded-md px-4 py-3">
+            <Zap size={14} className="mt-0.5 text-primary shrink-0" />
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              <span className="text-ink font-medium">Telegram is our fastest response channel.</span> We also respond to emails — typically within one business day.
+            </p>
+          </div>
+
           <ContactCard
             Icon={MessageCircle}
             label="Telegram"
             value="@veratisbio"
             href="https://t.me/veratisbio"
-            helper="For private questions. Fastest response channel."
+            helper="Fastest way to reach us. Typical reply in under 30 minutes during support hours."
+            primary
+            badge="FASTEST RESPONSE"
+            cta={{ label: "Open Telegram", href: "https://t.me/veratisbio" }}
           />
           <ContactCard
             Icon={Megaphone}
@@ -255,6 +259,13 @@ function Contact() {
             value="@VeratisUpdates"
             href="https://t.me/VeratisUpdates"
             helper="Public announcements only. New lots, COAs, standards. No DMs."
+          />
+          <ContactCard
+            Icon={Mail}
+            label="Email"
+            value="support@veratisbio.com"
+            href="mailto:support@veratisbio.com"
+            helper="Also available for written inquiries. Typical reply within one business day. Tracked and logged."
           />
           <ContactCard
             Icon={MapPin}
@@ -303,30 +314,51 @@ function ContactCard({
   value,
   href,
   helper,
+  primary,
+  badge,
+  cta,
 }: {
   Icon: typeof Mail;
   label: string;
   value: string;
   href?: string;
   helper: string;
+  primary?: boolean;
+  badge?: string;
+  cta?: { label: string; href: string };
 }) {
-  const content = (
-    <span className="mt-2 text-ink whitespace-pre-line block hover:underline">{value}</span>
-  );
   return (
-    <div className="border border-border rounded-lg p-5 bg-mist/40">
-      <div className="flex items-center gap-2 text-primary">
-        <Icon size={16} />
-        <p className="text-xs font-mono uppercase tracking-[0.18em]">{label}</p>
+    <div className={`border rounded-lg bg-mist/40 ${primary ? "border-primary/30 p-6 bg-mist/70" : "border-border p-5"}`}>
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-2 text-primary">
+          <Icon size={16} />
+          <p className="text-xs font-mono uppercase tracking-[0.18em]">{label}</p>
+        </div>
+        {badge && (
+          <span className="inline-flex items-center bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
+            {badge}
+          </span>
+        )}
       </div>
       {href ? (
-        <a href={href} target="_blank" rel="noopener noreferrer">
-          {content}
+        <a href={href} target="_blank" rel="noopener noreferrer" className="mt-2 text-ink whitespace-pre-line block hover:underline">
+          {value}
         </a>
       ) : (
         <p className="mt-2 text-ink whitespace-pre-line">{value}</p>
       )}
       <p className="mt-3 text-xs text-muted-foreground/80 leading-relaxed">{helper}</p>
+      {cta && (
+        <a
+          href={cta.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-1.5 border border-ink px-4 py-2 rounded-md text-sm hover:bg-ink hover:text-background transition"
+        >
+          {cta.label}
+          <ArrowRight size={14} />
+        </a>
+      )}
     </div>
   );
 }
