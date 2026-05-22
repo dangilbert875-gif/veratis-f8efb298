@@ -12,7 +12,7 @@ export const Route = createFileRoute("/blog/$slug")({
   head: ({ params }) => {
     const a = articles.find((x) => x.slug === params.slug);
     if (!a) return { meta: [{ title: "Article — VERATIS" }] };
-    const origin = "https://pure-peptide-labs.lovable.app";
+    const origin = "https://veratisbio.com";
     const scripts: Array<{ type: string; children: string }> = [
       {
         type: "application/ld+json",
@@ -51,7 +51,7 @@ export const Route = createFileRoute("/blog/$slug")({
         { name: "description", content: a.deck },
         { property: "og:title", content: a.title },
         { property: "og:description", content: a.deck },
-        { property: "og:image", content: a.image },
+        { property: "og:image", content: a.image && a.image.startsWith("http") ? a.image : `${origin}${a.image ?? ""}` },
         { property: "og:type", content: "article" },
         { property: "og:url", content: `${origin}/blog/${a.slug}` },
         { property: "article:published_time", content: a.publishedOn },
