@@ -236,7 +236,7 @@ export function ProductCard({
         </div>
       ) : null}
 
-      <div className={`mt-${showQuantity ? "2" : "4"} flex gap-2`}>
+      <div className={`${showQuantity ? "mt-2" : "mt-4"} flex gap-2`}>
         <button
           type="button"
           onClick={(e) => {
