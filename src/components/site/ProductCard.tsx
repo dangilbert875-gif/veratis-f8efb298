@@ -102,14 +102,14 @@ export function ProductCard({
   const pricePerMg = totalMg > 0 ? p.price / totalMg : null;
 
   return (
-    <article className="group">
+    <article className="group w-full max-w-[340px] sm:max-w-none mx-auto">
       <Link
         to="/shop/$slug"
         params={{ slug: p.slug }}
         className="block"
         aria-label={`${title} — view details`}
       >
-        <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full max-w-[280px] sm:max-w-none mx-auto">
+        <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full mx-auto">
           {accentClass ? (
             <span
               aria-hidden
