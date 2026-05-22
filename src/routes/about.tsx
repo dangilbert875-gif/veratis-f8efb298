@@ -9,8 +9,9 @@ export const Route = createFileRoute("/about")({
       { name: "description", content: "VERATIS manufactures research-grade peptides with verified purity and full documentation." },
       { property: "og:title", content: "About — VERATIS" },
       { property: "og:description", content: "Founded by analytical chemists. Every lot is third-party HPLC and mass-spec verified before release." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/about" },
+      { property: "og:url", content: "https://veratisbio.com/about" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/about" }],
   }),
   component: About,
 });
@@ -37,7 +38,7 @@ function About() {
         </div>
         <div className="md:col-span-2">
           <div className="aspect-[4/5] rounded-xl overflow-hidden border border-border">
-            <img src={lab} alt="Lab" loading="lazy" width={1536} height={1024} className="w-full h-full object-cover" />
+            <img src={lab} alt="VERATIS laboratory facility" loading="lazy" width={1536} height={1024} className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
