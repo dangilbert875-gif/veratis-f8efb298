@@ -4,7 +4,7 @@ import { labPartner } from "@/data/batches";
 import { usePublicLots } from "@/lib/use-lots";
 import { Search, Download, ShieldCheck, ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
-import { downloadCoa } from "@/lib/coa";
+import { downloadCoa, coaExtension } from "@/lib/coa";
 
 export const Route = createFileRoute("/coa-archive")({
   head: () => ({
