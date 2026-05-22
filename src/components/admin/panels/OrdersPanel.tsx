@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -126,7 +126,7 @@ function deriveAlerts(o: any) {
 }
 
 // ───── Main panel ─────
-export function OrdersPanel() {
+export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter?: "all"|"unpaid"|"unshipped"|"flagged"|"refunded" } = {}) {
   const qc = useQueryClient();
   const fetchOrders = useServerFn(listOrders);
   const bulk = useServerFn(bulkOrderAction);
@@ -142,6 +142,7 @@ export function OrdersPanel() {
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
   const [fulfillmentFilter, setFulfillmentFilter] = useState<string>("all");
   const [quickFilter, setQuickFilter] = useState<"all"|"unpaid"|"unshipped"|"flagged"|"refunded">("all");
+  useEffect(() => { if (initialQuickFilter) setQuickFilter(initialQuickFilter); }, [initialQuickFilter]);
   const [sort, setSort] = useState<"newest"|"oldest"|"value"|"awaiting"|"priority">("newest");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [detailId, setDetailId] = useState<string | null>(null);
