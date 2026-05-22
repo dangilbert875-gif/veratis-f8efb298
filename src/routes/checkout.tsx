@@ -1,10 +1,10 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
 import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
-import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon } from "lucide-react";
+import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
 
@@ -67,6 +67,20 @@ function CheckoutPage() {
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+  const [rateRefreshing, setRateRefreshing] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  // Draft order reference shown to the buyer for support purposes before the
+  // real order_number is issued on submit. Persisted for the tab session.
+  const draftRef = useMemo(() => {
+    if (typeof window === "undefined") return "DRAFT-000000";
+    const key = "veratis:checkout:draft-ref";
+    const existing = window.sessionStorage.getItem(key);
+    if (existing) return existing;
+    const ref = "DRAFT-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    window.sessionStorage.setItem(key, ref);
+    return ref;
+  }, []);
 
   // Promo / referral code
   const [promoInput, setPromoInput] = useState("");
@@ -170,6 +184,35 @@ function CheckoutPage() {
     const id = setInterval(load, 60_000);
     return () => { cancelled = true; clearInterval(id); };
   }, [fetchRate]);
+
+  // Tick every second so the "Quote valid for …" countdown updates live.
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  async function refreshRate() {
+    setRateRefreshing(true);
+    try {
+      const r = await fetchRate();
+      if (r?.rate) {
+        setBtcRate(r.rate);
+        setRateFetchedAt(r.fetched_at);
+      }
+    } catch {}
+    setRateRefreshing(false);
+  }
+
+  const QUOTE_TTL_MS = 60_000;
+  const quoteMsLeft = rateFetchedAt
+    ? Math.max(0, QUOTE_TTL_MS - (now - new Date(rateFetchedAt).getTime()))
+    : 0;
+  const quoteCountdown = (() => {
+    const s = Math.ceil(quoteMsLeft / 1000);
+    const mm = String(Math.floor(s / 60)).padStart(2, "0");
+    const ss = String(s % 60).padStart(2, "0");
+    return `${mm}:${ss}`;
+  })();
   const btcAmount = btcRate && totalAfterDiscount > 0 ? (totalAfterDiscount / btcRate).toFixed(8) : null;
   function copyVal(kind: "addr" | "amt", value: string) {
     navigator.clipboard?.writeText(value);
