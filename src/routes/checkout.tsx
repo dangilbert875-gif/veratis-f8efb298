@@ -3,12 +3,17 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
+import { createCheckoutOrder, getBtcUsdRate, reserveOrderNumber, validatePromoCode } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
+import { QRCodeSVG } from "qrcode.react";
 
 const BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
+const VENMO_HANDLE = "Veratis";
+const VENMO_DEEPLINK = `https://venmo.com/${VENMO_HANDLE}`;
+
+type PaymentMethod = "btc" | "venmo";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
