@@ -6,6 +6,8 @@ import { AdminAlerts } from "../AdminAlerts";
 import { QuickActions } from "../QuickActions";
 import type { SectionId } from "../AdminDashboard";
 
+type NavigateFn = (s: SectionId, opts?: { ordersFilter?: "unshipped" | "unpaid" | "flagged" | "refunded" }) => void;
+
 function pctDelta(curr: number, prev: number): number {
   if (!prev) return curr ? 100 : 0;
   return ((curr - prev) / prev) * 100;
@@ -22,7 +24,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function OverviewPanel({ onNavigate }: { onNavigate: (s: SectionId) => void }) {
+export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
   const fetchOverview = useServerFn(getAdminOverview);
   const { data, isLoading } = useQuery({
     queryKey: ["admin-overview"],
@@ -72,8 +74,9 @@ export function OverviewPanel({ onNavigate }: { onNavigate: (s: SectionId) => vo
               />
               <Stat
                 label="Fulfillment queue"
-                value={data.orders.pending.toLocaleString()}
-                sub="pending · awaiting payment"
+                value={(data.orders.unshipped ?? 0).toLocaleString()}
+                sub="paid · awaiting shipment →"
+                onClick={() => onNavigate("orders", { ordersFilter: "unshipped" })}
               />
             </div>
           </div>
