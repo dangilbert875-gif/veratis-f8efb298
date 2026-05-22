@@ -1,9 +1,74 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useCatalog, deriveCategories } from "@/lib/use-catalog";
 import { batches, labPartner } from "@/data/batches";
 import { useEffect, useState } from "react";
+import { BatchVerify } from "@/components/site/BatchVerify";
+import { Info, Scale, Target, MessagesSquare, ArrowRight, ChevronDown, X } from "lucide-react";
+import type { Product } from "@/data/products";
+
+// Subtle category accent colors — 6px top-left bar on each card
+const CATEGORY_ACCENTS: Record<string, string> = {
+  "Tissue Recovery": "bg-teal-300/60",
+  "Regenerative": "bg-amber-300/60",
+  "Growth Hormone": "bg-sky-300/50",
+  "Hormonal": "bg-rose-300/50",
+  "Pigmentation": "bg-orange-300/50",
+  "Mitochondrial": "bg-violet-300/55",
+  "Metabolic": "bg-slate-500/40",
+};
+
+// All categories the brand offers (some may be empty)
+const ALL_CATEGORIES = [
+  "Tissue Recovery",
+  "Regenerative",
+  "Growth Hormone",
+  "Hormonal",
+  "Pigmentation",
+  "Mitochondrial",
+  "Metabolic",
+];
+
+const TAGLINES: Record<string, string> = {
+  "bpc-157-12mg": "Pentadecapeptide for tissue recovery research",
+  "bpc-tb-500-blend": "Combined recovery blend for soft tissue studies",
+  "tb-500-fragment-12mg": "Thymosin Beta-4 fragment for soft tissue",
+  "tb-4-full-sequence-10mg": "Full-sequence TB-4 for regenerative studies",
+  "ghk-cu-100mg": "Copper tripeptide for skin & regenerative",
+  "ghk-cu-50mg": "Copper tripeptide for skin & regenerative",
+  "mots-c-10mg": "Mitochondrial-derived metabolic peptide",
+  "retatrutide-10mg": "Triple agonist for metabolic research",
+  "retatrutide-20mg": "Triple agonist for metabolic research",
+  "tirzepatide-15mg": "GLP-1/GIP dual agonist",
+  "tirzepatide-30mg": "GLP-1/GIP dual agonist",
+};
+
+// Deterministic stock state by slug
+function stockForSlug(slug: string): { state: "in_stock" | "low" | "last3"; count?: number } {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
+  const bucket = h % 10;
+  if (bucket === 0) return { state: "last3" };
+  if (bucket <= 2) return { state: "low", count: 4 + (h % 4) };
+  return { state: "in_stock" };
+}
+
+type SortKey = "featured" | "price-asc" | "price-desc" | "purity-desc" | "name-asc";
+
+function purityNum(p: Product): number {
+  const n = parseFloat(String(p.purity).replace("%", ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function totalMgForProduct(p: Product): number {
+  const tokens = p.dosage.match(/(\d[\d,.]*)\s*MG/gi);
+  if (!tokens) return 0;
+  return tokens.reduce((s, t) => {
+    const n = parseFloat(t.replace(/MG/gi, "").replace(/,/g, "").trim());
+    return s + (Number.isFinite(n) ? n : 0);
+  }, 0);
+}
 
 export const Route = createFileRoute("/shop/")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -15,8 +80,9 @@ export const Route = createFileRoute("/shop/")({
       { name: "description", content: "Browse research-grade peptides. Every batch HPLC and mass-spec verified." },
       { property: "og:title", content: "Catalog of research-grade peptides — VERATIS" },
       { property: "og:description", content: "Browse the VERATIS catalog. Every vial is lot-traceable to an independent certificate of analysis." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/shop" },
+      { property: "og:url", content: "https://veratisbio.com/shop" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/shop" }],
   }),
   component: ShopPage,
 });
@@ -25,20 +91,44 @@ function ShopPage() {
   const { category } = Route.useSearch();
   const { products, loading, source } = useCatalog();
   const categories = deriveCategories(products);
-  // Match search param case-insensitively against derived category names
   const initial = (() => {
     if (!category) return "All";
     const match = categories.find(
       (c) => c.name.toLowerCase() === category.toLowerCase(),
     );
-    return match?.name ?? "All";
+    return match?.name ?? category;
   })();
   const [filter, setFilter] = useState<string>(initial);
+  const [sort, setSort] = useState<SortKey>("featured");
+  const [verifyOpenMobile, setVerifyOpenMobile] = useState(false);
   useEffect(() => {
     setFilter(initial);
   }, [initial]);
-  const filtered = filter === "All" ? products : products.filter((p) => p.category === filter);
+
+  const baseFiltered = filter === "All" ? products : products.filter((p) => p.category === filter);
+  const filtered = [...baseFiltered].sort((a, b) => {
+    switch (sort) {
+      case "price-asc": return a.price - b.price;
+      case "price-desc": return b.price - a.price;
+      case "purity-desc": return purityNum(b) - purityNum(a);
+      case "name-asc": return a.name.localeCompare(b.name);
+      default: return 0;
+    }
+  });
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
+
+  // Cheapest $/mg across the catalog for the "Best value" badge
+  const cheapestPerMg = (() => {
+    let best: { slug: string; ppm: number } | null = null;
+    for (const p of products) {
+      const total = totalMgForProduct(p);
+      if (total > 0) {
+        const ppm = p.price / total;
+        if (!best || ppm < best.ppm) best = { slug: p.slug, ppm };
+      }
+    }
+    return best;
+  })();
 
   return (
     <Layout>
@@ -47,16 +137,56 @@ function ShopPage() {
         title="Catalog of compounds."
         lead="Every entry below is produced under the same lyophilization, sealing, and verification protocol. Each vial carries a unique lot number traceable to an independent certificate of analysis."
       />
+
+      {/* Mobile-only sticky verify banner */}
+      <div className="md:hidden sticky top-0 z-30 border-b border-border bg-background">
+        <button
+          type="button"
+          onClick={() => setVerifyOpenMobile((v) => !v)}
+          aria-expanded={verifyOpenMobile}
+          className="w-full flex items-center justify-between gap-3 px-5 h-12 text-[11.5px] font-mono uppercase tracking-[0.16em] text-ink"
+        >
+          <span className="inline-flex items-center gap-2">
+            <span className="relative inline-flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+            Verify any lot in under 1 second
+          </span>
+          {verifyOpenMobile ? <X size={14} /> : <ArrowRight size={14} />}
+        </button>
+        {verifyOpenMobile ? (
+          <div className="px-4 pb-4 pt-1 border-t border-border bg-mist/30">
+            <BatchVerify compact />
+          </div>
+        ) : null}
+      </div>
+
       {/* Operational metadata band */}
       <section className="border-y border-border bg-background">
         <div className="mx-auto max-w-7xl px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
           <div className="flex items-center gap-3">
-            <span className="text-foreground/60">Compounds</span>
+            <span className="text-foreground/60">Active SKUs</span>
             <span className="text-ink tabular-nums">{String(products.length).padStart(2, "0")}</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-foreground/60">Lots on record</span>
-            <span className="text-ink tabular-nums">{batches.length}</span>
+            <Link
+              to="/coa-archive"
+              className="text-ink tabular-nums underline decoration-foreground/30 underline-offset-[3px] hover:decoration-ink transition"
+            >
+              {batches.length}
+            </Link>
+            <span
+              className="group relative inline-flex items-center text-foreground/40 hover:text-ink transition cursor-help"
+              tabIndex={0}
+              aria-label="Multiple lots per SKU. Browse full archive."
+            >
+              <Info size={11} strokeWidth={1.75} />
+              <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 px-3 py-2 rounded-[3px] border border-border bg-background text-[10.5px] font-mono normal-case tracking-[0.04em] text-foreground leading-snug opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-visible:opacity-100 group-focus-visible:visible transition z-20 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.25)]">
+                Multiple lots per SKU. Browse full archive →
+              </span>
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-foreground/60">Mean purity</span>
@@ -69,40 +199,197 @@ function ShopPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        {/* Filter rail — editorial chips, not pills */}
-        <div className="flex flex-wrap items-baseline gap-x-6 gap-y-3 mb-14 pb-6 border-b border-border">
-          <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65 mr-2">— Filter</span>
-          {["All", ...categories.map((c) => c.name)].map((c) => {
-            const active = filter === c;
-            return (
-              <button
-                key={c}
-                onClick={() => setFilter(c)}
-                className={[
-                  "relative pb-1 text-[12.5px] tracking-[0.01em] transition-colors duration-200",
-                  active ? "text-ink" : "text-foreground/55 hover:text-ink",
-                  "after:content-[''] after:absolute after:left-0 after:right-0 after:-bottom-px after:h-px after:bg-ink",
-                  active ? "after:opacity-100" : "after:opacity-0",
-                ].join(" ")}
+      <section className="mx-auto max-w-7xl px-6 py-14 md:py-20">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
+          {/* Main column */}
+          <div className="lg:col-span-9">
+            {/* Filter chips + sort */}
+            <div className="mb-10 md:mb-12 pb-5 border-b border-border">
+              {/* Chip row — horizontal scroll on mobile with fade edges */}
+              <div className="relative -mx-1">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 px-1 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
+                  {["All", ...ALL_CATEGORIES].map((c) => {
+                    const active = filter === c;
+                    const count = c === "All" ? products.length : products.filter((p) => p.category === c).length;
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setFilter(c)}
+                        className={[
+                          "shrink-0 inline-flex items-center gap-2 h-11 px-4 rounded-full border text-[12px] font-medium tracking-[0.01em] transition-all duration-150 touch-manipulation",
+                          active
+                            ? "bg-ink text-background border-ink"
+                            : "bg-background text-foreground/70 border-border hover:border-ink/40 hover:text-ink",
+                        ].join(" ")}
+                      >
+                        {c}
+                        <span className={`text-[10px] font-mono tabular-nums ${active ? "text-background/60" : "text-foreground/40"}`}>
+                          {String(count).padStart(2, "0")}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div aria-hidden className="md:hidden absolute left-0 top-0 bottom-1 w-6 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+                <div aria-hidden className="md:hidden absolute right-0 top-0 bottom-1 w-6 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+              </div>
+
+              {/* Sort + result count */}
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 tabular-nums">
+                  {String(filtered.length).padStart(2, "0")} {filtered.length === 1 ? "result" : "results"}
+                </span>
+                <label className="inline-flex items-center gap-2 self-start sm:self-auto">
+                  <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">Sort by</span>
+                  <div className="relative">
+                    <select
+                      value={sort}
+                      onChange={(e) => setSort(e.target.value as SortKey)}
+                      className="appearance-none h-11 pl-3 pr-9 rounded-[3px] border border-border bg-background text-[12.5px] text-ink hover:border-ink/40 focus:outline-none focus:border-ink/60 transition cursor-pointer"
+                    >
+                      <option value="featured">Featured</option>
+                      <option value="price-asc">Price: Low to High</option>
+                      <option value="price-desc">Price: High to Low</option>
+                      <option value="purity-desc">Purity: High to Low</option>
+                      <option value="name-asc">Name: A–Z</option>
+                    </select>
+                    <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/50 pointer-events-none" />
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Product grid OR empty state */}
+            {filtered.length === 0 ? (
+              <EmptyCategory category={filter} />
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
+                {filtered.map((p) => {
+                  const stock = stockForSlug(p.slug);
+                  return (
+                    <ProductCard
+                      key={p.slug}
+                      p={p}
+                      accentClass={CATEGORY_ACCENTS[p.category]}
+                      stockState={stock.state}
+                      lowStockCount={stock.count}
+                      showPricePerMg
+                      bestValuePerMg={cheapestPerMg?.slug === p.slug}
+                      showQuantity
+                      showViewCoa
+                      tagline={TAGLINES[p.slug]}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {loading && source === "fallback" && (
+              <p className="mt-10 text-center text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/45">
+                Synchronising catalog…
+              </p>
+            )}
+
+            <p className="mt-10 pt-6 border-t border-border text-center text-[11px] font-mono uppercase tracking-[0.18em] text-foreground/50 tabular-nums">
+              {String(products.length).padStart(2, "0")} compounds in our active catalog
+            </p>
+          </div>
+
+          {/* Sticky verify sidebar — desktop only */}
+          <aside className="hidden lg:block lg:col-span-3">
+            <div className="sticky top-24">
+              <BatchVerify compact />
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      {/* Need help choosing? */}
+      <section className="border-y border-border bg-mist/30">
+        <div className="mx-auto max-w-7xl px-6 py-16 md:py-24">
+          <div className="max-w-2xl">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Catalog tools</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">Need help choosing?</h2>
+            <p className="mt-4 text-muted-foreground leading-relaxed">
+              Browse by research goal or talk to our team.
+            </p>
+          </div>
+          <div className="mt-10 grid md:grid-cols-3 gap-4 md:gap-5">
+            {[
+              { icon: Scale, title: "Compare peptides", body: "See mechanism, half-life, and research notes side by side.", cta: "Open comparison", to: "/standards" as const },
+              { icon: Target, title: "By research goal", body: "Filter peptides by what you're studying — recovery, metabolic, longevity, more.", cta: "Browse by goal", to: "/shop" as const },
+              { icon: MessagesSquare, title: "Talk to our team", body: "Bulk research orders or COA questions? We respond within 1 business day.", cta: "Contact", to: "/contact" as const },
+            ].map(({ icon: Icon, title, body, cta, to }) => (
+              <Link
+                key={title}
+                to={to}
+                className="group flex flex-col bg-background border border-border rounded-[3px] p-6 sm:p-7 min-h-[180px] hover:border-ink/40 transition"
               >
-                {c}
-              </button>
-            );
-          })}
-          <span className="ml-auto text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 tabular-nums">
-            {String(filtered.length).padStart(2, "0")} results
-          </span>
+                <Icon size={22} className="text-ink/75 mb-4" strokeWidth={1.25} />
+                <h3 className="font-display text-[1.125rem] text-ink leading-tight tracking-tight">{title}</h3>
+                <p className="mt-2 text-[13.5px] text-muted-foreground leading-relaxed flex-1">{body}</p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-[0.18em] text-ink group-hover:gap-2.5 transition-all">
+                  {cta} <ArrowRight size={12} />
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
-          {filtered.map((p) => <ProductCard key={p.slug} p={p} />)}
+      </section>
+
+      {/* Catalog help bar — sits above footer */}
+      <section className="bg-background border-t border-border">
+        <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[12.5px] text-foreground/75">
+          <p>Questions about purity, dosing, or COAs?</p>
+          <div className="flex items-center gap-5 text-[12px]">
+            <Link to="/faq" className="inline-flex items-center gap-1 text-ink hover:text-primary transition">
+              Read the FAQ <ArrowRight size={12} />
+            </Link>
+            <Link to="/contact" className="inline-flex items-center gap-1 text-ink hover:text-primary transition">
+              Contact us <ArrowRight size={12} />
+            </Link>
+          </div>
         </div>
-        {loading && source === "fallback" && (
-          <p className="mt-10 text-center text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/45">
-            Synchronising catalog…
-          </p>
-        )}
       </section>
     </Layout>
+  );
+}
+
+function EmptyCategory({ category }: { category: string }) {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const label = category === "All" ? "new compounds" : category;
+  return (
+    <div className="border border-dashed border-border rounded-[3px] bg-mist/30 px-6 py-14 sm:py-20 text-center">
+      <p className="font-display text-[1.5rem] sm:text-[1.75rem] text-ink tracking-tight leading-snug">
+        No compounds in this category yet.
+      </p>
+      <p className="mt-3 text-[14px] text-muted-foreground leading-relaxed max-w-md mx-auto">
+        We expand the catalog quarterly. Get notified when{" "}
+        <span className="text-ink">{label}</span> releases.
+      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (email) setSubmitted(true);
+        }}
+        className="mt-7 max-w-md mx-auto flex flex-col sm:flex-row gap-2"
+      >
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your.email@lab.edu"
+          className="flex-1 h-11 px-4 rounded-[3px] border border-border bg-background text-[13px] text-ink placeholder:text-foreground/40 focus:outline-none focus:border-ink/50 transition"
+        />
+        <button
+          type="submit"
+          className="inline-flex items-center justify-center h-11 px-5 rounded-[3px] bg-ink text-background text-[11.5px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.985] transition whitespace-nowrap"
+        >
+          {submitted ? "Subscribed ✓" : "Notify me"}
+        </button>
+      </form>
+    </div>
   );
 }
