@@ -972,13 +972,15 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   )}
                   {o.payment_tx_id && (
                     <div>
-                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">— Customer-provided TX ID / note</div>
+                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">
+                        — {o.payment_method === "venmo" ? "Customer note" : "Customer-provided TX ID / note"}
+                      </div>
                       <div className="flex gap-2">
                         <div className="flex-1 min-w-0 px-3 py-2 border border-ink/15 bg-mist/20 font-mono text-[11.5px] text-ink break-all whitespace-pre-wrap">
                           {o.payment_tx_id}
                         </div>
-                        <GhostButton type="button" onClick={() => copy(o.payment_tx_id ?? "", "TX ID")}>Copy</GhostButton>
-                        {!form.btc_tx_hash && (
+                        <GhostButton type="button" onClick={() => copy(o.payment_tx_id ?? "", o.payment_method === "venmo" ? "Note" : "TX ID")}>Copy</GhostButton>
+                        {o.payment_method !== "venmo" && !form.btc_tx_hash && (
                           <GhostButton type="button" onClick={() => set("btc_tx_hash", o.payment_tx_id)}>Use as TX hash</GhostButton>
                         )}
                       </div>
