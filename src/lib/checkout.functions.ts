@@ -240,18 +240,28 @@ export const validatePromoCode = createServerFn({ method: "POST" })
 
 export const getCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({ order_number: z.string().min(3).max(32) }).parse(d),
+    z.object({
+      order_number: z.string().min(3).max(32),
+      access_token: z.string().min(8).max(128).regex(/^[A-Za-z0-9_-]+$/),
+    }).parse(d),
   )
   .handler(async ({ data }) => {
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select(
-        "order_number, customer_email, customer_name, status, payment_status, payment_method, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
+        "order_number, access_token, customer_email, customer_name, status, payment_status, payment_method, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
       )
       .eq("order_number", data.order_number.toUpperCase())
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!order) throw new Error("Order not found");
+    // Timing-safe-ish equality on the unguessable access token.
+    const got = String(data.access_token);
+    const want = String(order.access_token ?? "");
+    if (got.length !== want.length) throw new Error("Order not found");
+    let diff = 0;
+    for (let i = 0; i < want.length; i++) diff |= got.charCodeAt(i) ^ want.charCodeAt(i);
+    if (diff !== 0) throw new Error("Order not found");
     return { ...order, btc_address: order.btc_address ?? STATIC_BTC_ADDRESS };
   });
 
