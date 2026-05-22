@@ -119,7 +119,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search compounds, lots, or articles…"
-            className="flex-1 bg-transparent outline-none text-[14px] text-ink placeholder:text-foreground/45"
+            className="flex-1 bg-transparent outline-none text-[14px] text-ink placeholder:text-muted-foreground"
             onKeyDown={(e) => {
               if (e.key === "Enter" && results[0]) go(results[0]);
             }}

@@ -13,7 +13,9 @@ export const Route = createFileRoute("/coa-archive")({
       { name: "description", content: "Searchable archive of every certificate of analysis ever issued for a VERATIS lot. Public, permanent, never recycled." },
       { property: "og:title", content: "COA Archive — VERATIS" },
       { property: "og:description", content: "Searchable archive of every certificate of analysis ever issued for a VERATIS lot." },
+      { property: "og:url", content: "https://veratisbio.com/coa-archive" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/coa-archive" }],
   }),
   component: Page,
 });
@@ -69,6 +71,7 @@ function Page() {
           <div className="relative flex-1 max-w-md">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
+              aria-label="Search COA archive by lot or product"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search lot or product…"

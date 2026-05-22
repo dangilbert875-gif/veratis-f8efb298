@@ -56,8 +56,8 @@ export const Route = createFileRoute("/shop/$slug")({
           { property: "og:title", content: `${loaderData.product.name} — VERATIS` },
           { property: "og:description", content: loaderData.product.short },
           { property: "og:type", content: "product" },
-          { property: "og:url", content: `https://pure-peptide-labs.lovable.app/shop/${loaderData.product.slug}` },
-          { property: "og:image", content: loaderData.product.image },
+          { property: "og:url", content: `https://veratisbio.com/shop/${loaderData.product.slug}` },
+          { property: "og:image", content: loaderData.product.image.startsWith("http") ? loaderData.product.image : `https://veratisbio.com${loaderData.product.image}` },
           ...(dossierForSlug(loaderData.product.slug)?.keywords?.length
             ? [
                 {
@@ -77,7 +77,7 @@ export const Route = createFileRoute("/shop/$slug")({
               "@type": "Product",
               name: loaderData.product.name,
               description: loaderData.product.description,
-              image: `https://pure-peptide-labs.lovable.app${loaderData.product.image}`,
+              image: loaderData.product.image.startsWith("http") ? loaderData.product.image : `https://veratisbio.com${loaderData.product.image}`,
               category: loaderData.product.category,
               brand: { "@type": "Brand", name: "VERATIS" },
               offers: {
@@ -88,7 +88,7 @@ export const Route = createFileRoute("/shop/$slug")({
                   loaderData.product.inStock === false
                     ? "https://schema.org/OutOfStock"
                     : "https://schema.org/InStock",
-                url: `https://pure-peptide-labs.lovable.app/shop/${loaderData.product.slug}`,
+                url: `https://veratisbio.com/shop/${loaderData.product.slug}`,
               },
             }),
           },
@@ -109,6 +109,9 @@ export const Route = createFileRoute("/shop/$slug")({
               ]
             : []),
         ]
+      : [],
+    links: loaderData
+      ? [{ rel: "canonical", href: `https://veratisbio.com/shop/${loaderData.product.slug}` }]
       : [],
   }),
   notFoundComponent: () => (

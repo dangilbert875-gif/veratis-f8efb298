@@ -8,8 +8,9 @@ export const Route = createFileRoute("/terms")({
       { name: "description", content: "Terms governing use of the VERATIS site, purchasing, the verification archive, and the research-use-only positioning of all products." },
       { property: "og:title", content: "Terms & Conditions — VERATIS" },
       { property: "og:description", content: "Operational terms for ordering, the verification archive, intellectual property, liability, and governing law." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/terms" },
+      { property: "og:url", content: "https://veratisbio.com/terms" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/terms" }],
   }),
   component: Page,
 });

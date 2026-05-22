@@ -12,6 +12,7 @@ export const Route = createFileRoute("/contact")({
       { property: "og:description", content: "Talk to a chemist, not a script. Batch questions, custom assays, and wholesale inquiries answered within one business day." },
       { property: "og:url", content: "https://veratisbio.com/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/contact" }],
   }),
   component: Contact,
 });
@@ -172,10 +173,12 @@ function Contact() {
               </div>
 
               <div>
-                <label className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <label htmlFor="field-subject" className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   Subject <span className="text-destructive">*</span>
                 </label>
                 <select
+                  id="field-subject"
+                  aria-label="Subject"
                   name="subject"
                   required
                   defaultValue=""
@@ -192,10 +195,12 @@ function Contact() {
               </div>
 
               <div>
-                <label className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <label htmlFor="field-message" className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   Message <span className="text-destructive">*</span>
                 </label>
                 <textarea
+                  id="field-message"
+                  aria-label="Message"
                   name="message"
                   required
                   rows={6}
@@ -378,10 +383,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+      <label htmlFor={`field-${name}`} className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
       <input
+        id={`field-${name}`}
+        aria-label={label}
         name={name}
         required={required}
         type={type}

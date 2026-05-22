@@ -98,7 +98,7 @@ export function CommandBar({
               value={query}
               onValueChange={setQuery}
               placeholder="Search products, orders, customers, lots, articles…"
-              className="w-full h-12 px-4 text-[14px] bg-transparent outline-none placeholder:text-foreground/40"
+              className="w-full h-12 px-4 text-[14px] bg-transparent outline-none placeholder:text-muted-foreground"
             />
           </div>
           <Command.List className="max-h-[60vh] overflow-y-auto py-2">

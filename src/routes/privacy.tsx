@@ -8,8 +8,9 @@ export const Route = createFileRoute("/privacy")({
       { name: "description", content: "How VERATIS collects, processes, and retains customer information across the verification archive and ordering system." },
       { property: "og:title", content: "Privacy Policy — VERATIS" },
       { property: "og:description", content: "Customer information handling, analytics, payment processing, and data retention standards for the VERATIS verification platform." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/privacy" },
+      { property: "og:url", content: "https://veratisbio.com/privacy" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/privacy" }],
   }),
   component: Page,
 });

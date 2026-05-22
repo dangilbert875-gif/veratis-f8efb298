@@ -35,8 +35,9 @@ export const Route = createFileRoute("/how-to-pay")({
         content:
           "Bitcoin payment in three steps. Transparent, verifiable, and dispatched within 48 hours of confirmation.",
       },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/how-to-pay" },
+      { property: "og:url", content: "https://veratisbio.com/how-to-pay" },
     ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com/how-to-pay" }],
   }),
   component: HowToPayPage,
 });
