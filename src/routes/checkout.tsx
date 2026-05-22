@@ -547,20 +547,20 @@ function CheckoutPage() {
 
                   <div>
                     <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan or copy BTC address</p>
-                    <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 min-w-0">
                       <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
                         <img
                           src={btcQr}
                           alt={`Bitcoin payment QR code for ${BTC_ADDRESS}`}
-                          className="w-[200px] h-[200px] sm:w-[120px] sm:h-[120px] block"
+                          className="w-[160px] h-[160px] sm:w-[120px] sm:h-[120px] block"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => copyVal("addr", BTC_ADDRESS)}
-                        className="group w-full sm:flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left min-h-[56px]"
+                        className="group w-full sm:flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left min-h-[56px]"
                       >
-                        <span className="text-[12.5px] text-ink break-all font-mono leading-relaxed">{BTC_ADDRESS}</span>
+                        <span className="text-[12px] sm:text-[12.5px] text-ink break-all font-mono leading-relaxed min-w-0">{BTC_ADDRESS}</span>
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0 self-end sm:self-auto">
                           {copied === "addr" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
                         </span>
@@ -578,9 +578,9 @@ function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => copyVal("amt", btcAmount)}
-                        className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                        className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
                       >
-                        <span className="text-[12.5px] text-ink break-all font-mono">{btcAmount} BTC</span>
+                        <span className="text-[12px] sm:text-[12.5px] text-ink break-all font-mono min-w-0">{btcAmount} BTC</span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
                           {copied === "amt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
                         </span>
