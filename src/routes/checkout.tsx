@@ -606,9 +606,22 @@ function CheckoutPage() {
             {items.map((i) => (
               <li key={i.slug} className="px-5 py-3 flex justify-between gap-3 text-[12px]">
                 <div className="min-w-0">
-                  <p className="text-ink truncate">{i.name}</p>
+                  <Link
+                    to="/shop/$slug"
+                    params={{ slug: i.slug }}
+                    className="text-ink truncate hover:underline block"
+                    title="Open product page to re-verify this lot"
+                  >
+                    {i.name}
+                  </Link>
                   <p className="text-foreground/55 text-[10.5px] font-mono tabular-nums">
-                    LOT {i.lot} · ×{i.quantity}
+                    <Link
+                      to="/shop/$slug"
+                      params={{ slug: i.slug }}
+                      className="hover:text-ink hover:underline underline-offset-2"
+                    >
+                      LOT {i.lot}
+                    </Link>{" "}· ×{i.quantity}
                   </p>
                 </div>
                 <p className="tabular-nums text-ink shrink-0">${(i.price * i.quantity).toFixed(0)}</p>
