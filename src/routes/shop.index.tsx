@@ -102,7 +102,6 @@ function ShopPage() {
   const [sort, setSort] = useState<SortKey>("featured");
   const [verifyOpenMobile, setVerifyOpenMobile] = useState(false);
   const [query, setQuery] = useState("");
-  const [priceMax, setPriceMax] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
   useEffect(() => {
     setFilter(initial);
@@ -120,16 +119,11 @@ function ShopPage() {
   const pageSize = isMobile ? 4 : 12;
   useEffect(() => {
     setVisibleCount(pageSize);
-  }, [filter, sort, query, priceMax, pageSize]);
-
-  // Price ceiling for the slider — round up to a nice number
-  const maxPrice = Math.max(0, ...products.map((p) => p.price));
-  const priceCeiling = Math.max(50, Math.ceil(maxPrice / 50) * 50);
+  }, [filter, sort, query, pageSize]);
 
   const q = query.trim().toLowerCase();
   const baseFiltered = products.filter((p) => {
     if (filter !== "All" && p.category !== filter) return false;
-    if (priceMax !== null && p.price > priceMax) return false;
     if (q) {
       const hay = `${p.name} ${p.slug} ${p.lot} ${p.category}`.toLowerCase();
       if (!hay.includes(q)) return false;
@@ -151,13 +145,11 @@ function ShopPage() {
   const activeFilters: Array<{ key: string; label: string; clear: () => void }> = [];
   if (filter !== "All") activeFilters.push({ key: "cat", label: filter, clear: () => setFilter("All") });
   if (q) activeFilters.push({ key: "q", label: `“${query}”`, clear: () => setQuery("") });
-  if (priceMax !== null) activeFilters.push({ key: "price", label: `≤ $${priceMax}`, clear: () => setPriceMax(null) });
   if (sort !== "featured") activeFilters.push({ key: "sort", label: `Sort: ${sort.replace("-", " ")}`, clear: () => setSort("featured") });
 
   function clearAll() {
     setFilter("All");
     setQuery("");
-    setPriceMax(null);
     setSort("featured");
   }
 
