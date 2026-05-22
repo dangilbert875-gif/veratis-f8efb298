@@ -42,6 +42,20 @@ async function nextOrderNumber(): Promise<string> {
   return String(data);
 }
 
+async function fetchBtcUsdRate(): Promise<number | null> {
+  try {
+    const res = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { amount?: string } };
+    const rate = Number(json?.data?.amount);
+    return Number.isFinite(rate) && rate > 0 ? rate : null;
+  } catch {
+    return null;
+  }
+}
+
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
@@ -57,6 +71,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     const btcAddress = STATIC_BTC_ADDRESS;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    // Lock the BTC quote at the time of checkout so the admin can see
+    // exactly how much BTC the customer was asked to pay.
+    const btcRate = await fetchBtcUsdRate();
+    const btcAmount = btcRate ? Number((total / btcRate).toFixed(8)) : null;
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
@@ -70,6 +88,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         fulfillment_status: "not_started",
         total_usd: total,
         btc_address: btcAddress,
+        btc_amount: btcAmount,
         payment_expires_at: expiresAt,
         shipping_name: data.shipping.name.trim(),
         shipping_address_1: data.shipping.address_1.trim(),
