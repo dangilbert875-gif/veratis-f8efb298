@@ -83,8 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary" },
       { name: "twitter:title", content: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
       { name: "twitter:description", content: "Premium research peptides with verified purity, third-party COAs, and discreet fast shipping." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3cd0346-55bd-4a80-8c6c-ed14ea444aab/id-preview-1bb92f7a--08529e93-cdf8-4368-9ffe-41cc42adf02b.lovable.app-1779160703728.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3cd0346-55bd-4a80-8c6c-ed14ea444aab/id-preview-1bb92f7a--08529e93-cdf8-4368-9ffe-41cc42adf02b.lovable.app-1779160703728.png" },
+      { property: "og:image", content: "https://veratisbio.com/og-image.png" },
+      { property: "og:url", content: "https://veratisbio.com" },
+      { name: "twitter:image", content: "https://veratisbio.com/og-image.png" },
+      { name: "twitter:url", content: "https://veratisbio.com" },
     ],
     links: [
       {
