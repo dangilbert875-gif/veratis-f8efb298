@@ -173,10 +173,12 @@ function Contact() {
               </div>
 
               <div>
-                <label className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <label htmlFor="field-subject" className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   Subject <span className="text-destructive">*</span>
                 </label>
                 <select
+                  id="field-subject"
+                  aria-label="Subject"
                   name="subject"
                   required
                   defaultValue=""
@@ -193,10 +195,12 @@ function Contact() {
               </div>
 
               <div>
-                <label className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                <label htmlFor="field-message" className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   Message <span className="text-destructive">*</span>
                 </label>
                 <textarea
+                  id="field-message"
+                  aria-label="Message"
                   name="message"
                   required
                   rows={6}
