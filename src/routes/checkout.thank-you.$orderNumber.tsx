@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { getCheckoutOrder } from "@/lib/checkout.functions";
 import { Check, Mail, Clock, Package, ShieldCheck, ArrowRight, Printer } from "lucide-react";
 
 export const Route = createFileRoute("/checkout/thank-you/$orderNumber")({
+  validateSearch: (s: Record<string, unknown>) =>
+    z.object({ t: z.string().min(8).max(128).optional() }).parse(s),
   head: () => ({
     meta: [
       { title: "Thank you — VERATIS" },
@@ -18,10 +21,12 @@ export const Route = createFileRoute("/checkout/thank-you/$orderNumber")({
 
 function ThankYouPage() {
   const { orderNumber } = Route.useParams();
+  const { t } = Route.useSearch();
   const fetcher = useServerFn(getCheckoutOrder);
   const { data } = useQuery({
     queryKey: ["thank-you-order", orderNumber],
-    queryFn: () => fetcher({ data: { order_number: orderNumber } }),
+    queryFn: () => fetcher({ data: { order_number: orderNumber, access_token: t ?? "" } }),
+    enabled: Boolean(t),
   });
 
   const items = (data?.items as any[]) || [];
@@ -161,6 +166,7 @@ function ThankYouPage() {
             <Link
               to="/checkout/$orderNumber"
               params={{ orderNumber }}
+              search={{ t: t ?? "" }}
               className="inline-flex items-center gap-2 h-11 px-5 text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/20 rounded-[3px] hover:bg-ink hover:text-background transition-all"
             >
               View order status <ArrowRight size={13} />
