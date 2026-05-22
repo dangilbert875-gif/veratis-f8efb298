@@ -608,6 +608,30 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_methods: {
+        Row: {
+          enabled: boolean
+          id: string
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          id: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          id?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payouts: {
         Row: {
           amount_usd: number
