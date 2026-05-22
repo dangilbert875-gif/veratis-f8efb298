@@ -1047,11 +1047,13 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   <Field label="Shipping method"><TextInput value={form.shipping_method ?? ""} onChange={(e) => set("shipping_method", e.target.value)} placeholder="Standard / Express" /></Field>
                   <Field label="Shipped at"><TextInput type="datetime-local" value={toLocal(form.shipped_at)} onChange={(e) => set("shipped_at", fromLocal(e.target.value))} /></Field>
                   <Field label="Delivered at"><TextInput type="datetime-local" value={toLocal(form.delivered_at)} onChange={(e) => set("delivered_at", fromLocal(e.target.value))} /></Field>
-                  <Field label="BTC amount"><TextInput type="number" step="0.00000001" value={form.btc_amount ?? ""} onChange={(e) => set("btc_amount", e.target.value ? Number(e.target.value) : null)} /></Field>
-                  <Field label="BTC address"><TextInput value={form.btc_address ?? ""} onChange={(e) => set("btc_address", e.target.value)} /></Field>
-                  <Field label="Confirmations"><TextInput type="number" min="0" value={form.btc_confirmations ?? 0} onChange={(e) => set("btc_confirmations", Number(e.target.value || 0))} /></Field>
+                  {o.payment_method !== "venmo" && (<>
+                    <Field label="BTC amount"><TextInput type="number" step="0.00000001" value={form.btc_amount ?? ""} onChange={(e) => set("btc_amount", e.target.value ? Number(e.target.value) : null)} /></Field>
+                    <Field label="BTC address"><TextInput value={form.btc_address ?? ""} onChange={(e) => set("btc_address", e.target.value)} /></Field>
+                    <Field label="Confirmations"><TextInput type="number" min="0" value={form.btc_confirmations ?? 0} onChange={(e) => set("btc_confirmations", Number(e.target.value || 0))} /></Field>
+                    <Field label="Payment expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
+                  </>)}
                   <Field label="Payment received at"><TextInput type="datetime-local" value={toLocal(form.payment_received_at)} onChange={(e) => set("payment_received_at", fromLocal(e.target.value))} /></Field>
-                  <Field label="Payment expires at"><TextInput type="datetime-local" value={toLocal(form.payment_expires_at)} onChange={(e) => set("payment_expires_at", fromLocal(e.target.value))} /></Field>
                 </div>
               )}
             </section>
