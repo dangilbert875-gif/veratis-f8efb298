@@ -849,8 +849,26 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
               </div>
             </Section>
 
-            {/* D. BTC payment */}
-            <Section title="BTC payment">
+            {/* D. Payment — Venmo or BTC */}
+            <Section title={o.payment_method === "venmo" ? "Venmo payment" : "BTC payment"}>
+              {o.payment_method === "venmo" ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <KV label="Order #" value={o.order_number} />
+                  <KV label="USD total" value={formatUSD(o.total_usd)} />
+                  <Field label="Payment status">
+                    <SelectInput value={form.payment_status ?? "awaiting_payment"} onChange={(e) => set("payment_status", e.target.value)}>
+                      {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+                    </SelectInput>
+                  </Field>
+                  <Field label="Received at">
+                    <TextInput
+                      type="datetime-local"
+                      value={form.payment_received_at ? new Date(form.payment_received_at).toISOString().slice(0,16) : ""}
+                      onChange={(e) => set("payment_received_at", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                    />
+                  </Field>
+                </div>
+              ) : (
               <div className="grid grid-cols-2 gap-3">
                 <KV label="USD total" value={formatUSD(o.total_usd)} />
                 <Field label="Payment status">
@@ -892,6 +910,8 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   />
                 </Field>
               </div>
+              )}
+              {o.payment_method !== "venmo" && (
               <div className="mt-3 grid grid-cols-1 gap-3">
                 <Field label="BTC address">
                   <div className="flex gap-2">
@@ -910,6 +930,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   </div>
                 </Field>
               </div>
+              )}
             </Section>
 
             {/* D2. Customer-submitted proof of payment */}
