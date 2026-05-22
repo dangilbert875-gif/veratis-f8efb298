@@ -90,15 +90,31 @@ export const getViewerContext = createServerFn({ method: "GET" })
 
 export const getAdminOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((d: unknown) =>
+    z
+      .object({ scope: z.enum(["today", "7d", "30d", "all"]).optional() })
+      .parse(d ?? {}),
+  )
+  .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
+    const scope = data.scope ?? "30d";
+    const scopeDays =
+      scope === "today" ? 1 : scope === "7d" ? 7 : scope === "30d" ? 30 : null;
 
-    const [orders, referrals, payouts, profiles] = await Promise.all([
-      supabase.from("orders").select("id, status, payment_status, fulfillment_status, total_usd, created_at, customer_email"),
+    const [orders, referrals, payouts, profiles, products, lots] = await Promise.all([
+      supabase.from("orders").select("id, status, payment_status, fulfillment_status, total_usd, created_at, customer_email, risk_flag, archived_at"),
       supabase.from("referrals").select("id, clicks, conversions, revenue_usd"),
       supabase.from("payouts").select("id, status, amount_usd"),
       supabase.from("profiles").select("id, created_at"),
+      supabase
+        .from("products")
+        .select("id, name, slug, inventory_count, low_stock_threshold, status, archived_at")
+        .is("archived_at", null),
+      supabase
+        .from("product_lots")
+        .select("id, lot_number, best_before, coa_url, active, archived_at, status")
+        .is("archived_at", null),
     ]);
 
     const orderRows = orders.data ?? [];
@@ -107,10 +123,20 @@ export const getAdminOverview = createServerFn({ method: "GET" })
       ["paid", "confirmed", "btc_received"].includes(o.payment_status);
     const isUnshipped = (o: any) =>
       paidLike(o) && !["shipped", "delivered", "cancelled"].includes(o.fulfillment_status);
+    const isAwaitingPayment = (o: any) =>
+      !paidLike(o) &&
+      (["awaiting_payment", "pending", "underpaid"].includes(o.payment_status) ||
+        ["pending", "awaiting_payment"].includes(o.status));
+    const isRefundLike = (o: any) =>
+      ["refunded", "failed"].includes(o.payment_status) || o.status === "refunded";
     const now = Date.now();
     const within = (o: any, fromDaysAgo: number, toDaysAgo = 0) => {
       const t = new Date(o.created_at).getTime();
       return t > now - fromDaysAgo * 86400000 && t <= now - toDaysAgo * 86400000;
+    };
+    const withinScope = (o: any) => {
+      if (scopeDays === null) return true;
+      return within(o, scopeDays);
     };
 
     const revenue30d = orderRows
@@ -121,6 +147,23 @@ export const getAdminOverview = createServerFn({ method: "GET" })
       .reduce((s: number, o: any) => s + Number(o.total_usd ?? 0), 0);
     const orders7d = orderRows.filter((o: any) => within(o, 7)).length;
     const ordersPrev7d = orderRows.filter((o: any) => within(o, 14, 7)).length;
+
+    // Scope-aware aggregates
+    const scopedOrders = orderRows.filter(withinScope);
+    const revenueScope = scopedOrders
+      .filter((o: any) => paidLike(o))
+      .reduce((s: number, o: any) => s + Number(o.total_usd ?? 0), 0);
+    const revenuePrevScope = (() => {
+      if (scopeDays === null) return 0;
+      return orderRows
+        .filter((o: any) => paidLike(o) && within(o, scopeDays * 2, scopeDays))
+        .reduce((s: number, o: any) => s + Number(o.total_usd ?? 0), 0);
+    })();
+    const ordersScopeCount = scopedOrders.length;
+    const ordersPrevScopeCount =
+      scopeDays === null
+        ? 0
+        : orderRows.filter((o: any) => within(o, scopeDays * 2, scopeDays)).length;
 
     // 14-day daily order count series for sparkline (oldest → newest)
     const series14: number[] = Array.from({ length: 14 }, (_, i) => {
@@ -137,6 +180,10 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     const newCustomers30d = profileRows.filter(
       (p: any) => new Date(p.created_at).getTime() > now - 30 * 86400000,
     ).length;
+    const newCustomersScope = profileRows.filter((p: any) => {
+      if (scopeDays === null) return true;
+      return new Date(p.created_at).getTime() > now - scopeDays * 86400000;
+    }).length;
     // Total unique customers across profiles + guest checkout emails
     const emailSet = new Set<string>();
     for (const o of orderRows) {
@@ -144,15 +191,50 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     }
     const totalCustomers = Math.max(profileRows.length, emailSet.size);
 
+    // Action-required counts
+    const awaitingPaymentCount = orderRows.filter(isAwaitingPayment).length;
+    const flaggedCount = orderRows.filter(
+      (o: any) => o.risk_flag && !o.archived_at,
+    ).length;
+    const refundsPendingCount = orderRows.filter(isRefundLike).length;
+
+    // Inventory health
+    const productRows = products.data ?? [];
+    const lotRows = lots.data ?? [];
+    const lowStockCount = productRows.filter(
+      (p: any) =>
+        p.status === "published" &&
+        Number(p.inventory_count ?? 0) <=
+          Number(p.low_stock_threshold ?? 0),
+    ).length;
+    const today = new Date().toISOString().slice(0, 10);
+    const in30 = new Date(now + 30 * 86400000).toISOString().slice(0, 10);
+    const lotsExpiringCount = lotRows.filter(
+      (l: any) => l.best_before && l.best_before <= in30 && l.best_before >= today,
+    ).length;
+    const coaPendingCount = lotRows.filter(
+      (l: any) =>
+        (l.status === "awaiting_coa" || (!l.coa_url && l.status !== "archived")) &&
+        l.status !== "archived",
+    ).length;
+
     return {
+      scope,
       orders: {
         total: orderRows.length,
         pending: orderRows.filter((o: any) => o.status === "pending" || o.status === "awaiting_payment").length,
         unshipped: orderRows.filter(isUnshipped).length,
+        awaitingPayment: awaitingPaymentCount,
+        flagged: flaggedCount,
+        refundsPending: refundsPendingCount,
         revenue30d,
         revenuePrev30d,
         orders7d,
         ordersPrev7d,
+        revenueScope,
+        revenuePrevScope,
+        ordersScopeCount,
+        ordersPrevScopeCount,
         series14,
       },
       referrals: {
@@ -168,7 +250,12 @@ export const getAdminOverview = createServerFn({ method: "GET" })
           .filter((p: any) => p.status !== "sent" && p.status !== "cancelled")
           .reduce((s: number, p: any) => s + Number(p.amount_usd ?? 0), 0),
       },
-      customers: { total: totalCustomers, new30d: newCustomers30d },
+      customers: { total: totalCustomers, new30d: newCustomers30d, newScope: newCustomersScope },
+      inventory: {
+        lowStockCount,
+        lotsExpiringCount,
+        coaPendingCount,
+      },
       generatedAt: new Date().toISOString(),
     };
   });
