@@ -880,7 +880,7 @@ function Row({ label, value }: { label: string; value: string }) {
 function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) {
   const steps = ["Contact", "Shipping", "Review"];
   return (
-    <ol className="flex items-center gap-3 mb-6 text-[10.5px] font-mono uppercase tracking-[0.2em]">
+    <ol className="flex flex-wrap items-center gap-y-2 gap-x-3 mb-6 text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em]">
       {steps.map((s, i) => {
         const n = (i + 1) as Step;
         const done = step > n;
@@ -900,7 +900,7 @@ function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) 
               </span>
               <span className={active ? "text-ink" : done ? "text-foreground/70" : "text-foreground/40"}>{s}</span>
             </button>
-            {i < steps.length - 1 && <span className="w-8 h-px bg-border" />}
+            {i < steps.length - 1 && <span className="w-6 sm:w-8 h-px bg-border" />}
           </li>
         );
       })}
