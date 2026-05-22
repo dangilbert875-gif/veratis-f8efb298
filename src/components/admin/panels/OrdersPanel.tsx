@@ -445,6 +445,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                   </th>
                   <th className="text-left font-medium px-4 py-2.5">Order</th>
                   <th className="text-left font-medium px-4 py-2.5">Customer</th>
+                  <th className="text-left font-medium px-4 py-2.5">Items</th>
                   <th className="text-left font-medium px-4 py-2.5">Payment</th>
                   <th className="text-left font-medium px-4 py-2.5">Fulfillment</th>
                   <th className="text-right font-medium px-4 py-2.5">Total</th>
@@ -455,7 +456,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((o: any) => {
+                {filtered.slice((page - 1) * pageSize, page * pageSize).map((o: any) => {
                   const alerts = deriveAlerts(o);
                   return (
                     <tr
@@ -470,6 +471,16 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                       <td className="px-4 py-3">
                         <div className="text-ink">{o.customer_name || o.customer_email}</div>
                         {o.customer_name && <div className="text-[10.5px] text-foreground/50">{o.customer_email}</div>}
+                      </td>
+                      <td className="px-4 py-3">
+                        {itemCount(o) > 0 ? (
+                          <span
+                            className="inline-flex items-center gap-1 border border-ink/15 px-1.5 py-0.5 text-[10.5px] tracking-[0.1em] uppercase text-foreground/70 bg-mist/20"
+                            title={itemSummary(o)}
+                          >
+                            {itemCount(o)} <span className="text-foreground/45">item{itemCount(o) === 1 ? "" : "s"}</span>
+                          </span>
+                        ) : <span className="text-foreground/30 text-[11px]">—</span>}
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <InlineStatusSelect
@@ -489,7 +500,12 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums">{formatUSD(o.total_usd)}</td>
                       <td className="px-4 py-3 text-foreground/65 text-[11.5px]">
-                        {o.shipping_city ? `${o.shipping_city}${o.shipping_state ? ", " + o.shipping_state : ""}` : "—"}
+                        {o.shipping_city ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            {countryFlag(o.shipping_country) && <span aria-hidden>{countryFlag(o.shipping_country)}</span>}
+                            <span>{o.shipping_city}{o.shipping_state ? `, ${o.shipping_state}` : ""}</span>
+                          </span>
+                        ) : "—"}
                       </td>
                       <td className="px-4 py-3 text-foreground/60">{formatDate(o.created_at)}</td>
                       <td className="px-4 py-3">
@@ -539,6 +555,35 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                 })}
               </tbody>
             </table>
+            {/* Pagination */}
+            {filtered.length > 0 && (
+              <div className="px-5 py-2.5 border-t border-ink/10 flex flex-wrap items-center justify-between gap-3 text-[11px] text-foreground/65">
+                <div className="tabular-nums">
+                  {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} of {filtered.length}
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={pageSize}
+                    onChange={(e) => setPageSize(Number(e.target.value) as 25|50|100)}
+                    className="h-7 border border-ink/15 bg-background px-2 text-[10.5px] uppercase tracking-[0.1em]"
+                  >
+                    {[25, 50, 100].map((n) => <option key={n} value={n}>{n} / page</option>)}
+                  </select>
+                  <button
+                    type="button"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="h-7 px-2 border border-ink/15 disabled:opacity-30 text-[10.5px] uppercase tracking-[0.1em] hover:bg-mist/30"
+                  >Prev</button>
+                  <button
+                    type="button"
+                    disabled={page * pageSize >= filtered.length}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="h-7 px-2 border border-ink/15 disabled:opacity-30 text-[10.5px] uppercase tracking-[0.1em] hover:bg-mist/30"
+                  >Next</button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Card>
