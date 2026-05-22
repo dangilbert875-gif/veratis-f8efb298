@@ -69,11 +69,19 @@ function CheckoutPage() {
 
   const fetchRate = useServerFn(getBtcUsdRate);
   const checkPromo = useServerFn(validatePromoCode);
+  const reserveNum = useServerFn(reserveOrderNumber);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
-  const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+  const [copied, setCopied] = useState<"addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder" | null>(null);
   const [rateRefreshing, setRateRefreshing] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+
+  // Payment method (Bitcoin or Venmo)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("btc");
+
+  // Real, pre-reserved order number issued at Step 3 so the customer can
+  // include it in the Venmo note before the order row is created.
+  const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(null);
 
   // Draft order reference shown to the buyer for support purposes before the
   // real order_number is issued on submit. Persisted for the tab session.
@@ -219,11 +227,42 @@ function CheckoutPage() {
     return `${mm}:${ss}`;
   })();
   const btcAmount = btcRate && totalAfterDiscount > 0 ? (totalAfterDiscount / btcRate).toFixed(8) : null;
-  function copyVal(kind: "addr" | "amt", value: string) {
+  function copyVal(
+    kind: "addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder",
+    value: string,
+  ) {
     navigator.clipboard?.writeText(value);
     setCopied(kind);
     setTimeout(() => setCopied(null), 1400);
   }
+
+  // Reserve a real order number the first time the user lands on Step 3.
+  // Cached in sessionStorage so a reload / step navigation doesn't burn a
+  // new sequence value.
+  useEffect(() => {
+    if (step !== 3) return;
+    if (reservedOrderNumber) return;
+    const key = "veratis:checkout:reserved-order-number";
+    const cached = typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
+    if (cached) {
+      setReservedOrderNumber(cached);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await reserveNum();
+        if (cancelled) return;
+        setReservedOrderNumber(r.order_number);
+        try { window.sessionStorage.setItem(key, r.order_number); } catch {}
+      } catch {
+        // Falls back to draftRef in the UI if reservation fails.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [step, reservedOrderNumber, reserveNum]);
+
+  const orderReference = reservedOrderNumber || draftRef;
 
   if (items.length === 0) {
     return (
