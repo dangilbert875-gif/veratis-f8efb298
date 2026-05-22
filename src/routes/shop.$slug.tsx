@@ -209,6 +209,10 @@ function ProductPage() {
             <span className="text-[12px] font-mono uppercase tracking-[0.16em] text-foreground/55">/ {sizeLabel}</span>
           </div>
 
+          <p className="mt-4 inline-flex items-center gap-2 px-3 py-2 rounded-[3px] border border-amber-200/70 bg-amber-50/60 text-[11px] font-mono uppercase tracking-[0.14em] text-amber-900">
+            For research use only · not for human or veterinary consumption
+          </p>
+
           {/* Specification block — reads like a lab document, not a product card */}
           <dl className="mt-7 border border-border rounded-[3px] divide-y divide-border bg-background">
             {[

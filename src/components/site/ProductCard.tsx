@@ -171,7 +171,7 @@ export function ProductCard({
             {title}
           </h3>
           {tagline ? (
-            <p className="hidden md:block mt-1.5 text-[11.5px] text-muted-foreground leading-snug opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-16 transition-all duration-300 ease-out">
+            <p className="mt-1.5 text-[11.5px] text-muted-foreground leading-snug line-clamp-2">
               {tagline}
             </p>
           ) : null}
