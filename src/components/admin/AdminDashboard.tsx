@@ -199,15 +199,26 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           </div>
           <div className="flex items-center gap-3">
             <SystemStatus lastSync={lastSync} />
+            {/* Wider search button on lg+, compact ⌘K hint on smaller widths */}
             <button
               type="button"
               onClick={() => setPaletteOpen(true)}
-              className="hidden md:inline-flex items-center gap-3 h-9 pl-3 pr-2 border border-ink/15 bg-background text-[12px] text-foreground/55 hover:border-ink/30 hover:text-ink transition-colors"
+              className="hidden lg:inline-flex items-center gap-3 h-9 pl-3 pr-2 border border-ink/15 bg-background text-[12px] text-foreground/55 hover:border-ink/30 hover:text-ink transition-colors"
+              title="Open command bar"
             >
               <span>Search anything…</span>
               <kbd className="border border-ink/15 px-1.5 py-0.5 text-[10px] tracking-[0.1em] text-foreground/50">
                 ⌘K
               </kbd>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaletteOpen(true)}
+              className="hidden md:inline-flex lg:hidden items-center gap-2 h-9 px-2.5 border border-ink/15 bg-background text-[11px] font-mono text-foreground/55 hover:border-ink/30 hover:text-ink transition-colors"
+              title="Open command bar"
+            >
+              <span className="tracking-[0.1em]">⌘K</span>
+              <span className="text-foreground/40">to search</span>
             </button>
             {/* Mobile section switcher */}
             <select
