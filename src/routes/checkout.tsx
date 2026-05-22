@@ -338,9 +338,13 @@ function CheckoutPage() {
           payment_proof_url: proofUrl,
           payment_tx_id: txId.trim() || null,
           promo_code: promo?.code ?? null,
+          payment_method: paymentMethod,
+          order_number: reservedOrderNumber,
         },
       });
       clear();
+      try { window.sessionStorage.removeItem("veratis:checkout:reserved-order-number"); } catch {}
+      try { window.sessionStorage.removeItem("veratis:checkout:draft-ref"); } catch {}
       navigate({ to: "/checkout/thank-you/$orderNumber", params: { orderNumber: res.order_number } });
     } catch (e: any) {
       setError(e?.message || "Could not place order. Please try again.");
