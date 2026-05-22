@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder, getBtcUsdRate, reserveOrderNumber, validatePromoCode } from "@/lib/checkout.functions";
+import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
@@ -69,7 +69,6 @@ function CheckoutPage() {
 
   const fetchRate = useServerFn(getBtcUsdRate);
   const checkPromo = useServerFn(validatePromoCode);
-  const reserveNum = useServerFn(reserveOrderNumber);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState<"addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder" | null>(null);
@@ -105,10 +104,6 @@ function CheckoutPage() {
       cancelled = true;
     };
   }, []);
-
-  // Real, pre-reserved order number issued at Step 3 so the customer can
-  // include it in the Venmo note before the order row is created.
-  const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(null);
 
   // Draft order reference shown to the buyer for support purposes before the
   // real order_number is issued on submit. Persisted for the tab session.
