@@ -56,6 +56,7 @@ function CheckoutPage() {
   const [zip, setZip] = useState("");
   const [country, setCountry] = useState("United States");
   const [notes, setNotes] = useState("");
+  const [researchAffirmed, setResearchAffirmed] = useState(false);
 
   const FREE_SHIPPING_THRESHOLD = 150;
   const shippingCost = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : 18;
@@ -224,6 +225,10 @@ function CheckoutPage() {
 
   async function placeOrder() {
     setError(null);
+    if (!researchAffirmed) {
+      setError("Please confirm the research-use affirmation before placing the order.");
+      return;
+    }
     if (!proofConfirmed) {
       setError("Please upload proof of payment or enter your transaction ID first.");
       return;
