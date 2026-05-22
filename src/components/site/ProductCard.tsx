@@ -161,7 +161,7 @@ export function ProductCard({
         </div>
 
         {/* Title block — fixed-height, balanced wrap */}
-        <div className="mt-3 sm:mt-5">
+        <div className="mt-3 sm:mt-5 text-center sm:text-left">
           <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
             {p.category}
           </p>
@@ -181,8 +181,8 @@ export function ProductCard({
         </div>
 
         {/* Price + availability row — clean horizontal rhythm */}
-        <div className="mt-3 pt-3 border-t border-border/70 flex items-baseline justify-between gap-3">
-          <div className="flex flex-col gap-1">
+        <div className="mt-3 pt-3 border-t border-border/70 flex items-baseline justify-center sm:justify-between gap-6 sm:gap-3">
+          <div className="flex flex-col gap-1 items-center sm:items-start">
             <p className={`text-[10px] font-mono uppercase tracking-[0.2em] ${available ? "text-foreground/65" : "text-foreground/55"}`}>
               {available ? "Available" : "Reserved"}
             </p>
@@ -192,7 +192,7 @@ export function ProductCard({
               </p>
             ) : null}
           </div>
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-center sm:items-end gap-1">
             <p className="text-[16px] sm:text-[15px] text-ink font-medium tabular-nums leading-none">
               ${p.price}
             </p>

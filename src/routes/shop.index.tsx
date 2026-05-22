@@ -102,7 +102,6 @@ function ShopPage() {
   const [sort, setSort] = useState<SortKey>("featured");
   const [verifyOpenMobile, setVerifyOpenMobile] = useState(false);
   const [query, setQuery] = useState("");
-  const [priceMax, setPriceMax] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
   useEffect(() => {
     setFilter(initial);
@@ -120,16 +119,11 @@ function ShopPage() {
   const pageSize = isMobile ? 4 : 12;
   useEffect(() => {
     setVisibleCount(pageSize);
-  }, [filter, sort, query, priceMax, pageSize]);
-
-  // Price ceiling for the slider — round up to a nice number
-  const maxPrice = Math.max(0, ...products.map((p) => p.price));
-  const priceCeiling = Math.max(50, Math.ceil(maxPrice / 50) * 50);
+  }, [filter, sort, query, pageSize]);
 
   const q = query.trim().toLowerCase();
   const baseFiltered = products.filter((p) => {
     if (filter !== "All" && p.category !== filter) return false;
-    if (priceMax !== null && p.price > priceMax) return false;
     if (q) {
       const hay = `${p.name} ${p.slug} ${p.lot} ${p.category}`.toLowerCase();
       if (!hay.includes(q)) return false;
@@ -151,13 +145,11 @@ function ShopPage() {
   const activeFilters: Array<{ key: string; label: string; clear: () => void }> = [];
   if (filter !== "All") activeFilters.push({ key: "cat", label: filter, clear: () => setFilter("All") });
   if (q) activeFilters.push({ key: "q", label: `“${query}”`, clear: () => setQuery("") });
-  if (priceMax !== null) activeFilters.push({ key: "price", label: `≤ $${priceMax}`, clear: () => setPriceMax(null) });
   if (sort !== "featured") activeFilters.push({ key: "sort", label: `Sort: ${sort.replace("-", " ")}`, clear: () => setSort("featured") });
 
   function clearAll() {
     setFilter("All");
     setQuery("");
-    setPriceMax(null);
     setSort("featured");
   }
 
@@ -202,7 +194,7 @@ function ShopPage() {
           </div>
           <Link
             to="/verify"
-            className="self-start md:self-auto inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
+            className="self-start md:self-auto hidden md:inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
           >
             <ShieldCheck size={13} strokeWidth={1.5} />
             Verify any lot in under 1 second
@@ -317,27 +309,6 @@ function ShopPage() {
                 </div>
                 <div aria-hidden className="md:hidden absolute left-0 top-0 bottom-1 w-6 bg-gradient-to-r from-background to-transparent pointer-events-none" />
                 <div aria-hidden className="md:hidden absolute right-0 top-0 bottom-1 w-6 bg-gradient-to-l from-background to-transparent pointer-events-none" />
-              </div>
-
-              {/* Price range */}
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">Max price</span>
-                <input
-                  type="range"
-                  min={50}
-                  max={priceCeiling}
-                  step={25}
-                  value={priceMax ?? priceCeiling}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setPriceMax(v >= priceCeiling ? null : v);
-                  }}
-                  className="flex-1 min-w-[160px] max-w-xs accent-ink"
-                  aria-label="Maximum price filter"
-                />
-                <span className="text-[11px] font-mono tabular-nums text-ink">
-                  ${priceMax ?? priceCeiling}{priceMax === null ? " (any)" : ""}
-                </span>
               </div>
 
               {/* Sort + result count */}

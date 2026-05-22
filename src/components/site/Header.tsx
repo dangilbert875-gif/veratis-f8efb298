@@ -96,10 +96,10 @@ export function Header() {
     ? (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2)
     : "99.25";
   const proofPoints = [
-    { label: `${batches.length || 86} lots verified · ISO 17025` },
-    { label: `${meanPurity}% mean purity across all lots` },
-    { label: "Average COA turnaround · 6 days" },
-    { label: "Every vial lot-traceable · permanent archive" },
+    { short: `${batches.length || 86} lots verified`, label: `${batches.length || 86} lots verified · ISO 17025` },
+    { short: `${meanPurity}% mean purity`, label: `${meanPurity}% mean purity across all lots` },
+    { short: "COA turnaround · 6 days", label: "Average COA turnaround · 6 days" },
+    { short: "Permanent lot archive", label: "Every vial lot-traceable · permanent archive" },
   ];
   const [proofIdx, setProofIdx] = useState(0);
   useEffect(() => {
@@ -122,7 +122,8 @@ export function Header() {
             className="inline-flex items-center gap-2 truncate animate-in fade-in slide-in-from-bottom-1 duration-500 hover:text-background transition"
             aria-live="polite"
           >
-            <span className="truncate">{proofPoints[proofIdx].label}</span>
+            <span className="truncate sm:hidden">{proofPoints[proofIdx].short}</span>
+            <span className="truncate hidden sm:inline">{proofPoints[proofIdx].label}</span>
           </Link>
           <span aria-hidden className="hidden md:inline-block h-2 w-px bg-background/20" />
           <Link

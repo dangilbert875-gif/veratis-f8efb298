@@ -13,9 +13,11 @@ export function Footer() {
       {/* Top: institutional verification rail */}
       <div className="border-b border-background/10">
         <div className="mx-auto max-w-7xl px-6 py-7 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-          <div className="flex items-center gap-3 text-[10.5px] font-mono uppercase tracking-[0.2em] text-background/55">
-            <ShieldCheck size={14} className="text-primary" strokeWidth={1.5} />
-            <span>Verification archive</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10.5px] font-mono uppercase tracking-[0.2em] text-background/55">
+            <span className="inline-flex items-center gap-2">
+              <ShieldCheck size={14} className="text-primary" strokeWidth={1.5} />
+              Verification archive
+            </span>
             <span className="text-background/20">·</span>
             <span className="tabular-nums">{lotCount} lots</span>
             <span className="text-background/20">·</span>
@@ -25,12 +27,12 @@ export function Footer() {
           </div>
           <Link
             to="/verify"
-            className="group inline-flex items-center justify-between gap-3 h-11 pl-4 pr-2 rounded-[3px] border border-background/15 bg-background/[0.04] hover:border-primary/60 active:scale-[0.99] transition w-full md:w-[340px]"
+            className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 sm:h-11 sm:py-0 sm:pl-4 sm:pr-2 rounded-[3px] border border-background/15 bg-background/[0.04] hover:border-primary/60 active:scale-[0.99] transition w-full md:w-[340px]"
           >
-            <span className="font-mono text-[12px] tabular-nums tracking-[0.08em] text-background/55">
+            <span className="font-mono text-[12px] tabular-nums tracking-[0.08em] text-background/55 px-1 sm:px-0">
               PP-XXXX
             </span>
-            <span className="inline-flex items-center gap-1.5 h-8 px-3 rounded-[2px] bg-primary text-primary-foreground text-[10.5px] font-medium uppercase tracking-[0.16em]">
+            <span className="inline-flex items-center justify-center gap-1.5 h-9 sm:h-8 px-3 rounded-[2px] bg-primary text-primary-foreground text-[10.5px] font-medium uppercase tracking-[0.16em]">
               Verify <ArrowRight size={11} />
             </span>
           </Link>
