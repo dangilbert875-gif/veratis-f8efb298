@@ -311,27 +311,6 @@ function ShopPage() {
                 <div aria-hidden className="md:hidden absolute right-0 top-0 bottom-1 w-6 bg-gradient-to-l from-background to-transparent pointer-events-none" />
               </div>
 
-              {/* Price range */}
-              <div className="mt-5 flex flex-wrap items-center gap-3">
-                <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">Max price</span>
-                <input
-                  type="range"
-                  min={50}
-                  max={priceCeiling}
-                  step={25}
-                  value={priceMax ?? priceCeiling}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    setPriceMax(v >= priceCeiling ? null : v);
-                  }}
-                  className="flex-1 min-w-[160px] max-w-xs accent-ink"
-                  aria-label="Maximum price filter"
-                />
-                <span className="text-[11px] font-mono tabular-nums text-ink">
-                  ${priceMax ?? priceCeiling}{priceMax === null ? " (any)" : ""}
-                </span>
-              </div>
-
               {/* Sort + result count */}
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 tabular-nums">
