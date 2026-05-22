@@ -395,7 +395,7 @@ function ShopPage() {
             {filtered.length === 0 ? (
               <EmptyCategory category={filter} />
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
                 {visible.map((p) => {
                   const stock = stockForSlug(p.slug);
                   return (
@@ -423,7 +423,7 @@ function ShopPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setVisibleCount((n) => n + 12)}
+                  onClick={() => setVisibleCount((n) => n + pageSize)}
                   className="inline-flex items-center gap-2 h-12 px-6 border border-ink/20 rounded-[3px] text-[11px] font-medium uppercase tracking-[0.22em] text-ink bg-background hover:bg-ink hover:text-background hover:border-ink transition"
                 >
                   Load more <ArrowRight size={13} />
