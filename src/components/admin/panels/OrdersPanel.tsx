@@ -36,6 +36,16 @@ function isComplete(o: any) {
     && ["shipped", "delivered"].includes(o.fulfillment_status);
 }
 
+function isPaidLike(o: any) {
+  return ["paid", "shipped", "delivered"].includes(o.status)
+    || ["paid", "confirmed", "btc_received"].includes(o.payment_status);
+}
+function isAwaitingPayment(o: any) {
+  if (isPaidLike(o)) return false;
+  return ["awaiting_payment", "pending", "underpaid"].includes(o.payment_status)
+    || ["pending", "awaiting_payment"].includes(o.status);
+}
+
 function StatusDot({ tone }: { tone: Tone }) {
   const c = tone === "ok" ? "bg-emerald-700"
     : tone === "warn" ? "bg-amber-600"
@@ -211,8 +221,8 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
     let rows = (orders as any[]).filter((o) => {
       if (paymentFilter !== "all" && o.payment_status !== paymentFilter) return false;
       if (fulfillmentFilter !== "all" && o.fulfillment_status !== fulfillmentFilter) return false;
-      if (quickFilter === "unpaid" && o.payment_status === "confirmed") return false;
-      if (quickFilter === "unshipped" && ["shipped","delivered","cancelled"].includes(o.fulfillment_status)) return false;
+      if (quickFilter === "unpaid" && isPaidLike(o)) return false;
+      if (quickFilter === "unshipped" && (!isPaidLike(o) || ["shipped","delivered","cancelled"].includes(o.fulfillment_status))) return false;
       if (quickFilter === "flagged" && !o.risk_flag) return false;
       if (quickFilter === "refunded" && o.payment_status !== "refunded") return false;
       if (needle) {
@@ -284,8 +294,8 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
     const rows = orders as any[];
     return {
       total: rows.length,
-      awaiting: rows.filter((o) => o.payment_status === "awaiting_payment").length,
-      unshipped: rows.filter((o) => (o.payment_status === "confirmed" || o.status === "paid") && !["shipped","delivered"].includes(o.fulfillment_status)).length,
+      awaiting: rows.filter(isAwaitingPayment).length,
+      unshipped: rows.filter((o) => isPaidLike(o) && !["shipped","delivered","cancelled"].includes(o.fulfillment_status)).length,
       flagged: rows.filter((o) => o.risk_flag).length,
       alerts: rows.reduce((s, o) => s + deriveAlerts(o).length, 0),
     };
