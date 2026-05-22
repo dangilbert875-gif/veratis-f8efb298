@@ -686,13 +686,14 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                     {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
                   </SelectInput>
                 </Field>
-                <Field label="BTC amount">
+                <Field label="BTC owed at checkout">
                   <TextInput
                     type="number"
                     step="0.00000001"
                     value={form.btc_amount ?? ""}
                     onChange={(e) => set("btc_amount", e.target.value)}
                     className="font-mono !text-[11.5px]"
+                    placeholder="Quoted to customer at checkout"
                   />
                 </Field>
                 <Field label="BTC confirmations">
