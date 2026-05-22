@@ -35,6 +35,8 @@ const checkoutSchema = z.object({
   payment_proof_url: z.string().url().max(1024).optional().nullable(),
   payment_tx_id: z.string().max(256).optional().nullable(),
   promo_code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/).optional().nullable(),
+  payment_method: z.enum(["btc", "venmo"]).optional().default("btc"),
+  order_number: z.string().min(3).max(32).regex(/^[A-Z0-9-]+$/i).optional().nullable(),
 });
 
 async function nextOrderNumber(): Promise<string> {
@@ -92,14 +94,17 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     );
 
     // Sequential order number starting at 1501 (1501, 1502, 1503…)
-    const order_number = await nextOrderNumber();
+    const order_number = data.order_number
+      ? data.order_number.toUpperCase()
+      : await nextOrderNumber();
 
-    const btcAddress = STATIC_BTC_ADDRESS;
+    const isVenmo = data.payment_method === "venmo";
+    const btcAddress = isVenmo ? null : STATIC_BTC_ADDRESS;
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     // Lock the BTC quote at the time of checkout so the admin can see
     // exactly how much BTC the customer was asked to pay.
-    const btcRate = await fetchBtcUsdRate();
-    const btcAmount = btcRate ? Number((total / btcRate).toFixed(8)) : null;
+    const btcRate = isVenmo ? null : await fetchBtcUsdRate();
+    const btcAmount = !isVenmo && btcRate ? Number((total / btcRate).toFixed(8)) : null;
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
@@ -109,7 +114,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         customer_name: data.customer.name.trim(),
         status: "awaiting_payment",
         payment_status: "pending",
-        payment_method: "btc",
+        payment_method: data.payment_method,
         fulfillment_status: "not_started",
         total_usd: total,
         btc_address: btcAddress,
@@ -190,6 +195,13 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     };
   });
 
+export const reserveOrderNumber = createServerFn({ method: "POST" }).handler(
+  async () => {
+    const order_number = await nextOrderNumber();
+    return { order_number };
+  },
+);
+
 export const validatePromoCode = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
     z.object({
@@ -222,7 +234,7 @@ export const getCheckoutOrder = createServerFn({ method: "POST" })
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select(
-        "order_number, customer_email, customer_name, status, payment_status, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
+        "order_number, customer_email, customer_name, status, payment_status, payment_method, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
       )
       .eq("order_number", data.order_number.toUpperCase())
       .maybeSingle();
