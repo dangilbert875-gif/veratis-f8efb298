@@ -194,7 +194,7 @@ function ShopPage() {
           </div>
           <Link
             to="/verify"
-            className="self-start md:self-auto inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
+            className="self-start md:self-auto hidden md:inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
           >
             <ShieldCheck size={13} strokeWidth={1.5} />
             Verify any lot in under 1 second
