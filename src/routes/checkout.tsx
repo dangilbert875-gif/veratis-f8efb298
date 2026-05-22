@@ -356,9 +356,9 @@ function CheckoutPage() {
     <Layout hideFooter>
       <PageHeader eyebrow="— Checkout" title="Complete your order" />
 
-      <section className="px-6 lg:px-12 py-12 max-w-6xl mx-auto grid lg:grid-cols-[1fr_380px] gap-12">
+      <section className="px-5 sm:px-6 lg:px-12 py-10 sm:py-12 max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,1fr)_380px] gap-10 lg:gap-12">
         {/* LEFT: form */}
-        <div>
+        <div className="min-w-0">
           <StepRail step={step} onJump={(n) => { if (n < step) setStep(n); }} />
 
           {step === 1 && (
@@ -438,14 +438,14 @@ function CheckoutPage() {
           )}
 
           {step === 3 && (
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
-              <div>
+            <div className="mb-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
+              <div className="min-w-0">
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
                   — Order # (include in payment)
                 </p>
                 <p className="mt-0.5 font-mono text-[13px] text-ink tabular-nums">{orderReference}</p>
               </div>
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 max-w-[260px] text-right">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 sm:max-w-[260px] sm:text-right">
                 Reference this number in your Venmo note or for any support inquiries.
               </p>
             </div>
@@ -691,7 +691,7 @@ function CheckoutPage() {
         </div>
 
         {/* RIGHT: summary */}
-        <aside className="lg:sticky lg:top-24 self-start border border-border rounded-[3px] bg-mist/30">
+        <aside className="lg:sticky lg:top-24 self-start border border-border rounded-[3px] bg-mist/30 min-w-0 w-full">
           <div className="px-5 py-4 border-b border-border">
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Order summary</p>
           </div>
