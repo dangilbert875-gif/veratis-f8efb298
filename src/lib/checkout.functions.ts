@@ -34,6 +34,7 @@ const checkoutSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   payment_proof_url: z.string().url().max(1024).optional().nullable(),
   payment_tx_id: z.string().max(256).optional().nullable(),
+  promo_code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/).optional().nullable(),
 });
 
 async function nextOrderNumber(): Promise<string> {
@@ -64,7 +65,31 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       0,
     );
     const shippingCost = itemsTotal >= 150 ? 0 : 18;
-    const total = Math.round((itemsTotal + shippingCost) * 100) / 100;
+
+    // Validate promo code server-side (never trust the client price)
+    let discountAmount = 0;
+    let appliedCode: string | null = null;
+    if (data.promo_code) {
+      const { data: codeRows } = await supabaseAdmin.rpc("lookup_promo_code", {
+        _code: data.promo_code,
+      });
+      const code = Array.isArray(codeRows) ? codeRows[0] : codeRows;
+      if (code && code.active) {
+        const amount = Number(code.discount_amount ?? 0);
+        if (code.discount_type === "fixed") {
+          discountAmount = Math.min(amount, itemsTotal);
+        } else {
+          discountAmount = Math.min((itemsTotal * amount) / 100, itemsTotal);
+        }
+        discountAmount = Math.round(discountAmount * 100) / 100;
+        appliedCode = String(code.code);
+      }
+    }
+
+    const total = Math.max(
+      0,
+      Math.round((itemsTotal + shippingCost - discountAmount) * 100) / 100,
+    );
 
     // Sequential order number starting at 1501 (1501, 1502, 1503…)
     const order_number = await nextOrderNumber();
@@ -102,6 +127,8 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         items: data.items as any,
         payment_proof_url: data.payment_proof_url || null,
         payment_tx_id: data.payment_tx_id?.trim() || null,
+        discount_code: appliedCode,
+        discount_amount_usd: discountAmount,
       })
       .select("id, order_number")
       .single();
@@ -156,8 +183,34 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       order_number: order!.order_number,
       total_usd: total,
       shipping_cost: shippingCost,
+      discount_amount_usd: discountAmount,
+      discount_code: appliedCode,
       btc_address: btcAddress,
       expires_at: expiresAt,
+    };
+  });
+
+export const validatePromoCode = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({
+      code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/),
+    }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { data: rows, error } = await supabaseAdmin.rpc("lookup_promo_code", {
+      _code: data.code,
+    });
+    if (error) throw new Error(error.message);
+    const code = Array.isArray(rows) ? rows[0] : rows;
+    if (!code || code.active === false) {
+      return { valid: false as const, error: "Invalid or inactive code" };
+    }
+    return {
+      valid: true as const,
+      code: String(code.code),
+      label: code.label as string | null,
+      discount_type: code.discount_type as "percent" | "fixed",
+      discount_amount: Number(code.discount_amount ?? 0),
     };
   });
 
