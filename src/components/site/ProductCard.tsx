@@ -38,6 +38,7 @@ export function ProductCard({
   bestValuePerMg,
   showQuantity,
   showViewCoa,
+  compactImage,
 }: {
   p: Product;
   badge?: Badge;
@@ -58,6 +59,8 @@ export function ProductCard({
   showQuantity?: boolean;
   /** Render secondary "View COA →" button next to Add to Cart. */
   showViewCoa?: boolean;
+  /** Slightly reduce the framed image on dense catalog mobile layouts. */
+  compactImage?: boolean;
 }) {
   const lot = p.lot;
   const available = p.inStock !== false;
@@ -102,14 +105,14 @@ export function ProductCard({
   const pricePerMg = totalMg > 0 ? p.price / totalMg : null;
 
   return (
-    <article className="group w-full mx-auto">
+    <article className="group w-full max-w-full min-w-0 mx-auto">
       <Link
         to="/shop/$slug"
         params={{ slug: p.slug }}
         className="block"
         aria-label={`${title} — view details`}
       >
-        <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full mx-auto">
+        <div className={`relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full mx-auto ${compactImage ? "max-w-[320px] sm:max-w-none" : ""}`}>
           {accentClass ? (
             <span
               aria-hidden
@@ -135,7 +138,7 @@ export function ProductCard({
             </span>
           ) : null}
 
-          <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-3 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
+          <div className={`absolute inset-0 flex items-center justify-center transition duration-[900ms] ease-out group-hover:scale-[1.02] ${compactImage ? "p-5 sm:p-3" : "p-3 sm:p-3"}`}>
             <VialImage
               name={p.name}
               dosage={p.dosage}
