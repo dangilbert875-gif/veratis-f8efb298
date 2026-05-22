@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder, getBtcUsdRate, reserveOrderNumber, validatePromoCode } from "@/lib/checkout.functions";
+import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
@@ -69,7 +69,6 @@ function CheckoutPage() {
 
   const fetchRate = useServerFn(getBtcUsdRate);
   const checkPromo = useServerFn(validatePromoCode);
-  const reserveNum = useServerFn(reserveOrderNumber);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
   const [copied, setCopied] = useState<"addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder" | null>(null);
@@ -105,10 +104,6 @@ function CheckoutPage() {
       cancelled = true;
     };
   }, []);
-
-  // Real, pre-reserved order number issued at Step 3 so the customer can
-  // include it in the Venmo note before the order row is created.
-  const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(null);
 
   // Draft order reference shown to the buyer for support purposes before the
   // real order_number is issued on submit. Persisted for the tab session.
@@ -263,33 +258,10 @@ function CheckoutPage() {
     setTimeout(() => setCopied(null), 1400);
   }
 
-  // Reserve a real order number the first time the user lands on Step 3.
-  // Cached in sessionStorage so a reload / step navigation doesn't burn a
-  // new sequence value.
-  useEffect(() => {
-    if (step !== 3) return;
-    if (reservedOrderNumber) return;
-    const key = "veratis:checkout:reserved-order-number";
-    const cached = typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
-    if (cached) {
-      setReservedOrderNumber(cached);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      try {
-        const r = await reserveNum();
-        if (cancelled) return;
-        setReservedOrderNumber(r.order_number);
-        try { window.sessionStorage.setItem(key, r.order_number); } catch {}
-      } catch {
-        // Falls back to draftRef in the UI if reservation fails.
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [step, reservedOrderNumber, reserveNum]);
-
-  const orderReference = reservedOrderNumber || draftRef;
+  // The real order_number is assigned server-side when the order is submitted.
+  // Until then, show the session-scoped draft reference to the buyer (so the
+  // Venmo note / support emails have something to reference).
+  const orderReference = draftRef;
 
   if (items.length === 0) {
     return (
@@ -366,13 +338,15 @@ function CheckoutPage() {
           payment_tx_id: txId.trim() || null,
           promo_code: promo?.code ?? null,
           payment_method: paymentMethod,
-          order_number: reservedOrderNumber,
         },
       });
       clear();
-      try { window.sessionStorage.removeItem("veratis:checkout:reserved-order-number"); } catch {}
       try { window.sessionStorage.removeItem("veratis:checkout:draft-ref"); } catch {}
-      navigate({ to: "/checkout/thank-you/$orderNumber", params: { orderNumber: res.order_number } });
+      navigate({
+        to: "/checkout/thank-you/$orderNumber",
+        params: { orderNumber: res.order_number },
+        search: { t: res.access_token },
+      });
     } catch (e: any) {
       setError(e?.message || "Could not place order. Please try again.");
       setSubmitting(false);

@@ -36,7 +36,6 @@ const checkoutSchema = z.object({
   payment_tx_id: z.string().max(256).optional().nullable(),
   promo_code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/).optional().nullable(),
   payment_method: z.enum(["btc", "venmo"]).optional().default("btc"),
-  order_number: z.string().min(3).max(32).regex(/^[A-Z0-9-]+$/i).optional().nullable(),
 });
 
 async function nextOrderNumber(): Promise<string> {
@@ -62,7 +61,27 @@ async function fetchBtcUsdRate(): Promise<number | null> {
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
-    const itemsTotal = data.items.reduce(
+    // Authoritative pricing: look up each item from the products table by slug.
+    // Never trust client-supplied prices.
+    const slugs = Array.from(new Set(data.items.map((i) => i.slug)));
+    const { data: products, error: productsErr } = await supabaseAdmin
+      .from("products")
+      .select("slug, name, price_usd, status, archived_at")
+      .in("slug", slugs);
+    if (productsErr) throw new Error(productsErr.message);
+    const priceBySlug = new Map<string, number>();
+    for (const p of products ?? []) {
+      if (p.status !== "published" || p.archived_at) continue;
+      priceBySlug.set(p.slug, Number(p.price_usd));
+    }
+    const pricedItems = data.items.map((i) => {
+      const dbPrice = priceBySlug.get(i.slug);
+      if (dbPrice === undefined || !Number.isFinite(dbPrice)) {
+        throw new Error(`Item not available: ${i.slug}`);
+      }
+      return { ...i, price: dbPrice };
+    });
+    const itemsTotal = pricedItems.reduce(
       (s, i) => s + Number(i.price) * Number(i.quantity),
       0,
     );
@@ -93,10 +112,9 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       Math.round((itemsTotal + shippingCost - discountAmount) * 100) / 100,
     );
 
-    // Sequential order number starting at 1501 (1501, 1502, 1503…)
-    const order_number = data.order_number
-      ? data.order_number.toUpperCase()
-      : await nextOrderNumber();
+    // Sequential order number starting at 1501 (1501, 1502, 1503…) — always
+    // assigned server-side so clients cannot influence it.
+    const order_number = await nextOrderNumber();
 
     const isVenmo = data.payment_method === "venmo";
     const btcAddress = isVenmo ? null : STATIC_BTC_ADDRESS;
@@ -129,13 +147,13 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         shipping_country: data.shipping.country.trim(),
         shipping_method: data.shipping_method,
         notes: data.notes?.trim() || null,
-        items: data.items as any,
+        items: pricedItems as any,
         payment_proof_url: data.payment_proof_url || null,
         payment_tx_id: data.payment_tx_id?.trim() || null,
         discount_code: appliedCode,
         discount_amount_usd: discountAmount,
       })
-      .select("id, order_number")
+      .select("id, order_number, access_token")
       .single();
 
     if (error) throw new Error(error.message);
@@ -143,7 +161,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     // Best-effort line items
     if (order?.id) {
       await supabaseAdmin.from("order_items").insert(
-        data.items.map((i) => ({
+        pricedItems.map((i) => ({
           order_id: order.id,
           product_name: i.name,
           lot_number: i.lot || null,
@@ -164,7 +182,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         templateData: {
           orderNumber: order!.order_number,
           customerName: data.customer.name,
-          items: data.items,
+          items: pricedItems,
           subtotal: itemsTotal,
           shipping: shippingCost,
           total,
@@ -177,7 +195,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
             zip: data.shipping.zip,
             country: data.shipping.country,
           },
-          orderUrl: `${siteOrigin}/checkout/thank-you/${order!.order_number}`,
+          orderUrl: `${siteOrigin}/checkout/thank-you/${order!.order_number}?t=${order!.access_token}`,
         },
       });
     } catch (e) {
@@ -186,6 +204,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     return {
       order_number: order!.order_number,
+      access_token: order!.access_token as string,
       total_usd: total,
       shipping_cost: shippingCost,
       discount_amount_usd: discountAmount,
@@ -194,13 +213,6 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       expires_at: expiresAt,
     };
   });
-
-export const reserveOrderNumber = createServerFn({ method: "POST" }).handler(
-  async () => {
-    const order_number = await nextOrderNumber();
-    return { order_number };
-  },
-);
 
 export const validatePromoCode = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
@@ -228,18 +240,28 @@ export const validatePromoCode = createServerFn({ method: "POST" })
 
 export const getCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({ order_number: z.string().min(3).max(32) }).parse(d),
+    z.object({
+      order_number: z.string().min(3).max(32),
+      access_token: z.string().min(8).max(128).regex(/^[A-Za-z0-9_-]+$/),
+    }).parse(d),
   )
   .handler(async ({ data }) => {
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select(
-        "order_number, customer_email, customer_name, status, payment_status, payment_method, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
+        "order_number, access_token, customer_email, customer_name, status, payment_status, payment_method, fulfillment_status, total_usd, btc_address, btc_amount, payment_expires_at, payment_received_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, shipping_method, items, created_at",
       )
       .eq("order_number", data.order_number.toUpperCase())
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!order) throw new Error("Order not found");
+    // Timing-safe-ish equality on the unguessable access token.
+    const got = String(data.access_token);
+    const want = String(order.access_token ?? "");
+    if (got.length !== want.length) throw new Error("Order not found");
+    let diff = 0;
+    for (let i = 0; i < want.length; i++) diff |= got.charCodeAt(i) ^ want.charCodeAt(i);
+    if (diff !== 0) throw new Error("Order not found");
     return { ...order, btc_address: order.btc_address ?? STATIC_BTC_ADDRESS };
   });
 

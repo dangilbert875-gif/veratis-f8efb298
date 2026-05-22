@@ -208,6 +208,7 @@ async function getAdminRoleForDebug(userId: string): Promise<string | null> {
 }
 
 function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
+  if (!import.meta.env.DEV) return null;
   return (
     <div className="mt-6 border border-ink/10 bg-mist/25 p-3 text-left text-[11px] leading-relaxed text-foreground/65">
       <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">Auth debug</div>

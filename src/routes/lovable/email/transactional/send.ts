@@ -57,6 +57,21 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
+        // Admin-only: this endpoint can send VERATIS-branded mail to any
+        // address, so it must not be callable by ordinary customer accounts.
+        const { data: roles, error: rolesError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+        if (rolesError) {
+          console.error('Role lookup failed', { error: rolesError })
+          return Response.json({ error: 'Forbidden' }, { status: 403 })
+        }
+        const isAdmin = (roles ?? []).some((r: any) => r.role === 'admin')
+        if (!isAdmin) {
+          return Response.json({ error: 'Forbidden' }, { status: 403 })
+        }
+
         // Parse request body
         let templateName: string
         let recipientEmail: string

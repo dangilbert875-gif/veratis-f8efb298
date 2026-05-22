@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { getCheckoutOrder } from "@/lib/checkout.functions";
 
 export const Route = createFileRoute("/checkout/$orderNumber")({
+  validateSearch: (s: Record<string, unknown>) =>
+    z.object({ t: z.string().min(8).max(128).optional() }).parse(s),
   head: () => ({
     meta: [
       { title: "Order confirmation — VERATIS" },
@@ -17,10 +20,12 @@ export const Route = createFileRoute("/checkout/$orderNumber")({
 
 function ConfirmationPage() {
   const { orderNumber } = Route.useParams();
+  const { t } = Route.useSearch();
   const fetcher = useServerFn(getCheckoutOrder);
   const { data, isLoading, error } = useQuery({
     queryKey: ["checkout-order", orderNumber],
-    queryFn: () => fetcher({ data: { order_number: orderNumber } }),
+    queryFn: () => fetcher({ data: { order_number: orderNumber, access_token: t ?? "" } }),
+    enabled: Boolean(t),
     refetchInterval: 30_000,
   });
 
