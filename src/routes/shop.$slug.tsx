@@ -88,7 +88,7 @@ export const Route = createFileRoute("/shop/$slug")({
                   loaderData.product.inStock === false
                     ? "https://schema.org/OutOfStock"
                     : "https://schema.org/InStock",
-                url: `https://pure-peptide-labs.lovable.app/shop/${loaderData.product.slug}`,
+                url: `https://veratisbio.com/shop/${loaderData.product.slug}`,
               },
             }),
           },
@@ -109,6 +109,9 @@ export const Route = createFileRoute("/shop/$slug")({
               ]
             : []),
         ]
+      : [],
+    links: loaderData
+      ? [{ rel: "canonical", href: `https://veratisbio.com/shop/${loaderData.product.slug}` }]
       : [],
   }),
   notFoundComponent: () => (
