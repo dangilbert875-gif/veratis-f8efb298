@@ -179,15 +179,15 @@ function ShopPage() {
       {/* Hero trust stat — mean purity promoted to top of catalog */}
       <section className="border-y border-border bg-mist/25">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="flex items-baseline gap-5">
-            <span className="font-display text-[3rem] md:text-[3.75rem] leading-none text-ink tabular-nums">
+          <div className="flex items-baseline gap-4 sm:gap-5">
+            <span className="font-display text-[2.25rem] sm:text-[3rem] md:text-[3.75rem] leading-none text-ink tabular-nums">
               {avgPurity}%
             </span>
             <div className="min-w-0">
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+              <p className="text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-foreground/55">
                 Mean purity · entire catalog
               </p>
-              <p className="mt-1 text-[13px] text-muted-foreground leading-snug max-w-md">
+              <p className="mt-1 text-[12.5px] sm:text-[13px] text-muted-foreground leading-snug max-w-md">
                 HPLC-verified across {batches.length} lots by {labPartner.name}.
               </p>
             </div>
@@ -229,21 +229,22 @@ function ShopPage() {
 
       {/* Operational metadata band */}
       <section className="border-y border-border bg-background">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-5 grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-6 sm:gap-x-8 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-4 sm:py-5 grid grid-cols-2 md:grid-cols-4 gap-y-2.5 gap-x-4 sm:gap-x-8 text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.14em] sm:tracking-[0.18em] text-foreground/55">
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
             <span className="text-foreground/60">Active SKUs</span>
             <span className="text-ink tabular-nums">{String(products.length).padStart(2, "0")}</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
             <span className="text-foreground/60">Lots on record</span>
-            <Link
-              to="/coa-archive"
-              className="text-ink tabular-nums underline decoration-foreground/30 underline-offset-[3px] hover:decoration-ink transition"
-            >
-              {batches.length}
-            </Link>
+            <span className="inline-flex items-center gap-1.5">
+              <Link
+                to="/coa-archive"
+                className="text-ink tabular-nums underline decoration-foreground/30 underline-offset-[3px] hover:decoration-ink transition"
+              >
+                {batches.length}
+              </Link>
             <span
-              className="group relative inline-flex items-center text-foreground/40 hover:text-ink transition cursor-help"
+              className="group relative hidden sm:inline-flex items-center text-foreground/40 hover:text-ink transition cursor-help"
               tabIndex={0}
               aria-label="Multiple lots per SKU. Browse full archive."
             >
@@ -252,24 +253,25 @@ function ShopPage() {
                 Multiple lots per SKU. Browse full archive →
               </span>
             </span>
+            </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
             <span className="text-foreground/60">Mean purity</span>
             <span className="text-ink tabular-nums">{avgPurity}%</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 min-w-0">
             <span className="text-foreground/60">Assayed by</span>
-            <span className="text-ink normal-case tracking-[0.04em]">{labPartner.name}</span>
+            <span className="text-ink normal-case tracking-[0.04em] truncate">{labPartner.name}</span>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 sm:px-6 py-14 md:py-20">
+      <section className="mx-auto max-w-7xl px-5 sm:px-6 py-10 sm:py-14 md:py-20">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
           {/* Main column */}
           <div className="lg:col-span-9">
             {/* Filter chips + sort */}
-            <div className="mb-10 md:mb-12 pb-5 border-b border-border">
+            <div className="mb-8 md:mb-12 pb-5 border-b border-border">
               {/* Search bar */}
               <div className="mb-4 relative max-w-md">
                 <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/45" />
@@ -366,7 +368,7 @@ function ShopPage() {
             {filtered.length === 0 ? (
               <EmptyCategory category={filter} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-14 md:gap-y-16">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-10 sm:gap-y-14 md:gap-y-16 justify-items-center md:justify-items-stretch">
                 {visible.map((p) => {
                   const stock = stockForSlug(p.slug);
                   return (
