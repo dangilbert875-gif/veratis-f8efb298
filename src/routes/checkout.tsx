@@ -222,7 +222,7 @@ function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <Layout>
+      <Layout hideFooter>
         <PageHeader eyebrow="— Checkout" title="Your cart is empty" />
         <section className="px-6 lg:px-12 py-20 max-w-3xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">Add specimens from the catalog before proceeding to checkout.</p>
