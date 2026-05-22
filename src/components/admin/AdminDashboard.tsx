@@ -14,6 +14,7 @@ import { PartnersPanel } from "./panels/PartnersPanel";
 import { CommandBar } from "./CommandBar";
 import { ActivityPanel } from "./panels/ActivityPanel";
 import { AuditLogPanel } from "./panels/AuditLogPanel";
+import { PaymentMethodsPanel } from "./panels/PaymentMethodsPanel";
 
 export type AdminDebugState = {
   userId: string | null;
@@ -67,6 +68,7 @@ const sectionGroups = [
     heading: "System",
     items: [
       { id: "audit", label: "Audit Log" },
+      { id: "payment-methods", label: "Payment Methods" },
     ],
   },
 ] as const;
@@ -83,7 +85,8 @@ export type SectionId =
   | "partners"
   | "referrals"
   | "payouts"
-  | "customers";
+  | "customers"
+  | "payment-methods";
 
 type SectionItem = { id: SectionId; label: string };
 const sections: SectionItem[] = sectionGroups.flatMap(
@@ -266,6 +269,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           {active === "articles" && <ArticlesPanel />}
           {active === "partners" && <PartnersPanel />}
           {active === "customers" && <CustomersPanel />}
+          {active === "payment-methods" && <PaymentMethodsPanel />}
         </div>
       </main>
 
