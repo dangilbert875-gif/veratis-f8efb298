@@ -176,6 +176,10 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [detailId, setDetailId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<25|50|100>(50);
+
+  useEffect(() => { setPage(1); }, [q, paymentFilter, fulfillmentFilter, quickFilter, sort, pageSize]);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
@@ -322,34 +326,85 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
 
   return (
     <div className="space-y-5" onClick={() => menuOpen && setMenuOpen(null)}>
-      {/* Health strip */}
+      {/* Health strip — clickable filter chips */}
       <div className="grid grid-cols-2 sm:grid-cols-5 border border-ink/10">
-        {[
-          ["Total", counts.total],
-          ["Awaiting payment", counts.awaiting],
-          ["Unshipped paid", counts.unshipped],
-          ["Flagged", counts.flagged],
-          ["Active alerts", counts.alerts],
-        ].map(([label, value], i) => (
-          <div key={i} className={`p-4 ${i > 0 ? "border-l border-ink/10" : ""} ${i >= 2 ? "border-t sm:border-t-0" : ""}`}>
-            <div className="text-[9.5px] tracking-[0.28em] uppercase text-foreground/55">{label}</div>
-            <div className="mt-1.5 text-[22px] font-medium tabular-nums text-ink">{value as number}</div>
-          </div>
-        ))}
+        {([
+          ["Total",            counts.total,     "all"],
+          ["Awaiting payment", counts.awaiting,  "unpaid"],
+          ["Unshipped paid",   counts.unshipped, "unshipped"],
+          ["Flagged",          counts.flagged,   "flagged"],
+          ["Active alerts",    counts.alerts,    "all"],
+        ] as const).map(([label, value, qf], i) => {
+          const active = quickFilter === qf && qf !== "all" ? true : (qf === "all" && quickFilter === "all" && label === "Total");
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setQuickFilter(qf as any)}
+              className={`text-left p-4 transition-colors hover:bg-mist/30 ${i > 0 ? "border-l border-ink/10" : ""} ${i >= 2 ? "border-t sm:border-t-0" : ""} ${active ? "bg-mist/40" : ""}`}
+            >
+              <div className="text-[9.5px] tracking-[0.28em] uppercase text-foreground/55">{label}</div>
+              <div className="mt-1.5 text-[22px] font-medium tabular-nums text-ink">{value as number}</div>
+            </button>
+          );
+        })}
       </div>
 
       <Card
         title="Order management"
         hint="Payment reconciliation · fulfillment workflow · operational notes"
       >
-        {/* Export action */}
-        <div className="px-5 py-2.5 border-b border-ink/10 flex justify-end">
+        {/* Toolbar: search + filters + sort + export */}
+        <div className="px-5 py-2.5 border-b border-ink/10 flex flex-wrap items-center gap-2">
+          <input
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search order #, email, name, tracking, tx…"
+            className="h-8 flex-1 min-w-[220px] border border-ink/15 bg-background px-2.5 text-[12px] placeholder:text-foreground/35 focus:outline-none focus:border-ink/40"
+          />
+          <select
+            value={paymentFilter}
+            onChange={(e) => setPaymentFilter(e.target.value)}
+            className="h-8 border border-ink/15 bg-background px-2 text-[11px] uppercase tracking-[0.1em] text-foreground/70"
+          >
+            <option value="all">All payment</option>
+            {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+          </select>
+          <select
+            value={fulfillmentFilter}
+            onChange={(e) => setFulfillmentFilter(e.target.value)}
+            className="h-8 border border-ink/15 bg-background px-2 text-[11px] uppercase tracking-[0.1em] text-foreground/70"
+          >
+            <option value="all">All fulfillment</option>
+            {FULFILLMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+          </select>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as any)}
+            className="h-8 border border-ink/15 bg-background px-2 text-[11px] uppercase tracking-[0.1em] text-foreground/70"
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="value">Highest value</option>
+            <option value="awaiting">Awaiting first</option>
+            <option value="priority">Alerts first</option>
+          </select>
+          {(q || paymentFilter !== "all" || fulfillmentFilter !== "all" || quickFilter !== "all" || sort !== "newest") && (
+            <button
+              type="button"
+              onClick={() => { setQ(""); setPaymentFilter("all"); setFulfillmentFilter("all"); setQuickFilter("all"); setSort("newest"); }}
+              className="text-[10px] tracking-[0.16em] uppercase text-foreground/50 hover:text-ink"
+            >
+              Clear
+            </button>
+          )}
           <GhostButton onClick={exportCsv} className="!h-8 !text-[10.5px]">Export CSV</GhostButton>
         </div>
 
         {/* Bulk bar */}
         {selected.size > 0 && (
-          <div className="px-5 py-2.5 bg-mist/40 border-b border-ink/10 flex flex-wrap items-center gap-2 text-[11px]">
+          <div className="sticky top-0 z-10 px-5 py-2.5 bg-mist/60 backdrop-blur border-b border-ink/15 flex flex-wrap items-center gap-2 text-[11px]">
             <span className="text-foreground/70 tracking-[0.14em] uppercase text-[10.5px]">
               {selected.size} selected
             </span>
