@@ -258,33 +258,10 @@ function CheckoutPage() {
     setTimeout(() => setCopied(null), 1400);
   }
 
-  // Reserve a real order number the first time the user lands on Step 3.
-  // Cached in sessionStorage so a reload / step navigation doesn't burn a
-  // new sequence value.
-  useEffect(() => {
-    if (step !== 3) return;
-    if (reservedOrderNumber) return;
-    const key = "veratis:checkout:reserved-order-number";
-    const cached = typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
-    if (cached) {
-      setReservedOrderNumber(cached);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      try {
-        const r = await reserveNum();
-        if (cancelled) return;
-        setReservedOrderNumber(r.order_number);
-        try { window.sessionStorage.setItem(key, r.order_number); } catch {}
-      } catch {
-        // Falls back to draftRef in the UI if reservation fails.
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [step, reservedOrderNumber, reserveNum]);
-
-  const orderReference = reservedOrderNumber || draftRef;
+  // The real order_number is assigned server-side when the order is submitted.
+  // Until then, show the session-scoped draft reference to the buyer (so the
+  // Venmo note / support emails have something to reference).
+  const orderReference = draftRef;
 
   if (items.length === 0) {
     return (
@@ -361,13 +338,15 @@ function CheckoutPage() {
           payment_tx_id: txId.trim() || null,
           promo_code: promo?.code ?? null,
           payment_method: paymentMethod,
-          order_number: reservedOrderNumber,
         },
       });
       clear();
-      try { window.sessionStorage.removeItem("veratis:checkout:reserved-order-number"); } catch {}
       try { window.sessionStorage.removeItem("veratis:checkout:draft-ref"); } catch {}
-      navigate({ to: "/checkout/thank-you/$orderNumber", params: { orderNumber: res.order_number } });
+      navigate({
+        to: "/checkout/thank-you/$orderNumber",
+        params: { orderNumber: res.order_number },
+        search: { t: res.access_token },
+      });
     } catch (e: any) {
       setError(e?.message || "Could not place order. Please try again.");
       setSubmitting(false);
