@@ -112,6 +112,25 @@ function shipAddress(o: any) {
   return parts.join(", ");
 }
 
+function countryFlag(code?: string | null) {
+  if (!code) return "";
+  const c = code.trim().toUpperCase();
+  if (c.length !== 2 || !/^[A-Z]{2}$/.test(c)) return "";
+  return String.fromCodePoint(...[...c].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65));
+}
+
+function itemCount(o: any) {
+  const items = Array.isArray(o.items) ? o.items : [];
+  return items.reduce((s: number, it: any) => s + Number(it?.quantity ?? it?.qty ?? 1), 0);
+}
+
+function itemSummary(o: any) {
+  const items = Array.isArray(o.items) ? o.items : [];
+  return items
+    .map((it: any) => `${it?.quantity ?? it?.qty ?? 1}× ${it?.product_name ?? it?.name ?? "Item"}`)
+    .join("\n");
+}
+
 function deriveAlerts(o: any) {
   const out: string[] = [];
   const now = Date.now();
