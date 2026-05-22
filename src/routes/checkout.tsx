@@ -816,18 +816,18 @@ function CheckoutPage() {
                 <p className="text-[12px] text-red-700 font-mono">{error}</p>
               )}
             </div>
-            <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-3">
+            <div className="px-6 py-4 border-t border-border flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3">
               <button
                 onClick={() => !uploading && setProofOpen(false)}
                 disabled={uploading}
-                className="h-10 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors disabled:opacity-60"
+                className="h-10 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors disabled:opacity-60 w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmProof}
                 disabled={uploading || (!proofFile && !txId.trim())}
-                className="inline-flex items-center gap-2 h-10 px-5 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 transition-all disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 transition-all disabled:opacity-60 w-full sm:w-auto"
               >
                 {uploading ? "Uploading…" : "Attach & continue"} {!uploading && <Check size={13} />}
               </button>
