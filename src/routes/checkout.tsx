@@ -305,13 +305,13 @@ function CheckoutPage() {
   }
 
   return (
-    <Layout>
+    <Layout hideFooter>
       <PageHeader eyebrow="— Checkout" title="Complete your order" />
 
       <section className="px-6 lg:px-12 py-12 max-w-6xl mx-auto grid lg:grid-cols-[1fr_380px] gap-12">
         {/* LEFT: form */}
         <div>
-          <StepRail step={step} />
+          <StepRail step={step} onJump={(n) => { if (n < step) setStep(n); }} />
 
           {step === 1 && (
             <Panel title="Contact information">
