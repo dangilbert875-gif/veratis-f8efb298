@@ -481,6 +481,8 @@ export type Database = {
           customer_id: string | null
           customer_name: string | null
           delivered_at: string | null
+          discount_amount_usd: number
+          discount_code: string | null
           fulfillment_status: string
           id: string
           internal_notes: string | null
@@ -525,6 +527,8 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string | null
           delivered_at?: string | null
+          discount_amount_usd?: number
+          discount_code?: string | null
           fulfillment_status?: string
           id?: string
           internal_notes?: string | null
@@ -569,6 +573,8 @@ export type Database = {
           customer_id?: string | null
           customer_name?: string | null
           delivered_at?: string | null
+          discount_amount_usd?: number
+          discount_code?: string | null
           fulfillment_status?: string
           id?: string
           internal_notes?: string | null
@@ -918,38 +924,47 @@ export type Database = {
       }
       referrals: {
         Row: {
+          active: boolean
           clicks: number
           code: string
           commission_rate: number
           conversions: number
           created_at: string
+          discount_amount: number
+          discount_type: string
           id: string
           label: string | null
-          partner_id: string
+          partner_id: string | null
           revenue_usd: number
           updated_at: string
         }
         Insert: {
+          active?: boolean
           clicks?: number
           code: string
           commission_rate?: number
           conversions?: number
           created_at?: string
+          discount_amount?: number
+          discount_type?: string
           id?: string
           label?: string | null
-          partner_id: string
+          partner_id?: string | null
           revenue_usd?: number
           updated_at?: string
         }
         Update: {
+          active?: boolean
           clicks?: number
           code?: string
           commission_rate?: number
           conversions?: number
           created_at?: string
+          discount_amount?: number
+          discount_type?: string
           id?: string
           label?: string | null
-          partner_id?: string
+          partner_id?: string | null
           revenue_usd?: number
           updated_at?: string
         }
@@ -1162,6 +1177,17 @@ export type Database = {
           _target_user: string
         }
         Returns: undefined
+      }
+      lookup_promo_code: {
+        Args: { _code: string }
+        Returns: {
+          active: boolean
+          code: string
+          discount_amount: number
+          discount_type: string
+          id: string
+          label: string
+        }[]
       }
       move_to_dlq: {
         Args: {
