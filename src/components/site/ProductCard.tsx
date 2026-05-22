@@ -109,7 +109,7 @@ export function ProductCard({
         className="block"
         aria-label={`${title} — view details`}
       >
-        <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70">
+        <div className="relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full max-w-[280px] sm:max-w-none mx-auto">
           {accentClass ? (
             <span
               aria-hidden
@@ -135,7 +135,7 @@ export function ProductCard({
             </span>
           ) : null}
 
-          <div className="absolute inset-0 flex items-center justify-center p-1.5 sm:p-3 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
+          <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-3 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
             <VialImage
               name={p.name}
               dosage={p.dosage}
