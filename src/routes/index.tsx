@@ -18,7 +18,10 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Premium research peptides with verified purity, third-party COAs, and discreet fast shipping." },
       { property: "og:title", content: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
       { property: "og:description", content: "Independently HPLC and mass-spec verified peptides. Public certificates of analysis for every lot." },
-      { property: "og:url", content: "https://pure-peptide-labs.lovable.app/" },
+      { property: "og:url", content: "https://veratisbio.com" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://veratisbio.com" },
     ],
     scripts: [
       {
@@ -27,7 +30,7 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "VERATIS",
-          url: "https://pure-peptide-labs.lovable.app/",
+          url: "https://veratisbio.com",
           description:
             "Research-grade peptides with independent ISO 17025 HPLC and mass-spec verification and public certificates of analysis.",
         }),
@@ -38,7 +41,7 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "VERATIS",
-          url: "https://pure-peptide-labs.lovable.app/",
+          url: "https://veratisbio.com",
         }),
       },
     ],
