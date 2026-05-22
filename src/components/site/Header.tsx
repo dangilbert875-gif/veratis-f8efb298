@@ -122,7 +122,8 @@ export function Header() {
             className="inline-flex items-center gap-2 truncate animate-in fade-in slide-in-from-bottom-1 duration-500 hover:text-background transition"
             aria-live="polite"
           >
-            <span className="truncate">{proofPoints[proofIdx].label}</span>
+            <span className="truncate sm:hidden">{proofPoints[proofIdx].short}</span>
+            <span className="truncate hidden sm:inline">{proofPoints[proofIdx].label}</span>
           </Link>
           <span aria-hidden className="hidden md:inline-block h-2 w-px bg-background/20" />
           <Link
