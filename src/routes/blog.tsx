@@ -106,7 +106,7 @@ function Blog() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by topic, method, term…"
-              className="w-full pl-9 pr-3 py-2.5 bg-background border border-border rounded-[3px] text-[13.5px] text-ink placeholder:text-foreground/40 focus:outline-none focus:border-primary/60 transition"
+              className="w-full pl-9 pr-3 py-2.5 bg-background border border-border rounded-[3px] text-[13.5px] text-ink placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 transition"
             />
           </label>
         </div>

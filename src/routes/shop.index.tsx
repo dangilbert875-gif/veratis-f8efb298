@@ -281,7 +281,7 @@ function ShopPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search compound or lot number…"
-                  className="w-full h-11 pl-10 pr-3 rounded-[3px] border border-border bg-background text-[13px] text-ink placeholder:text-foreground/40 focus:outline-none focus:border-ink/50 transition"
+                  className="w-full h-11 pl-10 pr-3 rounded-[3px] border border-border bg-background text-[13px] text-ink placeholder:text-muted-foreground focus:outline-none focus:border-ink/50 transition"
                 />
               </div>
 
@@ -503,7 +503,7 @@ function EmptyCategory({ category }: { category: string }) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your.email@lab.edu"
-          className="flex-1 h-11 px-4 rounded-[3px] border border-border bg-background text-[13px] text-ink placeholder:text-foreground/40 focus:outline-none focus:border-ink/50 transition"
+          className="flex-1 h-11 px-4 rounded-[3px] border border-border bg-background text-[13px] text-ink placeholder:text-muted-foreground focus:outline-none focus:border-ink/50 transition"
         />
         <button
           type="submit"
