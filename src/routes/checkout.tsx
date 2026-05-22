@@ -760,7 +760,7 @@ function CheckoutPage() {
             <div className="px-6 py-5 space-y-5">
               <p className="text-[12.5px] text-foreground/75 leading-relaxed">
                 {paymentMethod === "venmo"
-                  ? <>Attach a screenshot of your completed Venmo payment showing the amount, recipient <span className="font-mono text-ink">@{VENMO_HANDLE}</span>, and your Order&nbsp;# in the note. A transaction ID is optional.</>
+                  ? <>Attach a screenshot of your completed Venmo payment showing the amount, recipient <span className="font-mono text-ink">@{VENMO_HANDLE}</span>, and your Order&nbsp;# in the note. Notes are optional.</>
                   : <>Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.</>}
               </p>
 
@@ -799,16 +799,16 @@ function CheckoutPage() {
               </div>
 
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Transaction ID (optional)</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Notes (optional)</p>
                 <textarea
                   value={txId}
                   onChange={(e) => setTxId(e.target.value)}
                   rows={2}
-                  placeholder="e.g. 4a5e1e4b… (paste BTC tx hash or note)"
+                  placeholder=""
                   className={`${inp} min-h-[64px] resize-y font-mono text-[12px]`}
                 />
                 <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/45">
-                  — Screenshot or TX ID required (one or both)
+                  — Screenshot or notes required (one or both)
                 </p>
               </div>
 
@@ -980,10 +980,8 @@ function VenmoPaymentBlock({
         <p>Venmo payment</p>
       </div>
       <p className="text-foreground/75 text-[12px] leading-relaxed">
-        Send{" "}
-        <strong className="text-ink font-mono">${amountStr} USD</strong> to{" "}
-        <strong className="text-ink font-mono">@{VENMO_HANDLE}</strong> on Venmo. You{" "}
-        <strong className="text-ink">must</strong> include your Order # in the payment note — do not include any other information.
+        Send payment to <strong className="text-ink font-mono">@{VENMO_HANDLE}</strong> on Venmo and include{" "}
+        <strong className="text-ink font-mono">Order #{orderNumber}</strong> in the payment note only.
       </p>
 
       {/* Handle */}
@@ -1052,7 +1050,7 @@ function VenmoPaymentBlock({
 
       <p className="flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
         <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
-        Include your Order # in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
+        Include <span className="font-mono">Order #{orderNumber}</span> in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
       </p>
     </div>
   );
