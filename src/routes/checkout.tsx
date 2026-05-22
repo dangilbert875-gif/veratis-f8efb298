@@ -480,10 +480,14 @@ function CheckoutPage() {
                       >
                         <span className="text-[12.5px] text-ink break-all font-mono leading-relaxed">{BTC_ADDRESS}</span>
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0 self-end sm:self-auto">
-                          {copied === "addr" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Tap to copy</>}
+                          {copied === "addr" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
                         </span>
                       </button>
                     </div>
+                    <p className="mt-2 flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
+                      <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
+                      Send the exact amount. Wrong amounts or batched exchange withdrawals may delay confirmation.
+                    </p>
                   </div>
 
                   {btcAmount && (
@@ -496,18 +500,34 @@ function CheckoutPage() {
                       >
                         <span className="text-[12.5px] text-ink break-all font-mono">{btcAmount} BTC</span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
-                          {copied === "amt" ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+                          {copied === "amt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
                         </span>
                       </button>
                     </div>
                   )}
 
-                  <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-                    — {btcRate
-                      ? `Rate: 1 BTC = $${btcRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot`
-                      : "Fetching live BTC/USD rate from Coinbase…"}
-                    {rateFetchedAt && btcRate ? ` · ${new Date(rateFetchedAt).toLocaleTimeString()}` : ""}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
+                    <span>
+                      — {btcRate
+                        ? `Rate: 1 BTC = $${btcRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot`
+                        : "Fetching live BTC/USD rate from Coinbase…"}
+                      {rateFetchedAt && btcRate ? ` · ${new Date(rateFetchedAt).toLocaleTimeString()}` : ""}
+                    </span>
+                    {btcRate && (
+                      <span className={`tabular-nums ${quoteMsLeft < 10_000 ? "text-amber-800" : "text-foreground/55"}`}>
+                        · Quote valid for {quoteCountdown}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={refreshRate}
+                      disabled={rateRefreshing}
+                      className="inline-flex items-center gap-1 text-foreground/70 hover:text-ink disabled:opacity-50"
+                    >
+                      <RefreshCw size={11} className={rateRefreshing ? "animate-spin" : ""} />
+                      {rateRefreshing ? "Refreshing" : "Refresh quote"}
+                    </button>
+                  </div>
                 </div>
               </Review>
             </Panel>
