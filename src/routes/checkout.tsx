@@ -79,6 +79,33 @@ function CheckoutPage() {
   // Payment method (Bitcoin or Venmo)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("btc");
 
+  // Enabled payment methods (admin-controlled via backend Payment Methods panel).
+  const [venmoEnabled, setVenmoEnabled] = useState<boolean>(true);
+  const [btcEnabled, setBtcEnabled] = useState<boolean>(true);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("payment_methods")
+        .select("id, enabled");
+      if (cancelled || error || !data) return;
+      const map = new Map(data.map((r) => [r.id, r.enabled]));
+      const venmoOn = map.get("venmo") ?? true;
+      const btcOn = map.get("bitcoin") ?? true;
+      setVenmoEnabled(venmoOn);
+      setBtcEnabled(btcOn);
+      // If current selection is disabled, fall back to the other.
+      setPaymentMethod((prev) => {
+        if (prev === "venmo" && !venmoOn) return "btc";
+        if (prev === "btc" && !btcOn && venmoOn) return "venmo";
+        return prev;
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Real, pre-reserved order number issued at Step 3 so the customer can
   // include it in the Venmo note before the order row is created.
   const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(null);
