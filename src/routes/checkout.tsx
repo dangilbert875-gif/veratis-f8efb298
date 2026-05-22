@@ -487,20 +487,20 @@ function CheckoutPage() {
                   </div>
                 ) : (
                   <div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input
                         value={promoInput}
                         onChange={(e) => { setPromoInput(e.target.value); setPromoError(null); }}
                         placeholder=""
                         aria-label="Referral code"
-                        className={`${inp} mt-0 flex-1 uppercase font-mono`}
+                        className={`${inp} mt-0 w-full sm:flex-1 uppercase font-mono`}
                         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
                       />
                       <button
                         type="button"
                         onClick={applyPromo}
                         disabled={promoChecking || !promoInput.trim()}
-                        className="inline-flex items-center justify-center px-4 h-11 text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/30 rounded-[3px] hover:bg-ink hover:text-background transition-all disabled:opacity-50"
+                        className="inline-flex items-center justify-center px-4 h-11 w-full sm:w-auto text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/30 rounded-[3px] hover:bg-ink hover:text-background transition-all disabled:opacity-50"
                       >
                         {promoChecking ? "Checking…" : "Apply"}
                       </button>
@@ -1034,16 +1034,16 @@ function VenmoPaymentBlock({
       {/* QR */}
       <div>
         <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan Venmo QR code</p>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
           <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
             <QRCodeSVG
               value={VENMO_DEEPLINK}
-              size={140}
+              size={128}
               level="M"
               marginSize={0}
             />
           </div>
-          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1">
+          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1 min-w-0">
             Scan with your Venmo app or tap the handle above to copy. The QR opens the{" "}
             <span className="font-mono text-ink">@{VENMO_HANDLE}</span> Venmo profile.
           </p>
