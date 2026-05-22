@@ -5,7 +5,7 @@ import { useCatalog, deriveCategories } from "@/lib/use-catalog";
 import { batches, labPartner } from "@/data/batches";
 import { useEffect, useState } from "react";
 import { BatchVerify } from "@/components/site/BatchVerify";
-import { Info, Scale, Target, MessagesSquare, ArrowRight, ChevronDown, X } from "lucide-react";
+import { Info, Scale, Target, MessagesSquare, ArrowRight, ChevronDown, X, Search, ShieldCheck } from "lucide-react";
 import type { Product } from "@/data/products";
 
 // Subtle category accent colors — 6px top-left bar on each card
@@ -101,11 +101,30 @@ function ShopPage() {
   const [filter, setFilter] = useState<string>(initial);
   const [sort, setSort] = useState<SortKey>("featured");
   const [verifyOpenMobile, setVerifyOpenMobile] = useState(false);
+  const [query, setQuery] = useState("");
+  const [priceMax, setPriceMax] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(12);
   useEffect(() => {
     setFilter(initial);
   }, [initial]);
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [filter, sort, query, priceMax]);
 
-  const baseFiltered = filter === "All" ? products : products.filter((p) => p.category === filter);
+  // Price ceiling for the slider — round up to a nice number
+  const maxPrice = Math.max(0, ...products.map((p) => p.price));
+  const priceCeiling = Math.max(50, Math.ceil(maxPrice / 50) * 50);
+
+  const q = query.trim().toLowerCase();
+  const baseFiltered = products.filter((p) => {
+    if (filter !== "All" && p.category !== filter) return false;
+    if (priceMax !== null && p.price > priceMax) return false;
+    if (q) {
+      const hay = `${p.name} ${p.slug} ${p.lot} ${p.category}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
   const filtered = [...baseFiltered].sort((a, b) => {
     switch (sort) {
       case "price-asc": return a.price - b.price;
@@ -115,6 +134,22 @@ function ShopPage() {
       default: return 0;
     }
   });
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = filtered.length > visibleCount;
+
+  const activeFilters: Array<{ key: string; label: string; clear: () => void }> = [];
+  if (filter !== "All") activeFilters.push({ key: "cat", label: filter, clear: () => setFilter("All") });
+  if (q) activeFilters.push({ key: "q", label: `“${query}”`, clear: () => setQuery("") });
+  if (priceMax !== null) activeFilters.push({ key: "price", label: `≤ $${priceMax}`, clear: () => setPriceMax(null) });
+  if (sort !== "featured") activeFilters.push({ key: "sort", label: `Sort: ${sort.replace("-", " ")}`, clear: () => setSort("featured") });
+
+  function clearAll() {
+    setFilter("All");
+    setQuery("");
+    setPriceMax(null);
+    setSort("featured");
+  }
+
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
 
   // Cheapest $/mg across the catalog for the "Best value" badge
@@ -137,6 +172,33 @@ function ShopPage() {
         title="Catalog of compounds."
         lead="Every entry below is produced under the same lyophilization, sealing, and verification protocol. Each vial carries a unique lot number traceable to an independent certificate of analysis."
       />
+
+      {/* Hero trust stat — mean purity promoted to top of catalog */}
+      <section className="border-y border-border bg-mist/25">
+        <div className="mx-auto max-w-7xl px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-baseline gap-5">
+            <span className="font-display text-[3rem] md:text-[3.75rem] leading-none text-ink tabular-nums">
+              {avgPurity}%
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+                Mean purity · entire catalog
+              </p>
+              <p className="mt-1 text-[13px] text-muted-foreground leading-snug max-w-md">
+                HPLC-verified across {batches.length} lots by {labPartner.name}.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/verify"
+            className="self-start md:self-auto inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
+          >
+            <ShieldCheck size={13} strokeWidth={1.5} />
+            Verify any lot in under 1 second
+            <ArrowRight size={12} />
+          </Link>
+        </div>
+      </section>
 
       {/* Mobile-only sticky verify banner */}
       <div className="md:hidden sticky top-0 z-30 border-b border-border bg-background">
