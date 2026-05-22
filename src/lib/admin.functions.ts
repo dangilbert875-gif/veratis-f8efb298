@@ -95,7 +95,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     await assertAdmin(supabase, userId);
 
     const [orders, referrals, payouts, profiles] = await Promise.all([
-      supabase.from("orders").select("id, status, total_usd, created_at"),
+      supabase.from("orders").select("id, status, payment_status, fulfillment_status, total_usd, created_at, customer_email"),
       supabase.from("referrals").select("id, clicks, conversions, revenue_usd"),
       supabase.from("payouts").select("id, status, amount_usd"),
       supabase.from("profiles").select("id, created_at"),
@@ -103,7 +103,10 @@ export const getAdminOverview = createServerFn({ method: "GET" })
 
     const orderRows = orders.data ?? [];
     const paidLike = (o: any) =>
-      ["paid", "shipped", "delivered"].includes(o.status);
+      ["paid", "shipped", "delivered"].includes(o.status) ||
+      ["paid", "confirmed", "btc_received"].includes(o.payment_status);
+    const isUnshipped = (o: any) =>
+      paidLike(o) && !["shipped", "delivered", "cancelled"].includes(o.fulfillment_status);
     const now = Date.now();
     const within = (o: any, fromDaysAgo: number, toDaysAgo = 0) => {
       const t = new Date(o.created_at).getTime();
@@ -134,11 +137,18 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     const newCustomers30d = profileRows.filter(
       (p: any) => new Date(p.created_at).getTime() > now - 30 * 86400000,
     ).length;
+    // Total unique customers across profiles + guest checkout emails
+    const emailSet = new Set<string>();
+    for (const o of orderRows) {
+      if (o.customer_email) emailSet.add(String(o.customer_email).toLowerCase());
+    }
+    const totalCustomers = Math.max(profileRows.length, emailSet.size);
 
     return {
       orders: {
         total: orderRows.length,
         pending: orderRows.filter((o: any) => o.status === "pending" || o.status === "awaiting_payment").length,
+        unshipped: orderRows.filter(isUnshipped).length,
         revenue30d,
         revenuePrev30d,
         orders7d,
@@ -158,7 +168,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
           .filter((p: any) => p.status !== "sent" && p.status !== "cancelled")
           .reduce((s: number, p: any) => s + Number(p.amount_usd ?? 0), 0),
       },
-      customers: { total: profileRows.length, new30d: newCustomers30d },
+      customers: { total: totalCustomers, new30d: newCustomers30d },
       generatedAt: new Date().toISOString(),
     };
   });
