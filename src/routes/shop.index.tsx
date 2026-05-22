@@ -107,9 +107,20 @@ function ShopPage() {
   useEffect(() => {
     setFilter(initial);
   }, [initial]);
+  // Mobile: single-column, 4 per page. Desktop: multi-column, 12 per page.
+  const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    setVisibleCount(12);
-  }, [filter, sort, query, priceMax]);
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const pageSize = isMobile ? 4 : 12;
+  useEffect(() => {
+    setVisibleCount(pageSize);
+  }, [filter, sort, query, priceMax, pageSize]);
 
   // Price ceiling for the slider — round up to a nice number
   const maxPrice = Math.max(0, ...products.map((p) => p.price));
