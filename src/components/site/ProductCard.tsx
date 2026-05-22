@@ -19,11 +19,32 @@ function sizeFor(size: string) {
     .trim();
 }
 
-export function ProductCard({ p }: { p: Product }) {
+type Badge = { label: string; tone?: "amber" | "gray" | "green" };
+
+export function ProductCard({
+  p,
+  badge,
+  stockText,
+  stockTone,
+  tagline,
+}: {
+  p: Product;
+  badge?: Badge;
+  stockText?: string;
+  stockTone?: "default" | "amber";
+  tagline?: string;
+}) {
   const lot = p.lot;
   const available = p.inStock !== false;
   const title = titleFor(p.name);
   const { addItem } = useCart();
+
+  const badgeToneClass =
+    badge?.tone === "amber"
+      ? "bg-amber-50 text-amber-800 border-amber-200"
+      : badge?.tone === "green"
+      ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+      : "bg-mist text-foreground/70 border-border";
 
   return (
     <article className="group">
@@ -44,6 +65,14 @@ export function ProductCard({ p }: { p: Product }) {
           <span aria-hidden className="absolute bottom-0 right-0 w-3 h-px bg-ink/25" />
           <span aria-hidden className="absolute bottom-0 right-0 w-px h-3 bg-ink/25" />
 
+          {badge ? (
+            <span
+              className={`absolute top-2.5 left-2.5 z-10 inline-flex items-center px-2 py-[3px] rounded-[2px] border text-[9px] font-mono uppercase tracking-[0.16em] ${badgeToneClass}`}
+            >
+              {badge.label}
+            </span>
+          ) : null}
+
           <div className="absolute inset-0 flex items-center justify-center p-1.5 sm:p-3 transition duration-[900ms] ease-out group-hover:scale-[1.02]">
             <VialImage
               name={p.name}
@@ -57,7 +86,7 @@ export function ProductCard({ p }: { p: Product }) {
 
           {/* Desktop only: keep the in-frame hairline metadata. Mobile gets a clean image. */}
           <div className="hidden sm:flex absolute top-3 left-3 right-3 items-center justify-between text-[9.5px] font-mono uppercase tracking-[0.16em] text-foreground/55">
-            <span>{p.purity} HPLC</span>
+            <span className={badge ? "opacity-0" : ""}>{p.purity} HPLC</span>
             <span className="tabular-nums">LOT {lot}</span>
           </div>
         </div>
@@ -79,6 +108,11 @@ export function ProductCard({ p }: { p: Product }) {
           >
             {title}
           </h3>
+          {tagline ? (
+            <p className="hidden md:block mt-1.5 text-[11.5px] text-muted-foreground leading-snug opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-16 transition-all duration-300 ease-out">
+              {tagline}
+            </p>
+          ) : null}
           <p className="mt-1.5 text-[11.5px] text-muted-foreground font-mono tabular-nums truncate">
             {sizeFor(p.size)} · lyophilized
           </p>
@@ -86,9 +120,16 @@ export function ProductCard({ p }: { p: Product }) {
 
         {/* Price + availability row — clean horizontal rhythm */}
         <div className="mt-3 pt-3 border-t border-border/70 flex items-baseline justify-between gap-3">
-          <p className={`text-[10px] font-mono uppercase tracking-[0.2em] ${available ? "text-foreground/65" : "text-foreground/55"}`}>
-            {available ? "Available" : "Reserved"}
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className={`text-[10px] font-mono uppercase tracking-[0.2em] ${available ? "text-foreground/65" : "text-foreground/55"}`}>
+              {available ? "Available" : "Reserved"}
+            </p>
+            {stockText ? (
+              <p className={`text-[10px] font-mono tracking-[0.1em] ${stockTone === "amber" ? "text-amber-700" : "text-foreground/55"}`}>
+                {stockText}
+              </p>
+            ) : null}
+          </div>
           <p className="text-[16px] sm:text-[15px] text-ink font-medium tabular-nums leading-none">
             ${p.price}
           </p>
