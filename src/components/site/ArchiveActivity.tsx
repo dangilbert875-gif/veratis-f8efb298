@@ -1,6 +1,7 @@
 import { batches, labPartner } from "@/data/batches";
 import { Link } from "@tanstack/react-router";
 import { Archive, ArrowRight } from "lucide-react";
+import { useState } from "react";
 
 // Deterministic relative time so the log feels alive without
 // inducing hydration mismatch. Anchored to "now" at module load.
@@ -29,6 +30,7 @@ export function ArchiveActivity() {
     { kind: "Endotoxin cleared",     lot: seed[5].lot, detail: `${seed[5].endotoxin} · LAL chromogenic`, offset: 960 },
     { kind: "Lot archived",          lot: seed[6].lot, detail: `${seed[6].product} · ${seed[6].purity.toFixed(2)}% HPLC`, offset: 1320 },
   ];
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <section className="border-y border-border bg-mist/30">
@@ -81,7 +83,7 @@ export function ArchiveActivity() {
               {entries.map((e, i) => (
                 <li
                   key={`${e.lot}-${i}`}
-                  className="grid grid-cols-[88px_1fr_auto] sm:grid-cols-[130px_140px_1fr_auto] items-baseline gap-x-3 sm:gap-x-5 px-4 sm:px-5 py-3 sm:py-3.5 border-b border-border/60 last:border-0 text-[12.5px] hover:bg-mist/40 transition-colors"
+                  className={`${i >= 3 && !expanded ? "hidden sm:grid" : "grid"} grid-cols-[88px_1fr_auto] sm:grid-cols-[130px_140px_1fr_auto] items-baseline gap-x-3 sm:gap-x-5 px-4 sm:px-5 py-3 sm:py-3.5 border-b border-border/60 last:border-0 text-[12.5px] hover:bg-mist/40 transition-colors`}
                 >
                   <span className="font-mono text-[10px] sm:text-[10.5px] tabular-nums uppercase tracking-[0.1em] sm:tracking-[0.14em] text-foreground/50 whitespace-nowrap">
                     {relTime(batches[0].testedOn, e.offset)}
@@ -105,6 +107,15 @@ export function ArchiveActivity() {
                 </li>
               ))}
             </ul>
+            {!expanded && entries.length > 3 ? (
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                className="sm:hidden w-full px-4 py-3 border-t border-border text-[10.5px] font-mono uppercase tracking-[0.16em] text-ink hover:bg-mist/50 transition-colors"
+              >
+                View all {batches.length} entries →
+              </button>
+            ) : null}
             <div className="px-4 sm:px-5 min-h-10 py-2 flex items-center justify-between gap-3 border-t border-border text-[9.5px] sm:text-[10px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em] text-foreground/45">
               <span className="truncate">Append-only · sealed</span>
               <span className="tabular-nums whitespace-nowrap">{batches.length} entries</span>
