@@ -113,28 +113,6 @@ function ConfirmationPage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— {label}</p>
-      {children}
-    </div>
-  );
-}
-function CopyValue({ value, mono }: { value: string; mono?: boolean }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      onClick={() => { navigator.clipboard?.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1400); }}
-      className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
-    >
-      <span className={`text-[12.5px] text-ink break-all ${mono ? "font-mono" : ""}`}>{value}</span>
-      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
-        {copied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
-      </span>
-    </button>
-  );
-}
 function DetailCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="border border-border rounded-[3px] bg-background">
