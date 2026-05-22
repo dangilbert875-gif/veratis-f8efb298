@@ -7,7 +7,7 @@ import { mapDbLot } from "@/lib/use-lots";
 import { BadgeCheck, Search, FileText, AlertTriangle, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { PurityCounter } from "./PurityCounter";
-import { downloadCoa } from "@/lib/coa";
+import { downloadCoa, coaExtension } from "@/lib/coa";
 
 type State =
   | { kind: "idle" }
@@ -286,12 +286,7 @@ function BatchResult({ batch, dark = false }: { batch: Batch; dark?: boolean }) 
             ))}
           </dl>
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => downloadCoa(batch)}
-              className="inline-flex items-center gap-2 text-[11.5px] font-medium uppercase tracking-[0.16em] text-ink bg-background border border-background rounded-[3px] px-5 h-10 hover:bg-background/90 active:scale-[0.985] transition-all duration-200"
-            >
-              <FileText size={12} /> Download signed COA
-            </button>
+            <CoaDownloadButton batch={batch} />
             <Link
               to="/shop/$slug" params={{ slug: batch.slug }}
               className="inline-flex items-center gap-1.5 text-[11.5px] font-mono uppercase tracking-[0.16em] text-background/80 hover:text-background transition"
