@@ -469,6 +469,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          access_token: string
           archived_at: string | null
           btc_address: string | null
           btc_amount: number | null
@@ -515,6 +516,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          access_token?: string
           archived_at?: string | null
           btc_address?: string | null
           btc_amount?: number | null
@@ -561,6 +563,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          access_token?: string
           archived_at?: string | null
           btc_address?: string | null
           btc_amount?: number | null
