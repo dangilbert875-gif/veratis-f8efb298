@@ -440,11 +440,13 @@ function CheckoutPage() {
           {step === 3 && (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Reference (pre-payment)</p>
-                <p className="mt-0.5 font-mono text-[12.5px] text-ink tabular-nums">{draftRef}</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+                  — Order # (include in payment)
+                </p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink tabular-nums">{orderReference}</p>
               </div>
               <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 max-w-[260px] text-right">
-                Quote this if you need support before the payment confirms.
+                Reference this number in your Venmo note or for any support inquiries.
               </p>
             </div>
           )}
