@@ -356,9 +356,9 @@ function CheckoutPage() {
     <Layout hideFooter>
       <PageHeader eyebrow="— Checkout" title="Complete your order" />
 
-      <section className="px-6 lg:px-12 py-12 max-w-6xl mx-auto grid lg:grid-cols-[1fr_380px] gap-12">
+      <section className="px-5 sm:px-6 lg:px-12 py-10 sm:py-12 max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,1fr)_380px] gap-10 lg:gap-12">
         {/* LEFT: form */}
-        <div>
+        <div className="min-w-0">
           <StepRail step={step} onJump={(n) => { if (n < step) setStep(n); }} />
 
           {step === 1 && (
@@ -438,14 +438,14 @@ function CheckoutPage() {
           )}
 
           {step === 3 && (
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
-              <div>
+            <div className="mb-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
+              <div className="min-w-0">
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
                   — Order # (include in payment)
                 </p>
                 <p className="mt-0.5 font-mono text-[13px] text-ink tabular-nums">{orderReference}</p>
               </div>
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 max-w-[260px] text-right">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 sm:max-w-[260px] sm:text-right">
                 Reference this number in your Venmo note or for any support inquiries.
               </p>
             </div>
@@ -487,20 +487,20 @@ function CheckoutPage() {
                   </div>
                 ) : (
                   <div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input
                         value={promoInput}
                         onChange={(e) => { setPromoInput(e.target.value); setPromoError(null); }}
                         placeholder=""
                         aria-label="Referral code"
-                        className={`${inp} mt-0 flex-1 uppercase font-mono`}
+                        className={`${inp} mt-0 w-full sm:flex-1 uppercase font-mono`}
                         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
                       />
                       <button
                         type="button"
                         onClick={applyPromo}
                         disabled={promoChecking || !promoInput.trim()}
-                        className="inline-flex items-center justify-center px-4 h-11 text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/30 rounded-[3px] hover:bg-ink hover:text-background transition-all disabled:opacity-50"
+                        className="inline-flex items-center justify-center px-4 h-11 w-full sm:w-auto text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/30 rounded-[3px] hover:bg-ink hover:text-background transition-all disabled:opacity-50"
                       >
                         {promoChecking ? "Checking…" : "Apply"}
                       </button>
@@ -547,20 +547,20 @@ function CheckoutPage() {
 
                   <div>
                     <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan or copy BTC address</p>
-                    <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 min-w-0">
                       <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
                         <img
                           src={btcQr}
                           alt={`Bitcoin payment QR code for ${BTC_ADDRESS}`}
-                          className="w-[200px] h-[200px] sm:w-[120px] sm:h-[120px] block"
+                          className="w-[160px] h-[160px] sm:w-[120px] sm:h-[120px] block"
                         />
                       </div>
                       <button
                         type="button"
                         onClick={() => copyVal("addr", BTC_ADDRESS)}
-                        className="group w-full sm:flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left min-h-[56px]"
+                        className="group w-full sm:flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left min-h-[56px]"
                       >
-                        <span className="text-[12.5px] text-ink break-all font-mono leading-relaxed">{BTC_ADDRESS}</span>
+                        <span className="text-[12px] sm:text-[12.5px] text-ink break-all font-mono leading-relaxed min-w-0">{BTC_ADDRESS}</span>
                         <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0 self-end sm:self-auto">
                           {copied === "addr" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
                         </span>
@@ -578,9 +578,9 @@ function CheckoutPage() {
                       <button
                         type="button"
                         onClick={() => copyVal("amt", btcAmount)}
-                        className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+                        className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
                       >
-                        <span className="text-[12.5px] text-ink break-all font-mono">{btcAmount} BTC</span>
+                        <span className="text-[12px] sm:text-[12.5px] text-ink break-all font-mono min-w-0">{btcAmount} BTC</span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
                           {copied === "amt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
                         </span>
@@ -691,18 +691,18 @@ function CheckoutPage() {
         </div>
 
         {/* RIGHT: summary */}
-        <aside className="lg:sticky lg:top-24 self-start border border-border rounded-[3px] bg-mist/30">
+        <aside className="lg:sticky lg:top-24 self-start border border-border rounded-[3px] bg-mist/30 min-w-0 w-full">
           <div className="px-5 py-4 border-b border-border">
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Order summary</p>
           </div>
           <ul className="divide-y divide-border">
             {items.map((i) => (
-              <li key={i.slug} className="px-5 py-3 flex justify-between gap-3 text-[12px]">
-                <div className="min-w-0">
+              <li key={i.slug} className="px-4 sm:px-5 py-3 flex justify-between gap-3 text-[12px]">
+                <div className="min-w-0 flex-1">
                   <Link
                     to="/shop/$slug"
                     params={{ slug: i.slug }}
-                    className="text-ink truncate hover:underline block"
+                    className="text-ink truncate hover:underline block min-w-0"
                     title="Open product page to re-verify this lot"
                   >
                     {i.name}
@@ -721,7 +721,7 @@ function CheckoutPage() {
               </li>
             ))}
           </ul>
-          <div className="px-5 py-4 border-t border-border space-y-2 text-[12px]">
+          <div className="px-4 sm:px-5 py-4 border-t border-border space-y-2 text-[12px]">
             <Row label="Subtotal" value={`$${subtotal.toFixed(0)}`} />
             <Row label="Cold-chain shipping" value={shippingCost === 0 ? "Free" : `$${shippingCost}`} />
             {shippingCost > 0 && (
@@ -740,7 +740,7 @@ function CheckoutPage() {
               <span className="text-lg text-ink tabular-nums">${totalAfterDiscount.toFixed(2)}</span>
             </div>
           </div>
-          <ul className="px-5 py-4 border-t border-border flex flex-wrap gap-x-4 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/55">
+          <ul className="px-4 sm:px-5 py-4 border-t border-border flex flex-wrap gap-x-4 gap-y-1.5 text-[10px] font-mono uppercase tracking-[0.16em] text-foreground/55">
             <li className="inline-flex items-center gap-1.5"><Snowflake size={11} strokeWidth={1.5} /> Cold-chain</li>
             <li className="inline-flex items-center gap-1.5"><ShieldCheck size={11} strokeWidth={1.5} /> Lot-verified</li>
             <li className="inline-flex items-center gap-1.5"><Lock size={11} strokeWidth={1.5} /> BTC-secured</li>
@@ -863,9 +863,9 @@ function Field({ label, required, children }: { label: string; required?: boolea
 }
 function Review({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="py-3 border-b border-border last:border-b-0 grid grid-cols-[120px_1fr] gap-4 text-[12.5px]">
-      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {label}</p>
-      <div className="text-ink space-y-0.5">{children}</div>
+    <div className="py-3 border-b border-border last:border-b-0 grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)] gap-2 sm:gap-4 text-[12.5px]">
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-foreground/55">— {label}</p>
+      <div className="text-ink space-y-0.5 min-w-0">{children}</div>
     </div>
   );
 }
@@ -880,7 +880,7 @@ function Row({ label, value }: { label: string; value: string }) {
 function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) {
   const steps = ["Contact", "Shipping", "Review"];
   return (
-    <ol className="flex items-center gap-3 mb-6 text-[10.5px] font-mono uppercase tracking-[0.2em]">
+    <ol className="flex flex-wrap items-center gap-y-2 gap-x-3 mb-6 text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em]">
       {steps.map((s, i) => {
         const n = (i + 1) as Step;
         const done = step > n;
@@ -900,7 +900,7 @@ function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) 
               </span>
               <span className={active ? "text-ink" : done ? "text-foreground/70" : "text-foreground/40"}>{s}</span>
             </button>
-            {i < steps.length - 1 && <span className="w-8 h-px bg-border" />}
+            {i < steps.length - 1 && <span className="w-6 sm:w-8 h-px bg-border" />}
           </li>
         );
       })}
@@ -992,9 +992,9 @@ function VenmoPaymentBlock({
         <button
           type="button"
           onClick={() => onCopy("venmoHandle", `@${VENMO_HANDLE}`)}
-          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+          className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
         >
-          <span className="text-[13px] text-ink font-mono">@{VENMO_HANDLE}</span>
+          <span className="text-[13px] text-ink font-mono break-all min-w-0">@{VENMO_HANDLE}</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
             {copied === "venmoHandle" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
           </span>
@@ -1007,9 +1007,9 @@ function VenmoPaymentBlock({
         <button
           type="button"
           onClick={() => onCopy("venmoAmt", amountStr)}
-          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+          className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
         >
-          <span className="text-[13px] text-ink font-mono tabular-nums">${amountStr}</span>
+          <span className="text-[13px] text-ink font-mono tabular-nums break-all min-w-0">${amountStr}</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
             {copied === "venmoAmt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
           </span>
@@ -1022,9 +1022,9 @@ function VenmoPaymentBlock({
         <button
           type="button"
           onClick={() => onCopy("venmoOrder", orderNumber)}
-          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-ink/60 rounded-[3px] bg-mist/50 hover:bg-mist/70 transition-colors text-left"
+          className="group w-full min-w-0 flex items-center justify-between gap-3 px-3.5 py-3 border border-ink/60 rounded-[3px] bg-mist/50 hover:bg-mist/70 transition-colors text-left"
         >
-          <span className="text-[13px] text-ink font-mono tabular-nums">{orderNumber}</span>
+          <span className="text-[13px] text-ink font-mono tabular-nums break-all min-w-0">{orderNumber}</span>
           <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
             {copied === "venmoOrder" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
           </span>
@@ -1034,16 +1034,16 @@ function VenmoPaymentBlock({
       {/* QR */}
       <div>
         <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan Venmo QR code</p>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
           <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
             <QRCodeSVG
               value={VENMO_DEEPLINK}
-              size={140}
+              size={128}
               level="M"
               marginSize={0}
             />
           </div>
-          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1">
+          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1 min-w-0">
             Scan with your Venmo app or tap the handle above to copy. The QR opens the{" "}
             <span className="font-mono text-ink">@{VENMO_HANDLE}</span> Venmo profile.
           </p>
