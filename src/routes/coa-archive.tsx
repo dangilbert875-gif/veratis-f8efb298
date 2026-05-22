@@ -99,10 +99,10 @@ function Page() {
               <span className="text-primary tabular-nums inline-flex items-center gap-1.5"><ShieldCheck size={12} />{b.purity.toFixed(2)}%</span>
               <span className="text-muted-foreground tabular-nums">{b.testedOn}</span>
               <button
-                onClick={() => downloadCoa(b)}
+                onClick={() => { void downloadCoa(b); }}
                 className="inline-flex items-center gap-1.5 text-xs text-foreground/80 hover:text-primary border border-border px-3 py-1.5 rounded-md md:ml-auto"
               >
-                <Download size={12} /> COA
+                <Download size={12} /> COA{b.coaUrl ? ` (${(coaExtension(b.coaUrl) || "").toUpperCase()})` : ""}
               </button>
             </div>
           ))}
