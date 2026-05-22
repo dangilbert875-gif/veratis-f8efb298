@@ -560,6 +560,7 @@ function EmailCapture() {
             <div className="relative flex-1">
               <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-background/40" strokeWidth={1.5} />
               <input
+                aria-label="Email address for newsletter"
                 type="email"
                 required
                 value={email}
