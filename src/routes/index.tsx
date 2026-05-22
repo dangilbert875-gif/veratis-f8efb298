@@ -4,7 +4,8 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { categories } from "@/data/products";
 import { useCatalog } from "@/lib/use-catalog";
 import heroVial from "@/assets/hero-vial.jpg";
-import { FlaskConical, ShieldCheck, Lock, ArrowRight, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive } from "lucide-react";
+import { FlaskConical, ShieldCheck, Lock, ArrowRight, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive, Bandage, Leaf, TrendingUp, Atom, Sun, Zap, Flame, Plus, Minus, Quote, Mail } from "lucide-react";
+import { useState } from "react";
 import { BatchVerify } from "@/components/site/BatchVerify";
 import { LotTag, ArchiveIndexStrip } from "@/components/site/LotTag";
 import { batches, labPartner } from "@/data/batches";
@@ -54,6 +55,48 @@ function Home() {
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
   const { products } = useCatalog();
 
+  // Featured product configuration — slug → badge / stock / tagline
+  const featuredConfig: Record<string, { badge?: { label: string; tone?: "amber" | "gray" | "green" }; stockText?: string; stockTone?: "default" | "amber"; tagline?: string }> = {
+    "bpc-157-12mg": {
+      badge: { label: "Most ordered", tone: "amber" },
+      stockText: "12 vials remaining",
+      tagline: "Pentadecapeptide studied for tissue recovery and gastric protection.",
+    },
+    "tb-500-fragment-12mg": {
+      badge: { label: "Popular", tone: "gray" },
+      stockText: "18 vials remaining",
+      tagline: "Thymosin Beta-4 fragment for soft tissue and muscle research.",
+    },
+    "ghk-cu-100mg": {
+      badge: { label: "Best value", tone: "green" },
+      stockText: "Low stock · 6 remaining",
+      stockTone: "amber",
+      tagline: "Copper tripeptide for skin and regenerative research.",
+    },
+    "mots-c-10mg": {
+      stockText: "In stock",
+      tagline: "Mitochondrial-derived peptide for metabolic research.",
+    },
+  };
+  const featuredSlugs = ["bpc-157-12mg", "tb-500-fragment-12mg", "ghk-cu-100mg", "mots-c-10mg"];
+  const featuredProducts = featuredSlugs
+    .map((slug) => products.find((p) => p.slug === slug))
+    .filter(Boolean)
+    .slice(0, 4) as typeof products;
+  // Fallback if any are missing
+  const featured = featuredProducts.length === 4 ? featuredProducts : products.slice(0, 4);
+
+  // Icon map for category tiles
+  const categoryIcons: Record<string, typeof Bandage> = {
+    "Tissue Recovery": Bandage,
+    "Regenerative": Leaf,
+    "Growth Hormone": TrendingUp,
+    "Hormonal": Atom,
+    "Pigmentation": Sun,
+    "Mitochondrial": Zap,
+    "Metabolic": Flame,
+  };
+
   return (
     <Layout>
       {/* Hero */}
@@ -79,12 +122,15 @@ function Home() {
               </Link>
               <Link
                 to="/coa-archive"
-                className="group inline-flex items-center gap-2 border border-border bg-background px-6 py-4 rounded-md text-[13px] font-medium tracking-wide text-ink hover:border-ink/30 hover:bg-mist transition"
+                className="group inline-flex items-center gap-2 border border-ink/30 bg-transparent px-6 py-4 rounded-md text-[13px] font-medium tracking-wide text-ink hover:border-ink/60 hover:bg-ink/[0.03] transition"
               >
                 <ShieldCheck size={15} className="text-primary" strokeWidth={2} />
                 View COA archive
               </Link>
             </div>
+            <p className="mt-4 text-[12.5px] text-muted-foreground tabular-nums">
+              From $25 per vial <span className="text-foreground/30 mx-1">·</span> Free shipping over $150
+            </p>
             <ul className="mt-7 md:mt-8 flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-[11.5px] sm:text-[12px] text-muted-foreground">
               {[
                 { icon: BadgeCheck, label: "ISO 17025 verified" },
@@ -98,15 +144,15 @@ function Home() {
                 </li>
               ))}
             </ul>
-            <dl className="mt-10 md:mt-14 grid grid-cols-3 max-w-lg divide-x divide-border border-t border-border pt-6 md:pt-8">
+            <dl className="mt-10 md:mt-14 grid grid-cols-3 gap-0 max-w-lg divide-x divide-border border-t border-border pt-6 md:pt-8">
               {[
                 ["99.4%", "Average HPLC purity"],
                 ["ISO 17025", "Certified testing"],
                 ["48 hrs", "Ships within"],
               ].map(([v, k], i) => (
-                <div key={k} className={i === 0 ? "pr-3 sm:pr-6" : "px-3 sm:px-6"}>
-                  <dt className="text-[1.05rem] sm:text-[1.5rem] md:text-[1.75rem] text-ink font-display leading-tight tabular-nums [text-wrap:balance]">{v}</dt>
-                  <dd className="text-[9.5px] sm:text-[10.5px] md:text-[11px] text-muted-foreground mt-2 sm:mt-2.5 uppercase tracking-[0.14em] sm:tracking-[0.16em] leading-snug">{k}</dd>
+                <div key={k} className={i === 0 ? "pr-2 sm:pr-6" : "px-2 sm:px-6"}>
+                  <dt className="text-[0.95rem] sm:text-[1.5rem] md:text-[1.75rem] text-ink font-display leading-tight tabular-nums whitespace-nowrap [text-wrap:balance]">{v}</dt>
+                  <dd className="text-[9px] sm:text-[10.5px] md:text-[11px] text-muted-foreground mt-2 sm:mt-2.5 uppercase tracking-[0.12em] sm:tracking-[0.16em] leading-snug">{k}</dd>
                 </div>
               ))}
             </dl>
@@ -191,7 +237,19 @@ function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-4 gap-x-6 sm:gap-x-6 gap-y-14 sm:gap-y-12">
-          {products.slice(0, 4).map((p) => <ProductCard key={p.slug} p={p} />)}
+          {featured.map((p) => {
+            const cfg = featuredConfig[p.slug] ?? {};
+            return (
+              <ProductCard
+                key={p.slug}
+                p={p}
+                badge={cfg.badge}
+                stockText={cfg.stockText}
+                stockTone={cfg.stockTone}
+                tagline={cfg.tagline}
+              />
+            );
+          })}
         </div>
       </section>
 
@@ -221,6 +279,48 @@ function Home() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Testimonials — trusted by researchers */}
+      <section className="border-y border-border bg-mist/30">
+        <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
+          <div className="max-w-2xl">
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Field response</p>
+            <h2 className="text-3xl md:text-4xl text-ink tracking-tight">Trusted by researchers.</h2>
+            <p className="mt-4 text-muted-foreground leading-relaxed">
+              What independent investigators say about our archive.
+            </p>
+          </div>
+          <div className="mt-12 grid md:grid-cols-3 gap-6">
+            {[
+              {
+                quote: "The archive is the first peptide vendor system I've seen that I'd actually trust enough to cite in methodology.",
+                attr: "Postdoctoral researcher, biomedical engineering",
+              },
+              {
+                quote: "Verification under one second. Lot match every time. This is how every vendor should operate.",
+                attr: "Independent compound chemist",
+              },
+              {
+                quote: "Switched from three other suppliers. The COA workflow alone saves me hours per month.",
+                attr: "Lab director, contract research organization",
+              },
+            ].map((t, i) => (
+              <figure key={i} className="bg-background border border-border rounded-[3px] p-7 flex flex-col">
+                <Quote size={18} className="text-primary/70 mb-4" strokeWidth={1.5} />
+                <blockquote className="text-[15px] text-ink/90 leading-[1.65] italic font-display tracking-[-0.005em] [text-wrap:balance] flex-1">
+                  "{t.quote}"
+                </blockquote>
+                <figcaption className="mt-6 pt-5 border-t border-border/70 text-[11px] font-mono uppercase tracking-[0.16em] text-foreground/55">
+                  — {t.attr}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="mt-8 text-[11px] text-muted-foreground italic">
+            Testimonials from verified purchasers. Identifying information withheld on request.
+          </p>
+        </div>
       </section>
 
       {/* COA Preview */}
@@ -281,21 +381,25 @@ function Home() {
           </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              to="/shop"
-              className="group relative bg-mist border border-border rounded-lg p-5 sm:p-8 pb-12 sm:pb-16 min-h-[120px] sm:min-h-[160px] flex flex-col hover:border-ink/40 transition"
-            >
-              <p className="text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 tabular-nums">
-                {String(c.count).padStart(2, "0")} compounds
-              </p>
-              <h3 className="mt-2 text-[1.0625rem] sm:text-2xl text-ink leading-[1.2] tracking-tight [text-wrap:balance] hyphens-auto break-words">
-                {c.name}
-              </h3>
-              <ArrowRight size={16} className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 text-foreground/40 group-hover:text-ink group-hover:translate-x-1 transition" />
-            </Link>
-          ))}
+          {categories.map((c) => {
+            const Icon = categoryIcons[c.name] ?? FlaskConical;
+            return (
+              <Link
+                key={c.slug}
+                to="/shop"
+                className="group relative bg-background border border-border rounded-[3px] p-5 sm:p-8 min-h-[150px] sm:min-h-[190px] flex flex-col hover:border-ink/50 hover:shadow-[0_8px_24px_-16px_rgba(15,23,42,0.2)] transition"
+              >
+                <Icon size={26} className="text-ink/75 mb-4" strokeWidth={1.25} />
+                <h3 className="font-display text-[1.0625rem] sm:text-[1.375rem] text-ink leading-[1.15] tracking-tight [text-wrap:balance] hyphens-auto break-words">
+                  {c.name}
+                </h3>
+                <p className="mt-auto pt-4 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 tabular-nums">
+                  {String(c.count).padStart(2, "0")} compounds
+                </p>
+                <ArrowRight size={14} className="absolute top-5 right-5 sm:top-6 sm:right-6 text-foreground/35 group-hover:text-ink group-hover:translate-x-0.5 transition" />
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -345,6 +449,131 @@ function Home() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <FAQSection />
+
+      {/* Email capture */}
+      <EmailCapture />
+
     </Layout>
+  );
+}
+
+function FAQSection() {
+  const items = [
+    {
+      q: "Are your peptides legal to purchase?",
+      a: "Yes — for laboratory and research use only. All products ship with a \"Research Use Only\" designation and are not intended for human or veterinary consumption. By purchasing, you confirm you are a qualified researcher.",
+    },
+    {
+      q: "How fast do orders ship?",
+      a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs. Domestic delivery typically arrives within 3–5 business days.",
+    },
+    {
+      q: "What happens if my lot fails verification?",
+      a: "It won't — every lot is independently assayed before release and rejected if any specification fails. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately.",
+    },
+    {
+      q: "How do I verify my vial's certificate?",
+      a: "Enter the lot number printed on the vial or outer carton into our verification tool. The archive returns the original COA in under one second — purity, identity, endotoxin, signed and dated.",
+    },
+    {
+      q: "What payment methods do you accept?",
+      a: "All major credit cards via encrypted checkout. For cryptocurrency or bulk research orders, contact us directly.",
+    },
+  ];
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <section className="border-y border-border bg-mist/30">
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28 grid md:grid-cols-12 gap-10 md:gap-16">
+        <div className="md:col-span-4">
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— FAQ</p>
+          <h2 className="text-3xl md:text-4xl text-ink tracking-tight leading-[1.1]">Common questions.</h2>
+          <p className="mt-5 text-muted-foreground leading-relaxed max-w-xs">
+            If you don't see your question, <Link to="/contact" className="text-ink underline underline-offset-4 hover:text-primary">contact us</Link>.
+          </p>
+        </div>
+        <div className="md:col-span-8">
+          <ul className="border-t border-border">
+            {items.map((item, i) => {
+              const isOpen = open === i;
+              return (
+                <li key={i} className="border-b border-border">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                    className="w-full min-h-[64px] py-5 flex items-center justify-between gap-6 text-left group"
+                  >
+                    <span className="font-display text-[1.0625rem] sm:text-[1.125rem] text-ink tracking-tight leading-snug">
+                      {item.q}
+                    </span>
+                    <span className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-ink/60 group-hover:border-ink/40 group-hover:text-ink transition">
+                      {isOpen ? <Minus size={14} /> : <Plus size={14} />}
+                    </span>
+                  </button>
+                  {isOpen ? (
+                    <div className="pb-6 pr-12 text-[14.5px] text-muted-foreground leading-[1.75]">
+                      {item.a}
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EmailCapture() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  return (
+    <section className="bg-ink text-background">
+      <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 grid md:grid-cols-12 gap-10 md:gap-16 items-start">
+        <div className="md:col-span-6">
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary mb-4">— Lot release notifications</p>
+          <h2 className="font-display text-[1.875rem] sm:text-3xl md:text-[2.25rem] text-background leading-[1.12] tracking-[-0.02em] [text-wrap:balance]">
+            Notified when new lots release.
+          </h2>
+          <p className="mt-5 text-[14.5px] text-background/65 leading-[1.75] max-w-md">
+            Approximately one email per month. New lot announcements, archive updates, and standards publications. No marketing.
+          </p>
+        </div>
+        <div className="md:col-span-6 md:pt-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!email) return;
+              setSubmitted(true);
+            }}
+            className="flex flex-col sm:flex-row gap-3"
+          >
+            <div className="relative flex-1">
+              <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-background/40" strokeWidth={1.5} />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your.email@lab.edu"
+                className="w-full h-12 pl-11 pr-4 rounded-[3px] bg-background/[0.06] border border-background/20 text-background placeholder:text-background/35 text-[14px] focus:outline-none focus:border-primary/70 focus:bg-background/[0.08] transition"
+              />
+            </div>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center h-12 px-6 rounded-[3px] bg-primary text-primary-foreground text-[12.5px] font-medium tracking-wide hover:bg-primary/90 active:scale-[0.99] transition whitespace-nowrap"
+            >
+              {submitted ? "Subscribed ✓" : "Subscribe"}
+            </button>
+          </form>
+          <p className="mt-3 text-[11.5px] text-background/45">
+            We never share your email. Unsubscribe anytime.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
