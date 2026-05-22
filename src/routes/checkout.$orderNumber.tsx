@@ -2,14 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { Layout, PageHeader } from "@/components/site/Layout";
-import { getCheckoutOrder, getBtcUsdRate } from "@/lib/checkout.functions";
-import { Bitcoin, Copy, Check, Mail, Clock, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { getCheckoutOrder } from "@/lib/checkout.functions";
 
 export const Route = createFileRoute("/checkout/$orderNumber")({
   head: () => ({
     meta: [
       { title: "Order confirmation — VERATIS" },
+      { name: "description", content: "Your order has been received and payment is being verified." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -24,24 +23,17 @@ function ConfirmationPage() {
     queryFn: () => fetcher({ data: { order_number: orderNumber } }),
     refetchInterval: 30_000,
   });
-  const rateFetcher = useServerFn(getBtcUsdRate);
-  const { data: rateData } = useQuery({
-    queryKey: ["btc-usd-rate"],
-    queryFn: () => rateFetcher(),
-    refetchInterval: 60_000,
-    staleTime: 30_000,
-  });
 
   if (isLoading) {
     return (
-      <Layout>
+      <Layout hideFooter>
         <PageHeader eyebrow="— Order" title="Loading order…" />
       </Layout>
     );
   }
   if (error || !data) {
     return (
-      <Layout>
+      <Layout hideFooter>
         <PageHeader eyebrow="— Order" title="Order not found" />
         <section className="px-6 lg:px-12 py-16 max-w-3xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">
@@ -55,17 +47,8 @@ function ConfirmationPage() {
     );
   }
 
-  const expiresAt = data.payment_expires_at ? new Date(data.payment_expires_at) : null;
-  const paid = data.payment_status === "confirmed" || data.payment_received_at;
-  const liveRate = rateData?.rate ?? null;
-  const liveBtcAmount =
-    liveRate && Number(data.total_usd) > 0
-      ? (Number(data.total_usd) / liveRate).toFixed(8)
-      : null;
-  const displayBtcAmount = liveBtcAmount ?? (data.btc_amount ? String(data.btc_amount) : null);
-
   return (
-    <Layout>
+    <Layout hideFooter>
       <PageHeader eyebrow="— Order placed" title="Thank you" />
 
       <section className="px-6 lg:px-12 py-12 max-w-4xl mx-auto space-y-8">
@@ -75,65 +58,24 @@ function ConfirmationPage() {
             <p className="mt-1 text-2xl font-display tracking-tight text-ink">{data.order_number}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Amount due</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Amount paid</p>
             <p className="mt-1 text-2xl font-display tracking-tight text-ink tabular-nums">
               ${Number(data.total_usd).toFixed(2)} <span className="text-[12px] font-mono text-foreground/55 uppercase tracking-[0.18em]">USD</span>
             </p>
           </div>
         </div>
 
-        {/* Payment block */}
+        {/* Confirmation message */}
         <div className="border border-border rounded-[3px] bg-background">
-          <div className="px-6 py-4 border-b border-border flex items-center gap-2">
-            <Bitcoin size={16} className="text-ink/70" strokeWidth={1.5} />
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">— Bitcoin payment</p>
-            <span className={`ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.18em] rounded-[2px] ${
-              paid ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                   : "bg-amber-50 text-amber-700 border border-amber-200"
-            }`}>
-              {paid ? <Check size={11} /> : <Clock size={11} />} {paid ? "Confirmed" : "Awaiting payment"}
-            </span>
-          </div>
-          <div className="px-6 py-6 space-y-5">
-            {data.btc_address ? (
-              <>
-                <Field label="Send BTC to this address">
-                  <CopyValue value={data.btc_address} mono />
-                </Field>
-                {displayBtcAmount && (
-                  <Field label="Exact BTC amount">
-                    <CopyValue value={`${displayBtcAmount} BTC`} mono />
-                  </Field>
-                )}
-                {liveRate && (
-                  <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-                    — Rate: 1 BTC = ${liveRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot
-                  </p>
-                )}
-                <p className="text-[11.5px] text-foreground/70 leading-relaxed">
-                  Send exactly <strong className="text-ink">{displayBtcAmount ? `${displayBtcAmount} BTC` : `the USD-equivalent of $${Number(data.total_usd).toFixed(2)}`}</strong>{" "}
-                  to the address above. Your order ships within 48 hours of on-chain confirmation. A confirmation email will be sent to{" "}
-                  <span className="font-mono text-ink">{data.customer_email}</span>.
-                </p>
-              </>
-            ) : (
-              <div className="rounded-[3px] border border-border bg-mist/40 px-4 py-4">
-                <div className="flex items-start gap-3">
-                  <Mail size={16} className="text-ink/60 mt-0.5" strokeWidth={1.5} />
-                  <div className="text-[12.5px] text-foreground/80 leading-relaxed">
-                    Your unique Bitcoin payment address and the exact BTC amount will be issued to{" "}
-                    <span className="font-mono text-ink">{data.customer_email}</span> within the next hour.
-                    Please keep this reference number safe.
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {expiresAt && (
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-                — Payment window expires {expiresAt.toLocaleString()}
-              </p>
-            )}
+          <div className="px-6 py-5 space-y-3">
+            <p className="text-[12.5px] text-foreground/80 leading-relaxed">
+              Thank you for your order. We've received your payment and are verifying it on-chain now. You'll receive a confirmation email at{" "}
+              <span className="font-mono text-ink">{data.customer_email}</span>{" "}
+              within 48 hours once your order ships.
+            </p>
+            <p className="text-[12px] text-foreground/60 leading-relaxed">
+              Please take a screenshot of this page for your records.
+            </p>
           </div>
         </div>
 
@@ -162,16 +104,9 @@ function ConfirmationPage() {
           </DetailCard>
         </div>
 
-        <div className="flex items-center gap-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-          <ShieldCheck size={12} strokeWidth={1.5} /> Save this page · status auto-refreshes every 30 seconds
-        </div>
-
-        <div className="flex gap-4">
+        <div className="flex items-center justify-center pt-4">
           <Link to="/shop" className="inline-flex items-center justify-center h-11 px-6 text-[11px] font-medium uppercase tracking-[0.18em] text-ink border border-ink/20 rounded-[3px] hover:bg-ink hover:text-background transition-all">
             Continue browsing
-          </Link>
-          <Link to="/how-to-pay" className="inline-flex items-center justify-center h-11 px-6 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors">
-            Bitcoin payment guide
           </Link>
         </div>
       </section>
@@ -179,28 +114,6 @@ function ConfirmationPage() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— {label}</p>
-      {children}
-    </div>
-  );
-}
-function CopyValue({ value, mono }: { value: string; mono?: boolean }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      onClick={() => { navigator.clipboard?.writeText(value); setCopied(true); setTimeout(() => setCopied(false), 1400); }}
-      className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
-    >
-      <span className={`text-[12.5px] text-ink break-all ${mono ? "font-mono" : ""}`}>{value}</span>
-      <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
-        {copied ? <><Check size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
-      </span>
-    </button>
-  );
-}
 function DetailCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="border border-border rounded-[3px] bg-background">
