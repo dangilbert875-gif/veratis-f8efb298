@@ -402,6 +402,7 @@ function FileSlot({
   onPeek,
   onClear,
   accept,
+  getPreviewUrl,
 }: {
   label: string;
   path: string | null;
@@ -409,10 +410,26 @@ function FileSlot({
   onPeek: (path: string) => void;
   onClear: () => void;
   accept: string;
+  getPreviewUrl?: (path: string) => Promise<string>;
 }) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const isImage = !!path && /\.(png|jpe?g)$/i.test(path);
+  useEffect(() => {
+    let cancelled = false;
+    setPreviewUrl(null);
+    if (path && isImage && getPreviewUrl) {
+      getPreviewUrl(path).then((u) => { if (!cancelled) setPreviewUrl(u); }).catch(() => {});
+    }
+    return () => { cancelled = true; };
+  }, [path, isImage, getPreviewUrl]);
   return (
     <div>
       <div className="text-[9.5px] tracking-[0.24em] uppercase text-foreground/55 mb-1.5">{label}</div>
+      {path && isImage && previewUrl && (
+        <a href={previewUrl} target="_blank" rel="noopener" className="block mb-2">
+          <img src={previewUrl} alt={label} className="max-h-40 border border-ink/15 object-contain bg-ink/[0.02]" />
+        </a>
+      )}
       <div className="flex items-center gap-3 flex-wrap">
         {path ? (
           <>
