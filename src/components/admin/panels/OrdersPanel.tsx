@@ -690,8 +690,14 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                 {o.archived_at && <StatusBadge tone="neutral">Archived</StatusBadge>}
               </div>
             )}
+            {o?.updated_at && (
+              <div className="mt-1.5 text-[10px] tracking-[0.16em] uppercase text-foreground/45">
+                Last updated · {formatDate(o.updated_at)}
+              </div>
+            )}
           </div>
           <div className="flex gap-2 shrink-0">
+            <GhostButton type="button" onClick={() => typeof window !== "undefined" && window.print()}>Print</GhostButton>
             <PrimaryButton onClick={saveAll} disabled={saving || !form}>{saving ? "Saving…" : "Save"}</PrimaryButton>
             <GhostButton onClick={onClose}>Close</GhostButton>
           </div>
@@ -701,6 +707,43 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
           <div className="p-6 text-[12px] text-foreground/55">Loading…</div>
         ) : (
           <div className="p-5 space-y-5">
+            {/* Alerts strip */}
+            {(() => {
+              const alerts = deriveAlerts(o);
+              if (!alerts.length) return null;
+              return (
+                <div className="border border-amber-700/30 bg-amber-50/40 px-4 py-2.5 flex flex-wrap items-center gap-2 text-[11px] text-amber-900">
+                  <span className="text-[9.5px] tracking-[0.22em] uppercase text-amber-800/80">Attention</span>
+                  {alerts.map((a) => (
+                    <span key={a} className="inline-flex items-center gap-1.5 border border-amber-700/30 bg-background/60 px-1.5 py-0.5 text-[10.5px] tracking-[0.1em] uppercase">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600" />
+                      {a}
+                    </span>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Timeline */}
+            <Section title="Timeline">
+              <ol className="space-y-2.5">
+                {[
+                  { label: "Created",          at: o.created_at,           done: true },
+                  { label: "Payment received", at: o.payment_received_at,  done: !!o.payment_received_at || ["paid","confirmed","btc_received"].includes(o.payment_status) },
+                  { label: "Shipped",          at: o.shipped_at,           done: !!o.shipped_at || ["shipped","delivered"].includes(o.fulfillment_status) },
+                  { label: "Delivered",        at: o.delivered_at,         done: !!o.delivered_at || o.fulfillment_status === "delivered" },
+                ].map((step) => (
+                  <li key={step.label} className="flex items-start gap-3 text-[11.5px]">
+                    <span className={`mt-1 inline-block w-2 h-2 rounded-full shrink-0 ${step.done ? "bg-emerald-700" : "bg-ink/15"}`} />
+                    <div className="flex-1 flex items-baseline justify-between gap-3">
+                      <span className={step.done ? "text-ink" : "text-foreground/45"}>{step.label}</span>
+                      <span className="font-mono text-[10.5px] text-foreground/55 tabular-nums">{step.at ? formatDate(step.at) : "—"}</span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </Section>
+
             {/* A. Order summary */}
             <Section title="Order summary">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
