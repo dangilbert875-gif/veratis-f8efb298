@@ -382,6 +382,7 @@ function ShopPage() {
                       bestValuePerMg={cheapestPerMg?.slug === p.slug}
                       showQuantity
                       showViewCoa
+                      compactImage
                       tagline={TAGLINES[p.slug]}
                     />
                   );
