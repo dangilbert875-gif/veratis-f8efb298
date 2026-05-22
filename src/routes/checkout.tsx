@@ -579,7 +579,9 @@ function CheckoutPage() {
                 {!proofConfirmed ? (
                   <button
                     onClick={() => setProofOpen(true)}
-                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all"
+                    disabled={!researchAffirmed}
+                    title={!researchAffirmed ? "Confirm the research-use affirmation first" : undefined}
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-ink"
                   >
                     <Upload size={14} /> I've sent payment — upload proof
                   </button>
