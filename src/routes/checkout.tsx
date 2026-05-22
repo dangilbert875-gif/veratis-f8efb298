@@ -768,7 +768,13 @@ function CheckoutPage() {
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Screenshot</p>
                 {proofPreview ? (
                   <div className="relative border border-border rounded-[3px] overflow-hidden bg-mist/30">
-                    <img src={proofPreview} alt="Proof preview" className="w-full max-h-64 object-contain" />
+                    {proofFile?.type === "application/pdf" ? (
+                      <div className="w-full h-48 flex items-center justify-center text-[11px] font-mono uppercase tracking-[0.18em] text-foreground/65">
+                        — PDF attached · {proofFile.name}
+                      </div>
+                    ) : (
+                      <img src={proofPreview} alt="Proof preview" className="w-full max-h-64 object-contain" />
+                    )}
                     <button
                       type="button"
                       onClick={() => onPickFile(null)}
