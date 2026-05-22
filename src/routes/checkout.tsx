@@ -512,7 +512,27 @@ function CheckoutPage() {
                 )}
               </Review>
               <Review label="Payment method">
-                <div className="space-y-4">
+                <div className="space-y-5">
+                  {/* Selector */}
+                  <div className="grid sm:grid-cols-2 gap-2.5">
+                    <PaymentOptionCard
+                      selected={paymentMethod === "btc"}
+                      onSelect={() => setPaymentMethod("btc")}
+                      title="Bitcoin"
+                      subtitle="On-chain · ~1–3 hr confirm"
+                      icon={<Bitcoin size={18} strokeWidth={1.6} className="text-[#f7931a]" />}
+                    />
+                    <PaymentOptionCard
+                      selected={paymentMethod === "venmo"}
+                      onSelect={() => setPaymentMethod("venmo")}
+                      title="Venmo"
+                      subtitle="USD · @Veratis"
+                      icon={<VenmoLogo />}
+                    />
+                  </div>
+
+                  {paymentMethod === "btc" && (
+                    <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Bitcoin size={14} className="text-ink/70" strokeWidth={1.5} />
                     <p>Bitcoin (BTC)</p>
@@ -590,6 +610,17 @@ function CheckoutPage() {
                       {rateRefreshing ? "Refreshing" : "Refresh quote"}
                     </button>
                   </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === "venmo" && (
+                    <VenmoPaymentBlock
+                      amount={totalAfterDiscount}
+                      orderNumber={orderReference}
+                      copied={copied}
+                      onCopy={copyVal}
+                    />
+                  )}
                 </div>
               </Review>
             </Panel>
