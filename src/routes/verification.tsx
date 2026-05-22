@@ -7,7 +7,7 @@ export const Route = createFileRoute("/verification")({
   head: () => ({
     meta: [
       { title: "How we verify every lot — VERATIS" },
-      { name: "description", content: "Plain-language explanation of how VERATIS verifies every research-peptide lot — independent testing by Northbridge Analytical, what each COA covers, retention, and the permanent archive." },
+      { name: "description", content: "Plain-language explanation of how VERATIS verifies every research-peptide lot — independent testing by Janoshik Labs, what each COA covers, retention, and the permanent archive." },
       { property: "og:title", content: "How we verify every lot — VERATIS" },
       { property: "og:description", content: "Independent ISO 17025 testing, what every certificate of analysis covers, lot retention, and the permanent public archive." },
       { property: "og:url", content: "https://veratisbio.com/verification" },
