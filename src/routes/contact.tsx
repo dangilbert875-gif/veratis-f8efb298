@@ -379,10 +379,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
+      <label htmlFor={`field-${name}`} className="block mb-2 text-xs font-mono uppercase tracking-[0.18em] text-muted-foreground">
         {label} {required && <span className="text-destructive">*</span>}
       </label>
       <input
+        id={`field-${name}`}
+        aria-label={label}
         name={name}
         required={required}
         type={type}
