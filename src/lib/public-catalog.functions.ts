@@ -126,11 +126,55 @@ export const lookupPublicLot = createServerFn({ method: "POST" })
       .is("products.archived_at", null)
       .maybeSingle();
     if (error) throw new Error(error.message);
+
+    // Fallback: mirror listPublicLots — if no formally released lot row
+    // exists but the lot identifier matches a currently published product's
+    // own lot_number, surface that product so the archive and the verify
+    // lookup stay in sync.
+    let result: any = row;
+    if (!result) {
+      const { data: product, error: prodErr } = await supabaseAdmin
+        .from("products")
+        .select(
+          "id, slug, name, lot_number, purity, endotoxin, status, archived_at",
+        )
+        .ilike("lot_number", q)
+        .eq("status", "published")
+        .is("archived_at", null)
+        .maybeSingle();
+      if (prodErr) throw new Error(prodErr.message);
+      if (product) {
+        result = {
+          id: product.id,
+          lot_number: product.lot_number ?? q,
+          product_id: product.id,
+          purity: product.purity ?? null,
+          identity_status: null,
+          identity_method: null,
+          water_content: null,
+          endotoxin: product.endotoxin ?? null,
+          release_date: null,
+          best_before: null,
+          lab_partner: null,
+          tested_by: null,
+          coa_url: null,
+          coa_download_enabled: false,
+          status: null,
+          products: {
+            name: product.name,
+            slug: product.slug,
+            status: "published",
+            archived_at: null,
+          },
+        };
+      }
+    }
+
     // Best-effort verification log (anonymous)
     try {
       await supabaseAdmin.from("verification_logs").insert({ lot_number: q });
     } catch {}
-    return row;
+    return result;
   });
 
 /** Public lot lookup by product (for product detail pages). */
