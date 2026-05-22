@@ -112,6 +112,25 @@ function shipAddress(o: any) {
   return parts.join(", ");
 }
 
+function countryFlag(code?: string | null) {
+  if (!code) return "";
+  const c = code.trim().toUpperCase();
+  if (c.length !== 2 || !/^[A-Z]{2}$/.test(c)) return "";
+  return String.fromCodePoint(...[...c].map((ch) => 0x1f1e6 + ch.charCodeAt(0) - 65));
+}
+
+function itemCount(o: any) {
+  const items = Array.isArray(o.items) ? o.items : [];
+  return items.reduce((s: number, it: any) => s + Number(it?.quantity ?? it?.qty ?? 1), 0);
+}
+
+function itemSummary(o: any) {
+  const items = Array.isArray(o.items) ? o.items : [];
+  return items
+    .map((it: any) => `${it?.quantity ?? it?.qty ?? 1}× ${it?.product_name ?? it?.name ?? "Item"}`)
+    .join("\n");
+}
+
 function deriveAlerts(o: any) {
   const out: string[] = [];
   const now = Date.now();
@@ -157,6 +176,10 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [detailId, setDetailId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<25|50|100>(50);
+
+  useEffect(() => { setPage(1); }, [q, paymentFilter, fulfillmentFilter, quickFilter, sort, pageSize]);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
@@ -303,34 +326,85 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
 
   return (
     <div className="space-y-5" onClick={() => menuOpen && setMenuOpen(null)}>
-      {/* Health strip */}
+      {/* Health strip — clickable filter chips */}
       <div className="grid grid-cols-2 sm:grid-cols-5 border border-ink/10">
-        {[
-          ["Total", counts.total],
-          ["Awaiting payment", counts.awaiting],
-          ["Unshipped paid", counts.unshipped],
-          ["Flagged", counts.flagged],
-          ["Active alerts", counts.alerts],
-        ].map(([label, value], i) => (
-          <div key={i} className={`p-4 ${i > 0 ? "border-l border-ink/10" : ""} ${i >= 2 ? "border-t sm:border-t-0" : ""}`}>
-            <div className="text-[9.5px] tracking-[0.28em] uppercase text-foreground/55">{label}</div>
-            <div className="mt-1.5 text-[22px] font-medium tabular-nums text-ink">{value as number}</div>
-          </div>
-        ))}
+        {([
+          ["Total",            counts.total,     "all"],
+          ["Awaiting payment", counts.awaiting,  "unpaid"],
+          ["Unshipped paid",   counts.unshipped, "unshipped"],
+          ["Flagged",          counts.flagged,   "flagged"],
+          ["Active alerts",    counts.alerts,    "all"],
+        ] as const).map(([label, value, qf], i) => {
+          const active = quickFilter === qf && qf !== "all" ? true : (qf === "all" && quickFilter === "all" && label === "Total");
+          return (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setQuickFilter(qf as any)}
+              className={`text-left p-4 transition-colors hover:bg-mist/30 ${i > 0 ? "border-l border-ink/10" : ""} ${i >= 2 ? "border-t sm:border-t-0" : ""} ${active ? "bg-mist/40" : ""}`}
+            >
+              <div className="text-[9.5px] tracking-[0.28em] uppercase text-foreground/55">{label}</div>
+              <div className="mt-1.5 text-[22px] font-medium tabular-nums text-ink">{value as number}</div>
+            </button>
+          );
+        })}
       </div>
 
       <Card
         title="Order management"
         hint="Payment reconciliation · fulfillment workflow · operational notes"
       >
-        {/* Export action */}
-        <div className="px-5 py-2.5 border-b border-ink/10 flex justify-end">
+        {/* Toolbar: search + filters + sort + export */}
+        <div className="px-5 py-2.5 border-b border-ink/10 flex flex-wrap items-center gap-2">
+          <input
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search order #, email, name, tracking, tx…"
+            className="h-8 flex-1 min-w-[220px] border border-ink/15 bg-background px-2.5 text-[12px] placeholder:text-foreground/35 focus:outline-none focus:border-ink/40"
+          />
+          <select
+            value={paymentFilter}
+            onChange={(e) => setPaymentFilter(e.target.value)}
+            className="h-8 border border-ink/15 bg-background px-2 text-[11px] uppercase tracking-[0.1em] text-foreground/70"
+          >
+            <option value="all">All payment</option>
+            {PAYMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+          </select>
+          <select
+            value={fulfillmentFilter}
+            onChange={(e) => setFulfillmentFilter(e.target.value)}
+            className="h-8 border border-ink/15 bg-background px-2 text-[11px] uppercase tracking-[0.1em] text-foreground/70"
+          >
+            <option value="all">All fulfillment</option>
+            {FULFILLMENT_STATUSES.map((s) => <option key={s} value={s}>{humanize(s)}</option>)}
+          </select>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as any)}
+            className="h-8 border border-ink/15 bg-background px-2 text-[11px] uppercase tracking-[0.1em] text-foreground/70"
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="value">Highest value</option>
+            <option value="awaiting">Awaiting first</option>
+            <option value="priority">Alerts first</option>
+          </select>
+          {(q || paymentFilter !== "all" || fulfillmentFilter !== "all" || quickFilter !== "all" || sort !== "newest") && (
+            <button
+              type="button"
+              onClick={() => { setQ(""); setPaymentFilter("all"); setFulfillmentFilter("all"); setQuickFilter("all"); setSort("newest"); }}
+              className="text-[10px] tracking-[0.16em] uppercase text-foreground/50 hover:text-ink"
+            >
+              Clear
+            </button>
+          )}
           <GhostButton onClick={exportCsv} className="!h-8 !text-[10.5px]">Export CSV</GhostButton>
         </div>
 
         {/* Bulk bar */}
         {selected.size > 0 && (
-          <div className="px-5 py-2.5 bg-mist/40 border-b border-ink/10 flex flex-wrap items-center gap-2 text-[11px]">
+          <div className="sticky top-0 z-10 px-5 py-2.5 bg-mist/60 backdrop-blur border-b border-ink/15 flex flex-wrap items-center gap-2 text-[11px]">
             <span className="text-foreground/70 tracking-[0.14em] uppercase text-[10.5px]">
               {selected.size} selected
             </span>
@@ -371,6 +445,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                   </th>
                   <th className="text-left font-medium px-4 py-2.5">Order</th>
                   <th className="text-left font-medium px-4 py-2.5">Customer</th>
+                  <th className="text-left font-medium px-4 py-2.5">Items</th>
                   <th className="text-left font-medium px-4 py-2.5">Payment</th>
                   <th className="text-left font-medium px-4 py-2.5">Fulfillment</th>
                   <th className="text-right font-medium px-4 py-2.5">Total</th>
@@ -381,7 +456,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((o: any) => {
+                {filtered.slice((page - 1) * pageSize, page * pageSize).map((o: any) => {
                   const alerts = deriveAlerts(o);
                   return (
                     <tr
@@ -396,6 +471,16 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                       <td className="px-4 py-3">
                         <div className="text-ink">{o.customer_name || o.customer_email}</div>
                         {o.customer_name && <div className="text-[10.5px] text-foreground/50">{o.customer_email}</div>}
+                      </td>
+                      <td className="px-4 py-3">
+                        {itemCount(o) > 0 ? (
+                          <span
+                            className="inline-flex items-center gap-1 border border-ink/15 px-1.5 py-0.5 text-[10.5px] tracking-[0.1em] uppercase text-foreground/70 bg-mist/20"
+                            title={itemSummary(o)}
+                          >
+                            {itemCount(o)} <span className="text-foreground/45">item{itemCount(o) === 1 ? "" : "s"}</span>
+                          </span>
+                        ) : <span className="text-foreground/30 text-[11px]">—</span>}
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <InlineStatusSelect
@@ -415,7 +500,12 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums">{formatUSD(o.total_usd)}</td>
                       <td className="px-4 py-3 text-foreground/65 text-[11.5px]">
-                        {o.shipping_city ? `${o.shipping_city}${o.shipping_state ? ", " + o.shipping_state : ""}` : "—"}
+                        {o.shipping_city ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            {countryFlag(o.shipping_country) && <span aria-hidden>{countryFlag(o.shipping_country)}</span>}
+                            <span>{o.shipping_city}{o.shipping_state ? `, ${o.shipping_state}` : ""}</span>
+                          </span>
+                        ) : "—"}
                       </td>
                       <td className="px-4 py-3 text-foreground/60">{formatDate(o.created_at)}</td>
                       <td className="px-4 py-3">
@@ -465,6 +555,35 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                 })}
               </tbody>
             </table>
+            {/* Pagination */}
+            {filtered.length > 0 && (
+              <div className="px-5 py-2.5 border-t border-ink/10 flex flex-wrap items-center justify-between gap-3 text-[11px] text-foreground/65">
+                <div className="tabular-nums">
+                  {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} of {filtered.length}
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={pageSize}
+                    onChange={(e) => setPageSize(Number(e.target.value) as 25|50|100)}
+                    className="h-7 border border-ink/15 bg-background px-2 text-[10.5px] uppercase tracking-[0.1em]"
+                  >
+                    {[25, 50, 100].map((n) => <option key={n} value={n}>{n} / page</option>)}
+                  </select>
+                  <button
+                    type="button"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="h-7 px-2 border border-ink/15 disabled:opacity-30 text-[10.5px] uppercase tracking-[0.1em] hover:bg-mist/30"
+                  >Prev</button>
+                  <button
+                    type="button"
+                    disabled={page * pageSize >= filtered.length}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="h-7 px-2 border border-ink/15 disabled:opacity-30 text-[10.5px] uppercase tracking-[0.1em] hover:bg-mist/30"
+                  >Next</button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Card>
