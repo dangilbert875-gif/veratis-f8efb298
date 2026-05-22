@@ -44,9 +44,12 @@ function ThankYouPage() {
               Your order has been placed
             </h1>
             <p className="text-[13px] text-foreground/70 max-w-xl mx-auto leading-relaxed">
-              We've received your order and your proof of payment. Our team will verify
-              the Bitcoin transaction on-chain and dispatch your specimens within 48 hours
-              of confirmation.
+              We've received your order and your proof of payment.{" "}
+              {(data as any)?.payment_method === "venmo"
+                ? "We've received your Venmo payment submission and will verify it shortly."
+                : "We've received your payment and are verifying it on-chain now."}{" "}
+              Please take a screenshot of this page for your records — you'll receive
+              a confirmation email within 48 hours once your order ships.
             </p>
           </div>
           <div className="inline-flex items-center gap-3 px-5 py-2.5 border border-border rounded-[3px] bg-mist/40">
@@ -131,7 +134,9 @@ function ThankYouPage() {
             <Step
               icon={<Clock size={14} strokeWidth={1.5} />}
               title="Payment verification"
-              body="We confirm your Bitcoin transaction on-chain — typically within 1–3 hours, depending on network congestion."
+              body={(data as any)?.payment_method === "venmo"
+                ? "We match your Venmo payment against your Order # — typically within a few hours during business hours."
+                : "We confirm your Bitcoin transaction on-chain — typically within 1–3 hours, depending on network congestion."}
             />
             <Step
               icon={<Package size={14} strokeWidth={1.5} />}
