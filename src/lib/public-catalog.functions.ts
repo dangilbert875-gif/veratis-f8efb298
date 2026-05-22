@@ -196,3 +196,36 @@ export const listPublicLotsForProduct = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return rows ?? [];
   });
+
+/**
+ * Public COA download — returns a short-lived signed URL for a lot's COA
+ * file, but only when the lot is released, publicly visible, and the COA
+ * download is enabled. Lets the public Verify page download the actual
+ * uploaded PDF/JPG/PNG without exposing the private bucket.
+ */
+export const getPublicCoaSignedUrl = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ lot_number: z.string().min(1).max(128) }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const q = data.lot_number.trim();
+    if (!q) return null;
+    const { data: row, error } = await supabaseAdmin
+      .from("product_lots")
+      .select("coa_url, status, public_visible, coa_download_enabled, archived_at")
+      .ilike("lot_number", q)
+      .is("archived_at", null)
+      .eq("status", "released")
+      .eq("public_visible", true)
+      .eq("coa_download_enabled", true)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row?.coa_url) return null;
+
+    const path = String(row.coa_url);
+    const { data: signed, error: sErr } = await supabaseAdmin.storage
+      .from("coa-pdfs")
+      .createSignedUrl(path, 300);
+    if (sErr) throw new Error(sErr.message);
+    return { url: signed.signedUrl, path };
+  });
