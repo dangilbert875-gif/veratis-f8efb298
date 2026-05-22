@@ -5,7 +5,7 @@ import { useCatalog, deriveCategories } from "@/lib/use-catalog";
 import { batches, labPartner } from "@/data/batches";
 import { useEffect, useState } from "react";
 import { BatchVerify } from "@/components/site/BatchVerify";
-import { Info, Scale, Target, MessagesSquare, ArrowRight, ChevronDown, X } from "lucide-react";
+import { Info, Scale, Target, MessagesSquare, ArrowRight, ChevronDown, X, Search, ShieldCheck } from "lucide-react";
 import type { Product } from "@/data/products";
 
 // Subtle category accent colors — 6px top-left bar on each card
@@ -50,7 +50,7 @@ function stockForSlug(slug: string): { state: "in_stock" | "low" | "last3"; coun
   for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
   const bucket = h % 10;
   if (bucket === 0) return { state: "last3" };
-  if (bucket <= 2) return { state: "low", count: 4 + (h % 4) };
+  if (bucket <= 2) return { state: "low", count: 2 + (h % 4) }; // 2–5 left
   return { state: "in_stock" };
 }
 
@@ -101,11 +101,30 @@ function ShopPage() {
   const [filter, setFilter] = useState<string>(initial);
   const [sort, setSort] = useState<SortKey>("featured");
   const [verifyOpenMobile, setVerifyOpenMobile] = useState(false);
+  const [query, setQuery] = useState("");
+  const [priceMax, setPriceMax] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState(12);
   useEffect(() => {
     setFilter(initial);
   }, [initial]);
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [filter, sort, query, priceMax]);
 
-  const baseFiltered = filter === "All" ? products : products.filter((p) => p.category === filter);
+  // Price ceiling for the slider — round up to a nice number
+  const maxPrice = Math.max(0, ...products.map((p) => p.price));
+  const priceCeiling = Math.max(50, Math.ceil(maxPrice / 50) * 50);
+
+  const q = query.trim().toLowerCase();
+  const baseFiltered = products.filter((p) => {
+    if (filter !== "All" && p.category !== filter) return false;
+    if (priceMax !== null && p.price > priceMax) return false;
+    if (q) {
+      const hay = `${p.name} ${p.slug} ${p.lot} ${p.category}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
   const filtered = [...baseFiltered].sort((a, b) => {
     switch (sort) {
       case "price-asc": return a.price - b.price;
@@ -115,6 +134,22 @@ function ShopPage() {
       default: return 0;
     }
   });
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = filtered.length > visibleCount;
+
+  const activeFilters: Array<{ key: string; label: string; clear: () => void }> = [];
+  if (filter !== "All") activeFilters.push({ key: "cat", label: filter, clear: () => setFilter("All") });
+  if (q) activeFilters.push({ key: "q", label: `“${query}”`, clear: () => setQuery("") });
+  if (priceMax !== null) activeFilters.push({ key: "price", label: `≤ $${priceMax}`, clear: () => setPriceMax(null) });
+  if (sort !== "featured") activeFilters.push({ key: "sort", label: `Sort: ${sort.replace("-", " ")}`, clear: () => setSort("featured") });
+
+  function clearAll() {
+    setFilter("All");
+    setQuery("");
+    setPriceMax(null);
+    setSort("featured");
+  }
+
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
 
   // Cheapest $/mg across the catalog for the "Best value" badge
@@ -137,6 +172,33 @@ function ShopPage() {
         title="Catalog of compounds."
         lead="Every entry below is produced under the same lyophilization, sealing, and verification protocol. Each vial carries a unique lot number traceable to an independent certificate of analysis."
       />
+
+      {/* Hero trust stat — mean purity promoted to top of catalog */}
+      <section className="border-y border-border bg-mist/25">
+        <div className="mx-auto max-w-7xl px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-baseline gap-5">
+            <span className="font-display text-[3rem] md:text-[3.75rem] leading-none text-ink tabular-nums">
+              {avgPurity}%
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+                Mean purity · entire catalog
+              </p>
+              <p className="mt-1 text-[13px] text-muted-foreground leading-snug max-w-md">
+                HPLC-verified across {batches.length} lots by {labPartner.name}.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/verify"
+            className="self-start md:self-auto inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
+          >
+            <ShieldCheck size={13} strokeWidth={1.5} />
+            Verify any lot in under 1 second
+            <ArrowRight size={12} />
+          </Link>
+        </div>
+      </section>
 
       {/* Mobile-only sticky verify banner */}
       <div className="md:hidden sticky top-0 z-30 border-b border-border bg-background">
@@ -205,10 +267,22 @@ function ShopPage() {
           <div className="lg:col-span-9">
             {/* Filter chips + sort */}
             <div className="mb-10 md:mb-12 pb-5 border-b border-border">
+              {/* Search bar */}
+              <div className="mb-4 relative max-w-md">
+                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/45" />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search compound or lot number…"
+                  className="w-full h-11 pl-10 pr-3 rounded-[3px] border border-border bg-background text-[13px] text-ink placeholder:text-foreground/40 focus:outline-none focus:border-ink/50 transition"
+                />
+              </div>
+
               {/* Chip row — horizontal scroll on mobile with fade edges */}
               <div className="relative -mx-1">
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 px-1 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
-                  {["All", ...ALL_CATEGORIES].map((c) => {
+                  {["All", ...ALL_CATEGORIES.filter((c) => products.some((p) => p.category === c))].map((c) => {
                     const active = filter === c;
                     const count = c === "All" ? products.length : products.filter((p) => p.category === c).length;
                     return (
@@ -234,6 +308,27 @@ function ShopPage() {
                 <div aria-hidden className="md:hidden absolute right-0 top-0 bottom-1 w-6 bg-gradient-to-l from-background to-transparent pointer-events-none" />
               </div>
 
+              {/* Price range */}
+              <div className="mt-5 flex flex-wrap items-center gap-3">
+                <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">Max price</span>
+                <input
+                  type="range"
+                  min={50}
+                  max={priceCeiling}
+                  step={25}
+                  value={priceMax ?? priceCeiling}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setPriceMax(v >= priceCeiling ? null : v);
+                  }}
+                  className="flex-1 min-w-[160px] max-w-xs accent-ink"
+                  aria-label="Maximum price filter"
+                />
+                <span className="text-[11px] font-mono tabular-nums text-ink">
+                  ${priceMax ?? priceCeiling}{priceMax === null ? " (any)" : ""}
+                </span>
+              </div>
+
               {/* Sort + result count */}
               <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 tabular-nums">
@@ -257,6 +352,32 @@ function ShopPage() {
                   </div>
                 </label>
               </div>
+
+              {/* Active filter chips + Clear all */}
+              {activeFilters.length > 0 ? (
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  {activeFilters.map((f) => (
+                    <button
+                      key={f.key}
+                      type="button"
+                      onClick={f.clear}
+                      className="inline-flex items-center gap-1.5 h-7 pl-2.5 pr-2 rounded-full border border-border bg-mist/40 text-[11px] text-foreground/75 hover:text-ink hover:border-ink/30 transition"
+                    >
+                      {f.label}
+                      <X size={11} strokeWidth={1.75} />
+                    </button>
+                  ))}
+                  {activeFilters.length > 1 ? (
+                    <button
+                      type="button"
+                      onClick={clearAll}
+                      className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55 hover:text-ink transition px-1"
+                    >
+                      Clear all
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
 
             {/* Product grid OR empty state */}
@@ -264,7 +385,7 @@ function ShopPage() {
               <EmptyCategory category={filter} />
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-x-5 sm:gap-x-8 gap-y-12 sm:gap-y-16">
-                {filtered.map((p) => {
+                {visible.map((p) => {
                   const stock = stockForSlug(p.slug);
                   return (
                     <ProductCard
@@ -283,6 +404,21 @@ function ShopPage() {
                 })}
               </div>
             )}
+
+            {hasMore ? (
+              <div className="mt-12 flex flex-col items-center gap-3">
+                <p className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55 tabular-nums">
+                  Showing {visible.length} of {filtered.length}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((n) => n + 12)}
+                  className="inline-flex items-center gap-2 h-12 px-6 border border-ink/20 rounded-[3px] text-[11px] font-medium uppercase tracking-[0.22em] text-ink bg-background hover:bg-ink hover:text-background hover:border-ink transition"
+                >
+                  Load more <ArrowRight size={13} />
+                </button>
+              </div>
+            ) : null}
 
             {loading && source === "fallback" && (
               <p className="mt-10 text-center text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/45">
