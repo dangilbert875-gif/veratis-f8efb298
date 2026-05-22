@@ -697,14 +697,15 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   </SelectInput>
                 </Field>
                 <Field label="BTC owed at checkout">
-                  <TextInput
-                    type="number"
-                    step="0.00000001"
-                    value={form.btc_amount ?? ""}
-                    onChange={(e) => set("btc_amount", e.target.value)}
-                    className="font-mono !text-[11.5px]"
-                    placeholder="Quoted to customer at checkout"
-                  />
+                  <div className="rounded-md border border-line bg-mist/30 px-3 py-2 font-mono text-[12px] text-ink">
+                    {o.btc_amount != null && Number(o.btc_amount) > 0
+                      ? `${Number(o.btc_amount).toFixed(8)} BTC`
+                      : "—"}
+                  </div>
+                  <p className="mt-1 text-[10px] text-ink-soft">
+                    BTC total quoted to the customer at checkout. Verify their
+                    proof of payment matches this amount.
+                  </p>
                 </Field>
                 <Field label="BTC confirmations">
                   <TextInput
