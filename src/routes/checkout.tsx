@@ -3,12 +3,17 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
+import { createCheckoutOrder, getBtcUsdRate, reserveOrderNumber, validatePromoCode } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
+import { QRCodeSVG } from "qrcode.react";
 
 const BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
+const VENMO_HANDLE = "Veratis";
+const VENMO_DEEPLINK = `https://venmo.com/${VENMO_HANDLE}`;
+
+type PaymentMethod = "btc" | "venmo";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -64,11 +69,19 @@ function CheckoutPage() {
 
   const fetchRate = useServerFn(getBtcUsdRate);
   const checkPromo = useServerFn(validatePromoCode);
+  const reserveNum = useServerFn(reserveOrderNumber);
   const [btcRate, setBtcRate] = useState<number | null>(null);
   const [rateFetchedAt, setRateFetchedAt] = useState<string | null>(null);
-  const [copied, setCopied] = useState<"addr" | "amt" | null>(null);
+  const [copied, setCopied] = useState<"addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder" | null>(null);
   const [rateRefreshing, setRateRefreshing] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+
+  // Payment method (Bitcoin or Venmo)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("btc");
+
+  // Real, pre-reserved order number issued at Step 3 so the customer can
+  // include it in the Venmo note before the order row is created.
+  const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(null);
 
   // Draft order reference shown to the buyer for support purposes before the
   // real order_number is issued on submit. Persisted for the tab session.
@@ -214,11 +227,42 @@ function CheckoutPage() {
     return `${mm}:${ss}`;
   })();
   const btcAmount = btcRate && totalAfterDiscount > 0 ? (totalAfterDiscount / btcRate).toFixed(8) : null;
-  function copyVal(kind: "addr" | "amt", value: string) {
+  function copyVal(
+    kind: "addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder",
+    value: string,
+  ) {
     navigator.clipboard?.writeText(value);
     setCopied(kind);
     setTimeout(() => setCopied(null), 1400);
   }
+
+  // Reserve a real order number the first time the user lands on Step 3.
+  // Cached in sessionStorage so a reload / step navigation doesn't burn a
+  // new sequence value.
+  useEffect(() => {
+    if (step !== 3) return;
+    if (reservedOrderNumber) return;
+    const key = "veratis:checkout:reserved-order-number";
+    const cached = typeof window !== "undefined" ? window.sessionStorage.getItem(key) : null;
+    if (cached) {
+      setReservedOrderNumber(cached);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await reserveNum();
+        if (cancelled) return;
+        setReservedOrderNumber(r.order_number);
+        try { window.sessionStorage.setItem(key, r.order_number); } catch {}
+      } catch {
+        // Falls back to draftRef in the UI if reservation fails.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [step, reservedOrderNumber, reserveNum]);
+
+  const orderReference = reservedOrderNumber || draftRef;
 
   if (items.length === 0) {
     return (
@@ -294,9 +338,13 @@ function CheckoutPage() {
           payment_proof_url: proofUrl,
           payment_tx_id: txId.trim() || null,
           promo_code: promo?.code ?? null,
+          payment_method: paymentMethod,
+          order_number: reservedOrderNumber,
         },
       });
       clear();
+      try { window.sessionStorage.removeItem("veratis:checkout:reserved-order-number"); } catch {}
+      try { window.sessionStorage.removeItem("veratis:checkout:draft-ref"); } catch {}
       navigate({ to: "/checkout/thank-you/$orderNumber", params: { orderNumber: res.order_number } });
     } catch (e: any) {
       setError(e?.message || "Could not place order. Please try again.");
@@ -392,11 +440,13 @@ function CheckoutPage() {
           {step === 3 && (
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Reference (pre-payment)</p>
-                <p className="mt-0.5 font-mono text-[12.5px] text-ink tabular-nums">{draftRef}</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+                  — Order # (include in payment)
+                </p>
+                <p className="mt-0.5 font-mono text-[13px] text-ink tabular-nums">{orderReference}</p>
               </div>
               <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 max-w-[260px] text-right">
-                Quote this if you need support before the payment confirms.
+                Reference this number in your Venmo note or for any support inquiries.
               </p>
             </div>
           )}
@@ -462,7 +512,27 @@ function CheckoutPage() {
                 )}
               </Review>
               <Review label="Payment method">
-                <div className="space-y-4">
+                <div className="space-y-5">
+                  {/* Selector */}
+                  <div className="grid sm:grid-cols-2 gap-2.5">
+                    <PaymentOptionCard
+                      selected={paymentMethod === "btc"}
+                      onSelect={() => setPaymentMethod("btc")}
+                      title="Bitcoin"
+                      subtitle="On-chain · ~1–3 hr confirm"
+                      icon={<Bitcoin size={18} strokeWidth={1.6} className="text-[#f7931a]" />}
+                    />
+                    <PaymentOptionCard
+                      selected={paymentMethod === "venmo"}
+                      onSelect={() => setPaymentMethod("venmo")}
+                      title="Venmo"
+                      subtitle="USD · @Veratis"
+                      icon={<VenmoLogo />}
+                    />
+                  </div>
+
+                  {paymentMethod === "btc" && (
+                    <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Bitcoin size={14} className="text-ink/70" strokeWidth={1.5} />
                     <p>Bitcoin (BTC)</p>
@@ -540,6 +610,17 @@ function CheckoutPage() {
                       {rateRefreshing ? "Refreshing" : "Refresh quote"}
                     </button>
                   </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === "venmo" && (
+                    <VenmoPaymentBlock
+                      amount={totalAfterDiscount}
+                      orderNumber={orderReference}
+                      copied={copied}
+                      onCopy={copyVal}
+                    />
+                  )}
                 </div>
               </Review>
             </Panel>
@@ -678,14 +759,22 @@ function CheckoutPage() {
             </div>
             <div className="px-6 py-5 space-y-5">
               <p className="text-[12.5px] text-foreground/75 leading-relaxed">
-                Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.
+                {paymentMethod === "venmo"
+                  ? <>Attach a screenshot of your completed Venmo payment showing the amount, recipient <span className="font-mono text-ink">@{VENMO_HANDLE}</span>, and your Order&nbsp;# in the note. A transaction ID is optional.</>
+                  : <>Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.</>}
               </p>
 
               <div>
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Screenshot</p>
                 {proofPreview ? (
                   <div className="relative border border-border rounded-[3px] overflow-hidden bg-mist/30">
-                    <img src={proofPreview} alt="Proof preview" className="w-full max-h-64 object-contain" />
+                    {proofFile?.type === "application/pdf" ? (
+                      <div className="w-full h-48 flex items-center justify-center text-[11px] font-mono uppercase tracking-[0.18em] text-foreground/65">
+                        — PDF attached · {proofFile.name}
+                      </div>
+                    ) : (
+                      <img src={proofPreview} alt="Proof preview" className="w-full max-h-64 object-contain" />
+                    )}
                     <button
                       type="button"
                       onClick={() => onPickFile(null)}
@@ -698,10 +787,10 @@ function CheckoutPage() {
                   <label className="flex flex-col items-center justify-center gap-2 px-4 py-8 border border-dashed border-border rounded-[3px] bg-mist/30 cursor-pointer hover:border-ink/40 transition-colors">
                     <ImageIcon size={18} className="text-foreground/55" strokeWidth={1.5} />
                     <span className="text-[12px] text-foreground/70">Click to upload an image</span>
-                    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/45">PNG · JPG · up to 10MB</span>
+                    <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/45">PNG · JPG · PDF · up to 10MB</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf"
                       className="hidden"
                       onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
                     />
@@ -816,5 +905,155 @@ function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) 
         );
       })}
     </ol>
+  );
+}
+
+function VenmoLogo({ size = 18 }: { size?: number }) {
+  return (
+    <span
+      style={{ width: size, height: size }}
+      className="inline-flex items-center justify-center rounded-[4px] bg-[#3D95CE] text-white font-bold leading-none"
+    >
+      <span style={{ fontSize: size * 0.7 }} className="font-display italic">V</span>
+    </span>
+  );
+}
+
+function PaymentOptionCard({
+  selected,
+  onSelect,
+  title,
+  subtitle,
+  icon,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-[3px] border text-left transition-all ${
+        selected
+          ? "border-ink bg-mist/60 ring-1 ring-ink/40"
+          : "border-border bg-background hover:border-ink/40"
+      }`}
+    >
+      <span className="shrink-0">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12.5px] text-ink">{title}</span>
+        <span className="block text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-0.5 truncate">
+          {subtitle}
+        </span>
+      </span>
+      <span
+        className={`shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full border ${
+          selected ? "bg-ink border-ink" : "border-border bg-background"
+        }`}
+      >
+        {selected && <span className="w-1.5 h-1.5 rounded-full bg-background" />}
+      </span>
+    </button>
+  );
+}
+
+function VenmoPaymentBlock({
+  amount,
+  orderNumber,
+  copied,
+  onCopy,
+}: {
+  amount: number;
+  orderNumber: string;
+  copied: "addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder" | null;
+  onCopy: (kind: "venmoHandle" | "venmoAmt" | "venmoOrder", value: string) => void;
+}) {
+  const amountStr = amount.toFixed(2);
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <VenmoLogo size={16} />
+        <p>Venmo payment</p>
+      </div>
+      <p className="text-foreground/75 text-[12px] leading-relaxed">
+        Send{" "}
+        <strong className="text-ink font-mono">${amountStr} USD</strong> to{" "}
+        <strong className="text-ink font-mono">@{VENMO_HANDLE}</strong> on Venmo. You{" "}
+        <strong className="text-ink">must</strong> include your Order # in the payment note — do not include any other information.
+      </p>
+
+      {/* Handle */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Venmo handle</p>
+        <button
+          type="button"
+          onClick={() => onCopy("venmoHandle", `@${VENMO_HANDLE}`)}
+          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+        >
+          <span className="text-[13px] text-ink font-mono">@{VENMO_HANDLE}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+            {copied === "venmoHandle" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
+          </span>
+        </button>
+      </div>
+
+      {/* Amount */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Exact amount (USD)</p>
+        <button
+          type="button"
+          onClick={() => onCopy("venmoAmt", amountStr)}
+          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+        >
+          <span className="text-[13px] text-ink font-mono tabular-nums">${amountStr}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+            {copied === "venmoAmt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
+          </span>
+        </button>
+      </div>
+
+      {/* Order # */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Order # (paste into Venmo note)</p>
+        <button
+          type="button"
+          onClick={() => onCopy("venmoOrder", orderNumber)}
+          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-ink/60 rounded-[3px] bg-mist/50 hover:bg-mist/70 transition-colors text-left"
+        >
+          <span className="text-[13px] text-ink font-mono tabular-nums">{orderNumber}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+            {copied === "venmoOrder" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
+          </span>
+        </button>
+      </div>
+
+      {/* QR */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan Venmo QR code</p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
+            <QRCodeSVG
+              value={VENMO_DEEPLINK}
+              size={140}
+              level="M"
+              marginSize={0}
+            />
+          </div>
+          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1">
+            Scan with your Venmo app or tap the handle above to copy. The QR opens the{" "}
+            <span className="font-mono text-ink">@{VENMO_HANDLE}</span> Venmo profile.
+          </p>
+        </div>
+      </div>
+
+      <p className="flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
+        <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
+        Include your Order # in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
+      </p>
+    </div>
   );
 }
