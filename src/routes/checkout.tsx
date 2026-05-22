@@ -1079,9 +1079,11 @@ function VenmoPaymentBlock({
         </div>
       </div>
 
-      <p className="flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
-        <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
-        Include <span className="font-mono">Order #{orderNumber}</span> in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
+      <p className="flex items-start gap-2 text-[12px] leading-relaxed text-amber-800">
+        <AlertTriangle size={14} strokeWidth={1.6} className="mt-[2px] shrink-0" />
+        <span>
+          Include <span className="font-mono text-ink">Order #{orderNumber}</span> in the Venmo note only. Do not include any other text. Payments without an order number may be delayed.
+        </span>
       </p>
     </div>
   );
