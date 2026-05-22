@@ -403,13 +403,16 @@ export const listReferrals = createServerFn({ method: "GET" })
 
 const referralInput = z.object({
   id: z.string().uuid().optional(),
-  partner_id: z.string().uuid(),
+  partner_id: z.string().uuid().nullable().optional(),
   code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/),
   label: z.string().max(128).nullable().optional(),
-  clicks: z.number().int().min(0),
-  conversions: z.number().int().min(0),
-  revenue_usd: z.number().min(0),
-  commission_rate: z.number().min(0).max(1),
+  clicks: z.number().int().min(0).optional(),
+  conversions: z.number().int().min(0).optional(),
+  revenue_usd: z.number().min(0).optional(),
+  commission_rate: z.number().min(0).max(1).optional(),
+  discount_type: z.enum(["percent", "fixed"]),
+  discount_amount: z.number().min(0),
+  active: z.boolean().optional(),
 });
 
 export const upsertReferral = createServerFn({ method: "POST" })
@@ -418,7 +421,9 @@ export const upsertReferral = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
-    const { error } = await supabase.from("referrals").upsert(data);
+    const payload: any = { ...data };
+    if (!payload.partner_id) delete payload.partner_id;
+    const { error } = await supabase.from("referrals").upsert(payload);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
