@@ -469,6 +469,23 @@ function CheckoutPage() {
             </Panel>
           )}
 
+          {step === 3 && (
+            <div className="mt-6 border border-amber-200/70 bg-amber-50/40 rounded-[3px] p-5">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={researchAffirmed}
+                  onChange={(e) => setResearchAffirmed(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-amber-700/40 text-ink focus:ring-ink/30 accent-ink"
+                />
+                <span className="text-[12.5px] text-foreground/85 leading-relaxed">
+                  <span className="block text-[10.5px] font-mono uppercase tracking-[0.18em] text-amber-900 mb-1">— Required research-use affirmation</span>
+                  I confirm these products are purchased strictly for laboratory research use, will not be administered to humans or animals, and that I am a qualified researcher or affiliated with a research institution.
+                </span>
+              </label>
+            </div>
+          )}
+
           {error && (
             <p className="mt-4 text-[12px] text-red-700 font-mono">{error}</p>
           )}
@@ -503,8 +520,9 @@ function CheckoutPage() {
                     <Upload size={14} /> I've sent payment — upload proof
                   </button>
                 ) : (
-                  <button onClick={placeOrder} disabled={submitting}
-                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60">
+                  <button onClick={placeOrder} disabled={submitting || !researchAffirmed}
+                    title={!researchAffirmed ? "Confirm the research-use affirmation to place your order" : undefined}
+                    className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
                     {submitting ? "Placing order…" : "Place order"} {!submitting && <ArrowRight size={14} />}
                   </button>
                 )}
