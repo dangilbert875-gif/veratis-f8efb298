@@ -907,3 +907,153 @@ function StepRail({ step, onJump }: { step: Step; onJump?: (n: Step) => void }) 
     </ol>
   );
 }
+
+function VenmoLogo({ size = 18 }: { size?: number }) {
+  return (
+    <span
+      style={{ width: size, height: size }}
+      className="inline-flex items-center justify-center rounded-[4px] bg-[#3D95CE] text-white font-bold leading-none"
+    >
+      <span style={{ fontSize: size * 0.7 }} className="font-display italic">V</span>
+    </span>
+  );
+}
+
+function PaymentOptionCard({
+  selected,
+  onSelect,
+  title,
+  subtitle,
+  icon,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  title: string;
+  subtitle: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-[3px] border text-left transition-all ${
+        selected
+          ? "border-ink bg-mist/60 ring-1 ring-ink/40"
+          : "border-border bg-background hover:border-ink/40"
+      }`}
+    >
+      <span className="shrink-0">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12.5px] text-ink">{title}</span>
+        <span className="block text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-0.5 truncate">
+          {subtitle}
+        </span>
+      </span>
+      <span
+        className={`shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-full border ${
+          selected ? "bg-ink border-ink" : "border-border bg-background"
+        }`}
+      >
+        {selected && <span className="w-1.5 h-1.5 rounded-full bg-background" />}
+      </span>
+    </button>
+  );
+}
+
+function VenmoPaymentBlock({
+  amount,
+  orderNumber,
+  copied,
+  onCopy,
+}: {
+  amount: number;
+  orderNumber: string;
+  copied: "addr" | "amt" | "venmoHandle" | "venmoAmt" | "venmoOrder" | null;
+  onCopy: (kind: "venmoHandle" | "venmoAmt" | "venmoOrder", value: string) => void;
+}) {
+  const amountStr = amount.toFixed(2);
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <VenmoLogo size={16} />
+        <p>Venmo payment</p>
+      </div>
+      <p className="text-foreground/75 text-[12px] leading-relaxed">
+        Send{" "}
+        <strong className="text-ink font-mono">${amountStr} USD</strong> to{" "}
+        <strong className="text-ink font-mono">@{VENMO_HANDLE}</strong> on Venmo. You{" "}
+        <strong className="text-ink">must</strong> include your Order # in the payment note — do not include any other information.
+      </p>
+
+      {/* Handle */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Venmo handle</p>
+        <button
+          type="button"
+          onClick={() => onCopy("venmoHandle", `@${VENMO_HANDLE}`)}
+          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+        >
+          <span className="text-[13px] text-ink font-mono">@{VENMO_HANDLE}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+            {copied === "venmoHandle" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
+          </span>
+        </button>
+      </div>
+
+      {/* Amount */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Exact amount (USD)</p>
+        <button
+          type="button"
+          onClick={() => onCopy("venmoAmt", amountStr)}
+          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30 hover:border-ink/40 transition-colors text-left"
+        >
+          <span className="text-[13px] text-ink font-mono tabular-nums">${amountStr}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+            {copied === "venmoAmt" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Copy</>}
+          </span>
+        </button>
+      </div>
+
+      {/* Order # */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Order # (paste into Venmo note)</p>
+        <button
+          type="button"
+          onClick={() => onCopy("venmoOrder", orderNumber)}
+          className="group w-full flex items-center justify-between gap-3 px-3.5 py-3 border border-ink/60 rounded-[3px] bg-mist/50 hover:bg-mist/70 transition-colors text-left"
+        >
+          <span className="text-[13px] text-ink font-mono tabular-nums">{orderNumber}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.18em] text-foreground/55 group-hover:text-ink shrink-0">
+            {copied === "venmoOrder" ? <><Check size={12} /> Copied ✓</> : <><Copy size={12} /> Tap to copy</>}
+          </span>
+        </button>
+      </div>
+
+      {/* QR */}
+      <div>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan Venmo QR code</p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
+            <QRCodeSVG
+              value={VENMO_DEEPLINK}
+              size={140}
+              level="M"
+              marginSize={0}
+            />
+          </div>
+          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1">
+            Scan with your Venmo app or tap the handle above to copy. The QR opens the{" "}
+            <span className="font-mono text-ink">@{VENMO_HANDLE}</span> Venmo profile.
+          </p>
+        </div>
+      </div>
+
+      <p className="flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
+        <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
+        Include your Order # in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
+      </p>
+    </div>
+  );
+}
