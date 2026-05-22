@@ -30,7 +30,7 @@ function ThankYouPage() {
   const shippingCost = Math.max(0, total - itemsTotal);
 
   return (
-    <Layout>
+    <Layout hideFooter>
       <PageHeader eyebrow="— Order received" title="Thank you" />
 
       <section className="px-6 lg:px-12 py-12 max-w-3xl mx-auto space-y-10 print:py-4">
