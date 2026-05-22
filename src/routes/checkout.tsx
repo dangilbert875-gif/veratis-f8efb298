@@ -760,7 +760,7 @@ function CheckoutPage() {
             <div className="px-6 py-5 space-y-5">
               <p className="text-[12.5px] text-foreground/75 leading-relaxed">
                 {paymentMethod === "venmo"
-                  ? <>Attach a screenshot of your completed Venmo payment showing the amount, recipient <span className="font-mono text-ink">@{VENMO_HANDLE}</span>, and your Order&nbsp;# in the note. A transaction ID is optional.</>
+                  ? <>Attach a screenshot of your completed Venmo payment showing the amount, recipient <span className="font-mono text-ink">@{VENMO_HANDLE}</span>, and your Order&nbsp;# in the note. Notes are optional.</>
                   : <>Attach a screenshot of your Bitcoin payment <em>or</em> paste the transaction ID below. At least one is required.</>}
               </p>
 
@@ -799,16 +799,16 @@ function CheckoutPage() {
               </div>
 
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Transaction ID (optional)</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Notes (optional)</p>
                 <textarea
                   value={txId}
                   onChange={(e) => setTxId(e.target.value)}
                   rows={2}
-                  placeholder="e.g. 4a5e1e4b… (paste BTC tx hash or note)"
+                  placeholder=""
                   className={`${inp} min-h-[64px] resize-y font-mono text-[12px]`}
                 />
                 <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/45">
-                  — Screenshot or TX ID required (one or both)
+                  — Screenshot or notes required (one or both)
                 </p>
               </div>
 
@@ -816,18 +816,18 @@ function CheckoutPage() {
                 <p className="text-[12px] text-red-700 font-mono">{error}</p>
               )}
             </div>
-            <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-3">
+            <div className="px-6 py-4 border-t border-border flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3">
               <button
                 onClick={() => !uploading && setProofOpen(false)}
                 disabled={uploading}
-                className="h-10 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors disabled:opacity-60"
+                className="h-10 px-4 text-[11px] uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition-colors disabled:opacity-60 w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmProof}
                 disabled={uploading || (!proofFile && !txId.trim())}
-                className="inline-flex items-center gap-2 h-10 px-5 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 transition-all disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 h-10 px-5 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 transition-all disabled:opacity-60 w-full sm:w-auto"
               >
                 {uploading ? "Uploading…" : "Attach & continue"} {!uploading && <Check size={13} />}
               </button>
@@ -980,10 +980,8 @@ function VenmoPaymentBlock({
         <p>Venmo payment</p>
       </div>
       <p className="text-foreground/75 text-[12px] leading-relaxed">
-        Send{" "}
-        <strong className="text-ink font-mono">${amountStr} USD</strong> to{" "}
-        <strong className="text-ink font-mono">@{VENMO_HANDLE}</strong> on Venmo. You{" "}
-        <strong className="text-ink">must</strong> include your Order # in the payment note — do not include any other information.
+        Send payment to <strong className="text-ink font-mono">@{VENMO_HANDLE}</strong> on Venmo and include{" "}
+        <strong className="text-ink font-mono">Order #{orderNumber}</strong> in the payment note only.
       </p>
 
       {/* Handle */}
@@ -1033,9 +1031,9 @@ function VenmoPaymentBlock({
 
       {/* QR */}
       <div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan Venmo QR code</p>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 min-w-0">
-          <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2 text-center sm:text-left">— Scan Venmo QR code</p>
+        <div className="flex flex-col items-center sm:flex-row sm:items-center gap-3 min-w-0">
+          <div className="shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
             <QRCodeSVG
               value={VENMO_DEEPLINK}
               size={128}
@@ -1043,7 +1041,7 @@ function VenmoPaymentBlock({
               marginSize={0}
             />
           </div>
-          <p className="text-[11.5px] text-foreground/70 leading-relaxed sm:flex-1 min-w-0">
+          <p className="text-[11.5px] text-foreground/70 leading-relaxed text-center sm:text-left sm:flex-1 min-w-0">
             Scan with your Venmo app or tap the handle above to copy. The QR opens the{" "}
             <span className="font-mono text-ink">@{VENMO_HANDLE}</span> Venmo profile.
           </p>
@@ -1052,7 +1050,7 @@ function VenmoPaymentBlock({
 
       <p className="flex items-start gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-amber-800">
         <AlertTriangle size={11} strokeWidth={1.6} className="mt-[1px] shrink-0" />
-        Include your Order # in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
+        Include <span className="font-mono">Order #{orderNumber}</span> in the Venmo note. Do not include any other text. Payments without an Order # may be delayed.
       </p>
     </div>
   );
