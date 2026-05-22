@@ -267,11 +267,11 @@ function ShopPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 sm:px-6 py-10 sm:py-14 md:py-20">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12">
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 min-w-0">
           {/* Main column */}
-          <div className="lg:col-span-9">
+          <div className="lg:col-span-9 min-w-0 w-full">
             {/* Filter chips + sort */}
-            <div className="mb-8 md:mb-12 pb-5 border-b border-border">
+            <div className="mb-8 md:mb-12 pb-5 border-b border-border min-w-0">
               {/* Search bar */}
               <div className="mb-4 relative max-w-md">
                 <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground/45" />
@@ -285,7 +285,7 @@ function ShopPage() {
               </div>
 
               {/* Chip row — horizontal scroll on mobile with fade edges */}
-              <div className="relative -mx-1">
+              <div className="relative -mx-1 min-w-0 max-w-full overflow-hidden">
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 px-1 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
                   {["All", ...ALL_CATEGORIES.filter((c) => products.some((p) => p.category === c))].map((c) => {
                     const active = filter === c;
