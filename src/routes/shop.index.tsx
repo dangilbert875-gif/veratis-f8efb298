@@ -50,7 +50,7 @@ function stockForSlug(slug: string): { state: "in_stock" | "low" | "last3"; coun
   for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
   const bucket = h % 10;
   if (bucket === 0) return { state: "last3" };
-  if (bucket <= 2) return { state: "low", count: 4 + (h % 4) };
+  if (bucket <= 2) return { state: "low", count: 2 + (h % 4) }; // 2–5 left
   return { state: "in_stock" };
 }
 
