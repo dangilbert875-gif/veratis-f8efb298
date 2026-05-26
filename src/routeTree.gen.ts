@@ -44,6 +44,15 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiAdminStatsTodayRouteImport } from './routes/api/admin/stats.today'
+import { Route as ApiAdminOrdersUnpaidRouteImport } from './routes/api/admin/orders.unpaid'
+import { Route as ApiAdminOrdersToshipRouteImport } from './routes/api/admin/orders.toship'
+import { Route as ApiAdminOrdersTodayRouteImport } from './routes/api/admin/orders.today'
+import { Route as ApiAdminOrdersPendingRouteImport } from './routes/api/admin/orders.pending'
+import { Route as ApiAdminOrdersLowstockRouteImport } from './routes/api/admin/orders.lowstock'
+import { Route as ApiAdminOrdersOrderNumberRouteImport } from './routes/api/admin/orders.$orderNumber'
+import { Route as ApiAdminCustomersEmailRouteImport } from './routes/api/admin/customers.$email'
+import { Route as ApiAdminOrdersOrderNumberMarkShippedRouteImport } from './routes/api/admin/orders.$orderNumber.mark-shipped'
 
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
@@ -224,6 +233,53 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminStatsTodayRoute = ApiAdminStatsTodayRouteImport.update({
+  id: '/api/admin/stats/today',
+  path: '/api/admin/stats/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersUnpaidRoute = ApiAdminOrdersUnpaidRouteImport.update({
+  id: '/api/admin/orders/unpaid',
+  path: '/api/admin/orders/unpaid',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersToshipRoute = ApiAdminOrdersToshipRouteImport.update({
+  id: '/api/admin/orders/toship',
+  path: '/api/admin/orders/toship',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersTodayRoute = ApiAdminOrdersTodayRouteImport.update({
+  id: '/api/admin/orders/today',
+  path: '/api/admin/orders/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersPendingRoute = ApiAdminOrdersPendingRouteImport.update({
+  id: '/api/admin/orders/pending',
+  path: '/api/admin/orders/pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersLowstockRoute = ApiAdminOrdersLowstockRouteImport.update({
+  id: '/api/admin/orders/lowstock',
+  path: '/api/admin/orders/lowstock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersOrderNumberRoute =
+  ApiAdminOrdersOrderNumberRouteImport.update({
+    id: '/api/admin/orders/$orderNumber',
+    path: '/api/admin/orders/$orderNumber',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminCustomersEmailRoute = ApiAdminCustomersEmailRouteImport.update({
+  id: '/api/admin/customers/$email',
+  path: '/api/admin/customers/$email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminOrdersOrderNumberMarkShippedRoute =
+  ApiAdminOrdersOrderNumberMarkShippedRouteImport.update({
+    id: '/mark-shipped',
+    path: '/mark-shipped',
+    getParentRoute: () => ApiAdminOrdersOrderNumberRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -256,11 +312,20 @@ export interface FileRoutesByFullPath {
   '/shop/': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
+  '/api/admin/orders/$orderNumber': typeof ApiAdminOrdersOrderNumberRouteWithChildren
+  '/api/admin/orders/lowstock': typeof ApiAdminOrdersLowstockRoute
+  '/api/admin/orders/pending': typeof ApiAdminOrdersPendingRoute
+  '/api/admin/orders/today': typeof ApiAdminOrdersTodayRoute
+  '/api/admin/orders/toship': typeof ApiAdminOrdersToshipRoute
+  '/api/admin/orders/unpaid': typeof ApiAdminOrdersUnpaidRoute
+  '/api/admin/stats/today': typeof ApiAdminStatsTodayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/api/admin/orders/$orderNumber/mark-shipped': typeof ApiAdminOrdersOrderNumberMarkShippedRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -293,11 +358,20 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
+  '/api/admin/orders/$orderNumber': typeof ApiAdminOrdersOrderNumberRouteWithChildren
+  '/api/admin/orders/lowstock': typeof ApiAdminOrdersLowstockRoute
+  '/api/admin/orders/pending': typeof ApiAdminOrdersPendingRoute
+  '/api/admin/orders/today': typeof ApiAdminOrdersTodayRoute
+  '/api/admin/orders/toship': typeof ApiAdminOrdersToshipRoute
+  '/api/admin/orders/unpaid': typeof ApiAdminOrdersUnpaidRoute
+  '/api/admin/stats/today': typeof ApiAdminStatsTodayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/api/admin/orders/$orderNumber/mark-shipped': typeof ApiAdminOrdersOrderNumberMarkShippedRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -331,11 +405,20 @@ export interface FileRoutesById {
   '/shop/': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
+  '/api/admin/orders/$orderNumber': typeof ApiAdminOrdersOrderNumberRouteWithChildren
+  '/api/admin/orders/lowstock': typeof ApiAdminOrdersLowstockRoute
+  '/api/admin/orders/pending': typeof ApiAdminOrdersPendingRoute
+  '/api/admin/orders/today': typeof ApiAdminOrdersTodayRoute
+  '/api/admin/orders/toship': typeof ApiAdminOrdersToshipRoute
+  '/api/admin/orders/unpaid': typeof ApiAdminOrdersUnpaidRoute
+  '/api/admin/stats/today': typeof ApiAdminStatsTodayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/api/admin/orders/$orderNumber/mark-shipped': typeof ApiAdminOrdersOrderNumberMarkShippedRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -370,11 +453,20 @@ export interface FileRouteTypes {
     | '/shop/'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
+    | '/api/admin/customers/$email'
+    | '/api/admin/orders/$orderNumber'
+    | '/api/admin/orders/lowstock'
+    | '/api/admin/orders/pending'
+    | '/api/admin/orders/today'
+    | '/api/admin/orders/toship'
+    | '/api/admin/orders/unpaid'
+    | '/api/admin/stats/today'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/api/admin/orders/$orderNumber/mark-shipped'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -407,11 +499,20 @@ export interface FileRouteTypes {
     | '/shop'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
+    | '/api/admin/customers/$email'
+    | '/api/admin/orders/$orderNumber'
+    | '/api/admin/orders/lowstock'
+    | '/api/admin/orders/pending'
+    | '/api/admin/orders/today'
+    | '/api/admin/orders/toship'
+    | '/api/admin/orders/unpaid'
+    | '/api/admin/stats/today'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/api/admin/orders/$orderNumber/mark-shipped'
   id:
     | '__root__'
     | '/'
@@ -444,11 +545,20 @@ export interface FileRouteTypes {
     | '/shop/'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
+    | '/api/admin/customers/$email'
+    | '/api/admin/orders/$orderNumber'
+    | '/api/admin/orders/lowstock'
+    | '/api/admin/orders/pending'
+    | '/api/admin/orders/today'
+    | '/api/admin/orders/toship'
+    | '/api/admin/orders/unpaid'
+    | '/api/admin/stats/today'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/api/admin/orders/$orderNumber/mark-shipped'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -476,6 +586,14 @@ export interface RootRouteChildren {
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiAdminCustomersEmailRoute: typeof ApiAdminCustomersEmailRoute
+  ApiAdminOrdersOrderNumberRoute: typeof ApiAdminOrdersOrderNumberRouteWithChildren
+  ApiAdminOrdersLowstockRoute: typeof ApiAdminOrdersLowstockRoute
+  ApiAdminOrdersPendingRoute: typeof ApiAdminOrdersPendingRoute
+  ApiAdminOrdersTodayRoute: typeof ApiAdminOrdersTodayRoute
+  ApiAdminOrdersToshipRoute: typeof ApiAdminOrdersToshipRoute
+  ApiAdminOrdersUnpaidRoute: typeof ApiAdminOrdersUnpaidRoute
+  ApiAdminStatsTodayRoute: typeof ApiAdminStatsTodayRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -730,6 +848,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/stats/today': {
+      id: '/api/admin/stats/today'
+      path: '/api/admin/stats/today'
+      fullPath: '/api/admin/stats/today'
+      preLoaderRoute: typeof ApiAdminStatsTodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/unpaid': {
+      id: '/api/admin/orders/unpaid'
+      path: '/api/admin/orders/unpaid'
+      fullPath: '/api/admin/orders/unpaid'
+      preLoaderRoute: typeof ApiAdminOrdersUnpaidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/toship': {
+      id: '/api/admin/orders/toship'
+      path: '/api/admin/orders/toship'
+      fullPath: '/api/admin/orders/toship'
+      preLoaderRoute: typeof ApiAdminOrdersToshipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/today': {
+      id: '/api/admin/orders/today'
+      path: '/api/admin/orders/today'
+      fullPath: '/api/admin/orders/today'
+      preLoaderRoute: typeof ApiAdminOrdersTodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/pending': {
+      id: '/api/admin/orders/pending'
+      path: '/api/admin/orders/pending'
+      fullPath: '/api/admin/orders/pending'
+      preLoaderRoute: typeof ApiAdminOrdersPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/lowstock': {
+      id: '/api/admin/orders/lowstock'
+      path: '/api/admin/orders/lowstock'
+      fullPath: '/api/admin/orders/lowstock'
+      preLoaderRoute: typeof ApiAdminOrdersLowstockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/$orderNumber': {
+      id: '/api/admin/orders/$orderNumber'
+      path: '/api/admin/orders/$orderNumber'
+      fullPath: '/api/admin/orders/$orderNumber'
+      preLoaderRoute: typeof ApiAdminOrdersOrderNumberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/customers/$email': {
+      id: '/api/admin/customers/$email'
+      path: '/api/admin/customers/$email'
+      fullPath: '/api/admin/customers/$email'
+      preLoaderRoute: typeof ApiAdminCustomersEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/orders/$orderNumber/mark-shipped': {
+      id: '/api/admin/orders/$orderNumber/mark-shipped'
+      path: '/mark-shipped'
+      fullPath: '/api/admin/orders/$orderNumber/mark-shipped'
+      preLoaderRoute: typeof ApiAdminOrdersOrderNumberMarkShippedRouteImport
+      parentRoute: typeof ApiAdminOrdersOrderNumberRoute
+    }
   }
 }
 
@@ -771,6 +952,21 @@ const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
   CheckoutRouteChildren,
 )
 
+interface ApiAdminOrdersOrderNumberRouteChildren {
+  ApiAdminOrdersOrderNumberMarkShippedRoute: typeof ApiAdminOrdersOrderNumberMarkShippedRoute
+}
+
+const ApiAdminOrdersOrderNumberRouteChildren: ApiAdminOrdersOrderNumberRouteChildren =
+  {
+    ApiAdminOrdersOrderNumberMarkShippedRoute:
+      ApiAdminOrdersOrderNumberMarkShippedRoute,
+  }
+
+const ApiAdminOrdersOrderNumberRouteWithChildren =
+  ApiAdminOrdersOrderNumberRoute._addFileChildren(
+    ApiAdminOrdersOrderNumberRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -796,6 +992,14 @@ const rootRouteChildren: RootRouteChildren = {
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiAdminCustomersEmailRoute: ApiAdminCustomersEmailRoute,
+  ApiAdminOrdersOrderNumberRoute: ApiAdminOrdersOrderNumberRouteWithChildren,
+  ApiAdminOrdersLowstockRoute: ApiAdminOrdersLowstockRoute,
+  ApiAdminOrdersPendingRoute: ApiAdminOrdersPendingRoute,
+  ApiAdminOrdersTodayRoute: ApiAdminOrdersTodayRoute,
+  ApiAdminOrdersToshipRoute: ApiAdminOrdersToshipRoute,
+  ApiAdminOrdersUnpaidRoute: ApiAdminOrdersUnpaidRoute,
+  ApiAdminStatsTodayRoute: ApiAdminStatsTodayRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

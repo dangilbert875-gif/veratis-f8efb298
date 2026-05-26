@@ -2,6 +2,47 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
 
+// ---------------------------------------------------------------------------
+// Generic Ops Event Webhook (Telegram Operations Bot)
+// ---------------------------------------------------------------------------
+// Single configurable n8n URL receives all operational events. n8n switches
+// on `event_type` to route to Telegram messages, alerts, etc.
+
+export type N8nOpsEventType =
+  | "ORDER_CREATED"
+  | "ORDER_PAID"
+  | "ORDER_SHIPPED"
+  | "LOW_STOCK"
+  | "PAYMENT_PENDING"
+  | "PAYMENT_FAILED";
+
+export async function postN8nOpsEvent(
+  event_type: N8nOpsEventType,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const url = process.env.N8N_OPS_WEBHOOK_URL;
+  if (!url) {
+    console.warn(`[n8n ops] ${event_type} not sent — N8N_OPS_WEBHOOK_URL not set`);
+    return;
+  }
+  const payload = {
+    event_type,
+    timestamp: new Date().toISOString(),
+    data,
+  };
+  try {
+    console.log(`[n8n ops] ${event_type}`, JSON.stringify(payload));
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    console.log(`[n8n ops] ${event_type} response`, res.status);
+  } catch (err) {
+    console.error(`[n8n ops] ${event_type} failed`, err instanceof Error ? err.message : String(err));
+  }
+}
+
 export type N8nOrderWebhookPayload = {
   webhookversion: string;
   ordernumber: string;
