@@ -37,6 +37,7 @@ const checkoutSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   payment_proof_url: z.string().url().max(1024).optional().nullable(),
   payment_tx_id: z.string().max(256).optional().nullable(),
+  btc_amount_quoted: z.string().max(32).optional().nullable(),
   promo_code: z
     .string()
     .min(2)
@@ -159,8 +160,17 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     // Lock the BTC quote at the time of checkout so the admin can see
     // exactly how much BTC the customer was asked to pay.
-    const btcRate = isVenmo ? null : await fetchBtcUsdRate();
-    const btcAmount = !isVenmo && btcRate ? Number((total / btcRate).toFixed(8)) : null;
+    const submittedBtcQuote = !isVenmo ? Number(data.btc_amount_quoted) : null;
+    const btcRate = !isVenmo && (!submittedBtcQuote || !Number.isFinite(submittedBtcQuote) || submittedBtcQuote <= 0)
+      ? await fetchBtcUsdRate()
+      : null;
+    const btcAmount = !isVenmo
+      ? submittedBtcQuote && Number.isFinite(submittedBtcQuote) && submittedBtcQuote > 0
+        ? Number(submittedBtcQuote.toFixed(8))
+        : btcRate
+          ? Number((total / btcRate).toFixed(8))
+          : null
+      : null;
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
