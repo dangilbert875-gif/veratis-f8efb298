@@ -119,6 +119,75 @@ type NewOrderWebhookPayload = {
   timestamp: string;
 };
 
+async function resetOrderCreatedWebhookFlag(orderNumber: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from("orders")
+    .update({ order_created_webhook_sent: false, updated_at: new Date().toISOString() })
+    .eq("order_number", orderNumber);
+
+  if (error) {
+    console.error("[checkout order n8n webhook] idempotency reset failed", {
+      orderNumber,
+      error: error.message,
+    });
+  }
+}
+
+async function sendOrderCreatedWebhookOnce(payload: NewOrderWebhookPayload): Promise<void> {
+  const orderNumber = payload.ordernumber;
+  const { data: claimedOrder, error: claimError } = await supabaseAdmin
+    .from("orders")
+    .update({ order_created_webhook_sent: true, updated_at: new Date().toISOString() })
+    .eq("order_number", orderNumber)
+    .eq("order_created_webhook_sent", false)
+    .select("order_number")
+    .maybeSingle();
+
+  if (claimError) {
+    console.error("[checkout order n8n webhook] idempotency claim failed", {
+      orderNumber,
+      error: claimError.message,
+    });
+    return;
+  }
+
+  if (!claimedOrder) {
+    console.log("[checkout order n8n webhook] duplicate ORDER_CREATED skipped", { orderNumber });
+    return;
+  }
+
+  try {
+    console.log("[checkout order n8n webhook] webhook attempted", true);
+    console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
+    console.log("FINAL N8N WEBHOOK PAYLOAD", payload);
+    console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(payload));
+
+    const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const webhookResponseBody = await webhookResponse.text();
+    console.log("[checkout order n8n webhook] response status", webhookResponse.status);
+    console.log("[checkout order n8n webhook] response body", webhookResponseBody);
+
+    if (!webhookResponse.ok) {
+      await resetOrderCreatedWebhookFlag(orderNumber);
+      console.error("[checkout order n8n webhook] non-success response; idempotency flag reset", {
+        orderNumber,
+        status: webhookResponse.status,
+      });
+    }
+  } catch (webhookError) {
+    await resetOrderCreatedWebhookFlag(orderNumber);
+    console.error(
+      "[checkout order n8n webhook] error message",
+      webhookError instanceof Error ? webhookError.message : String(webhookError),
+    );
+  }
+}
+
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
