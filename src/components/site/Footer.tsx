@@ -96,13 +96,7 @@ export function Footer() {
           ["Research use disclaimer", "/research-use"],
           ["Payment policy", "/payment-policy"],
         ]} />
-        <FooterCol title="Company" links={[
-          ["About", "/about"],
-          ["Education", "/blog"],
-          ["FAQ", "/faq"],
-          ["How to pay", "/how-to-pay"],
-          ["Contact", "/contact"],
-        ]} />
+        <FooterCol title="Company" links={companyLinks} />
       </div>
 
       {/* Calibration footer — operational signature */}
