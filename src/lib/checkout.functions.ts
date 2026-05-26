@@ -237,10 +237,6 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
     const orderItems = pricedItems;
-    const productsArray: NewOrderWebhookPayload["products"] = orderItems.map((item) => ({
-      name: valueOrNA(item.name),
-      quantity: Number.isFinite(Number(item.quantity)) ? Number(item.quantity) : "N/A",
-    }));
     const normalizedPaymentMethod = valueOrNA(order!.payment_method ?? data.payment_method).toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
@@ -260,7 +256,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       customername: order!.customer_name,
       customeremail: order!.customer_email,
       customerphone: data.customer.phone || null,
-      products: productsArray,
+      products: orderItems.map((item) => ({
+        name: valueOrNA(item.name),
+        quantity: Number.isFinite(Number(item.quantity)) ? Number(item.quantity) : "N/A",
+      })),
       ordertotal: Number(order!.total_usd),
       paymentmethod: paymentMethodLabel,
       paymentstatus: valueOrNA(order!.payment_status),
