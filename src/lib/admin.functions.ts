@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
+import { createSampleN8nOrderPayload, postN8nOrderWebhook } from "@/lib/n8n-webhook.server";
 
 async function sendOrderStatusEmail(orderId: string, newStatus: string, priorStatus?: string | null) {
   if (priorStatus === newStatus) return;
@@ -693,6 +694,38 @@ export const getAdminAlerts = createServerFn({ method: "GET" })
         count: unfulfilledOrders.length,
       },
     };
+  });
+
+// ───── n8n webhook debug ─────
+export const listN8nWebhookDebug = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+
+    const { data, error } = await supabase
+      .from("audit_logs")
+      .select("id, created_at, action, entity_id, diff")
+      .eq("entity_type", "n8n_webhook")
+      .order("created_at", { ascending: false })
+      .limit(25);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const sendTestN8nWebhook = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+
+    const result = await postN8nOrderWebhook({
+      payload: createSampleN8nOrderPayload(),
+      source: "admin_test_button",
+      entityId: "TEST-1530",
+      actorId: userId,
+    });
+    return result;
   });
 
 // ───── Global command-bar search (Phase 2.5 A) ─────
