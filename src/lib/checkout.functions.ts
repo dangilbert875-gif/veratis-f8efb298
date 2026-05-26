@@ -3,7 +3,6 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
-import type { N8nOrderWebhookPayload } from "@/lib/n8n-webhook.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
@@ -88,6 +87,34 @@ function btcQuoteOrNA(value: unknown): string {
   if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(8);
   return valueOrNA(value);
 }
+
+type NewOrderWebhookPayload = {
+  ordernumber: string;
+  customername: string | null;
+  customeremail: string | null;
+  customerphone: string | null;
+  products: Array<{ name: string; quantity: number | string }>;
+  ordertotal: number;
+  paymentmethod: string;
+  paymentstatus: string;
+  btcamountquoted: string;
+  btctxid: string;
+  btcpaymentproofurl: string;
+  venmousername: string;
+  venmonotes: string;
+  venmopaymentproofurl: string;
+  fulfillmentstatus: string | null;
+  shippingaddress: {
+    name: string | null;
+    address1: string | null;
+    address2: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    country: string | null;
+  };
+  timestamp: string;
+};
 
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
@@ -210,7 +237,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
     const orderItems = pricedItems;
-    const productsArray: N8nOrderWebhookPayload["products"] = orderItems.map((item) => ({
+    const productsArray: NewOrderWebhookPayload["products"] = orderItems.map((item) => ({
       name: valueOrNA(item.name),
       quantity: Number.isFinite(Number(item.quantity)) ? Number(item.quantity) : "N/A",
     }));
@@ -228,7 +255,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const venmousername = isVenmoOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
     const venmonotes = isVenmoOrder ? valueOrNA(submittedPaymentNotes) : "N/A";
     const venmopaymentproofurl = isVenmoOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
-    const newOrderWebhookPayload: N8nOrderWebhookPayload = {
+    const newOrderWebhookPayload: NewOrderWebhookPayload = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
       customeremail: order!.customer_email,
