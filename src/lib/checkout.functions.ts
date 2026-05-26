@@ -204,8 +204,20 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       price?: number;
     }>;
     const firstOrderItem = savedOrderItems[0];
-    const isVenmoOrder = order!.payment_method === "venmo";
-    const isBtcOrder = order!.payment_method === "btc";
+    const normalizedPaymentMethod = String(data.payment_method ?? order!.payment_method ?? "btc").toLowerCase();
+    const isVenmoOrder = normalizedPaymentMethod === "venmo";
+    const isBtcOrder = !isVenmoOrder;
+    const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
+    const submittedPaymentTxId = data.payment_tx_id?.trim() || order!.payment_tx_id;
+    const submittedPaymentProofUrl = data.payment_proof_url || order!.payment_proof_url;
+    const submittedPaymentNotes = data.notes?.trim() || order!.notes;
+    const submittedBtcAmountQuoted = order!.btc_amount ?? btcAmount;
+    const btcamountquoted = isBtcOrder ? btcQuoteOrNA(submittedBtcAmountQuoted) : "N/A";
+    const btctxid = isBtcOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
+    const btcpaymentproofurl = isBtcOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
+    const venmousername = isVenmoOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
+    const venmonotes = isVenmoOrder ? valueOrNA(submittedPaymentNotes) : "N/A";
+    const venmopaymentproofurl = isVenmoOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
     const newOrderWebhookPayload: Record<string, unknown> = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
@@ -217,8 +229,14 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         price: firstOrderItem?.price ?? null,
       },
       ordertotal: Number(order!.total_usd),
-      paymentmethod: order!.payment_method,
+      paymentmethod: paymentMethodLabel,
       paymentstatus: order!.payment_status,
+      btcamountquoted,
+      btctxid,
+      btcpaymentproofurl,
+      venmousername,
+      venmonotes,
+      venmopaymentproofurl,
       fulfillmentstatus: order!.fulfillment_status,
       shippingaddress: {
         name: order!.shipping_name,
