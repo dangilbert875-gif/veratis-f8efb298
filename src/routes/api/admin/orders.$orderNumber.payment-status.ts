@@ -37,8 +37,15 @@ export const Route = createFileRoute("/api/admin/orders/$orderNumber/payment-sta
         if (error) return json({ error: error.message }, 500);
         if (!data) return json({ error: "Order not found" }, 404);
 
-        if (paymentstatus === "confirmed") {
-          await postN8nOpsEvent("ORDER_PAID", {
+        const opsEventMap: Record<string, "ORDER_PAID" | "PAYMENT_PENDING" | "PAYMENT_FAILED" | null> = {
+          confirmed: "ORDER_PAID",
+          pending: "PAYMENT_PENDING",
+          failed: "PAYMENT_FAILED",
+          refunded: null,
+        };
+        const opsEvent = opsEventMap[paymentstatus];
+        if (opsEvent) {
+          await postN8nOpsEvent(opsEvent, {
             ordernumber: data.order_number,
             paymentstatus: data.payment_status,
           });
