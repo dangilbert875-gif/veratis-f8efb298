@@ -5,7 +5,7 @@ import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
-const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
+const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
 
 const itemSchema = z.object({
   slug: z.string().min(1).max(128),
