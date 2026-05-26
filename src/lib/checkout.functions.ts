@@ -180,20 +180,25 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
-    const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order";
+    const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
+    const firstOrderItem = Array.isArray(order!.items) ? order!.items[0] : pricedItems[0];
     const newOrderWebhookPayload = {
-      order_number: order!.order_number,
-      customer_name: order!.customer_name,
-      customer_email: order!.customer_email,
-      customer_phone: data.customer.phone || null,
-      products: order!.items,
-      order_total: Number(order!.total_usd),
-      payment_status: order!.payment_status,
-      fulfillment_status: order!.fulfillment_status,
-      shipping_address: {
+      ordernumber: order!.order_number,
+      customername: order!.customer_name,
+      customeremail: order!.customer_email,
+      customerphone: data.customer.phone || null,
+      products: {
+        name: firstOrderItem?.name ?? null,
+        quantity: firstOrderItem?.quantity ?? null,
+        price: firstOrderItem?.price ?? null,
+      },
+      ordertotal: Number(order!.total_usd),
+      paymentstatus: order!.payment_status,
+      fulfillmentstatus: order!.fulfillment_status,
+      shippingaddress: {
         name: order!.shipping_name,
-        address_1: order!.shipping_address_1,
-        address_2: order!.shipping_address_2,
+        address1: order!.shipping_address_1,
+        address2: order!.shipping_address_2,
         city: order!.shipping_city,
         state: order!.shipping_state,
         zip: order!.shipping_zip,
@@ -203,10 +208,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     };
 
     try {
-      console.log("[n8n new-order webhook] Webhook attempted");
-      console.log("[n8n new-order webhook] URL", newOrderWebhookUrl);
+      console.log("[n8n new-order-clean webhook] Webhook attempted");
+      console.log("[n8n new-order-clean webhook] URL called", newOrderWebhookUrl);
       console.log(
-        "[n8n new-order webhook] Payload sent",
+        "[n8n new-order-clean webhook] JSON payload sent",
         JSON.stringify(newOrderWebhookPayload),
       );
 
@@ -218,15 +223,15 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       const webhookResponseBody = await webhookResponse.text();
 
       console.log(
-        "[n8n new-order webhook] Response status",
+        "[n8n new-order-clean webhook] Response status",
         webhookResponse.status,
       );
       console.log(
-        "[n8n new-order webhook] Response body",
+        "[n8n new-order-clean webhook] Response body",
         webhookResponseBody,
       );
     } catch (e) {
-      console.error("[n8n new-order webhook] Caught error", e);
+      console.error("[n8n new-order-clean webhook] Request error", e);
     }
 
     // Best-effort line items
