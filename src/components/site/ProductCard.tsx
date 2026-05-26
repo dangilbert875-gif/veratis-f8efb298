@@ -105,11 +105,11 @@ export function ProductCard({
   const pricePerMg = totalMg > 0 ? p.price / totalMg : null;
 
   return (
-    <article className={`group w-full max-w-full min-w-0 mx-auto ${compactImage ? "max-[639px]:max-w-[340px]" : ""}`}>
+    <article className={`group w-full max-w-full min-w-0 mx-auto flex flex-col h-full ${compactImage ? "max-[639px]:max-w-[340px]" : ""}`}>
       <Link
         to="/shop/$slug"
         params={{ slug: p.slug }}
-        className="block"
+        className="flex flex-col flex-1"
         aria-label={`${title} — view details`}
       >
         <div className={`relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full mx-auto ${compactImage ? "max-w-[320px] sm:max-w-none" : ""}`}>
@@ -162,18 +162,16 @@ export function ProductCard({
           >
             {title}
           </h3>
-          {tagline ? (
-            <p className="mt-1.5 text-[11.5px] text-muted-foreground leading-snug line-clamp-2">
-              {tagline}
-            </p>
-          ) : null}
+          <p className="mt-1.5 text-[11.5px] text-muted-foreground leading-snug line-clamp-2 min-h-[2.6em]">
+            {tagline ?? ""}
+          </p>
           <p className="mt-1.5 text-[11.5px] text-muted-foreground font-mono tabular-nums truncate">
             {sizeFor(p.size)} · lyophilized
           </p>
         </div>
 
         {/* Price + availability row — clean horizontal rhythm */}
-        <div className="mt-3 pt-3 border-t border-border/70 flex items-baseline justify-center sm:justify-between gap-6 sm:gap-3">
+        <div className="mt-auto pt-3 border-t border-border/70 flex items-baseline justify-center sm:justify-between gap-6 sm:gap-3">
           <div className="flex flex-col gap-1 items-center sm:items-start">
             <p className={`text-[10px] font-mono uppercase tracking-[0.2em] ${available ? "text-foreground/65" : "text-foreground/55"}`}>
               {available ? "Available" : "Reserved"}
