@@ -260,9 +260,11 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     // Lock the BTC quote at the time of checkout so the admin can see
     // exactly how much BTC the customer was asked to pay.
     const submittedBtcQuote = !isVenmo ? Number(data.btc_amount_quoted) : null;
-    const btcRate = !isVenmo && (!submittedBtcQuote || !Number.isFinite(submittedBtcQuote) || submittedBtcQuote <= 0)
-      ? await fetchBtcUsdRate()
-      : null;
+    const btcRate =
+      !isVenmo &&
+      (!submittedBtcQuote || !Number.isFinite(submittedBtcQuote) || submittedBtcQuote <= 0)
+        ? await fetchBtcUsdRate()
+        : null;
     const btcAmount = !isVenmo
       ? submittedBtcQuote && Number.isFinite(submittedBtcQuote) && submittedBtcQuote > 0
         ? Number(submittedBtcQuote.toFixed(8))
@@ -309,7 +311,9 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
     const orderItems = pricedItems;
-    const normalizedPaymentMethod = valueOrNA(order!.payment_method ?? data.payment_method).toLowerCase();
+    const normalizedPaymentMethod = valueOrNA(
+      order!.payment_method ?? data.payment_method,
+    ).toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
     const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
@@ -395,10 +399,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         .select("name, slug, inventory_count, low_stock_threshold")
         .eq("slug", i.slug)
         .maybeSingle();
-      if (
-        prod &&
-        Number(prod.inventory_count ?? 0) <= Number(prod.low_stock_threshold ?? 0)
-      ) {
+      if (prod && Number(prod.inventory_count ?? 0) <= Number(prod.low_stock_threshold ?? 0)) {
         await postN8nOpsEvent("LOW_STOCK", {
           name: prod.name,
           slug: prod.slug,
