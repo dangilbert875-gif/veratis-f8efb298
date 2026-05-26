@@ -188,14 +188,6 @@ function ProductPage() {
                 imageUrl={p.image}
               />
             </div>
-            <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em] text-foreground/55">
-              <span className="truncate">Specimen · {title}</span>
-              <span className="tabular-nums whitespace-nowrap">LOT {lotId}</span>
-            </div>
-            <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.14em] sm:tracking-[0.16em] text-foreground/50">
-              <span className="truncate">{sizeLabel} · {p.purity} HPLC</span>
-              <span className="whitespace-nowrap hidden sm:inline">Format A · 1:1</span>
-            </div>
           </div>
         </div>
 

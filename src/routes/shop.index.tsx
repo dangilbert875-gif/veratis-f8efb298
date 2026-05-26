@@ -274,9 +274,8 @@ function ShopPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 sm:px-6 py-10 sm:py-14 md:py-20">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 min-w-0">
-          {/* Main column */}
-          <div className="lg:col-span-9 min-w-0 w-full">
+        <div className="min-w-0">
+          <div className="min-w-0 w-full">
             {/* Filter chips + sort */}
             <div className="mb-8 md:mb-12 pb-5 border-b border-border min-w-0">
               {/* Search bar */}
@@ -376,14 +375,13 @@ function ShopPage() {
             {filtered.length === 0 ? (
               <EmptyCategory category={filter} />
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-10 sm:gap-y-14 md:gap-y-16">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 md:gap-x-8 gap-y-10 sm:gap-y-14 md:gap-y-16">
                 {visible.map((p) => {
                   const stock = stockForProduct(p);
                   return (
                     <ProductCard
                       key={p.slug}
                       p={p}
-                      accentClass={CATEGORY_ACCENTS[p.category]}
                       stockState={stock.state}
                       lowStockCount={stock.count}
                       showPricePerMg
@@ -423,13 +421,6 @@ function ShopPage() {
               {String(products.length).padStart(2, "0")} compounds in our active catalog
             </p>
           </div>
-
-          {/* Sticky verify sidebar — desktop only */}
-          <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24">
-              <BatchVerify compact />
-            </div>
-          </aside>
         </div>
       </section>
 
