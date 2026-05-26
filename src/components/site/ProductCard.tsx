@@ -150,18 +150,6 @@ export function ProductCard({
             />
           </div>
 
-          {/* Desktop only: keep the in-frame hairline metadata. Mobile gets a clean image. */}
-          <div className="hidden sm:flex absolute top-3 left-3 right-3 items-center justify-between text-[9.5px] font-mono uppercase tracking-[0.16em] text-foreground/55">
-            <span className={badge ? "opacity-0" : ""}>{p.purity} HPLC</span>
-            <span className="tabular-nums">LOT {lot}</span>
-          </div>
-        </div>
-
-        {/* Mobile-only metadata row — lifted out of the image */}
-        <div className="sm:hidden mt-4 flex items-center justify-between text-[9.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-          <span>{p.purity} HPLC</span>
-          <span aria-hidden className="mx-2 h-px flex-1 bg-border" />
-          <span className="tabular-nums">LOT {lot}</span>
         </div>
 
         {/* Title block — fixed-height, balanced wrap */}
