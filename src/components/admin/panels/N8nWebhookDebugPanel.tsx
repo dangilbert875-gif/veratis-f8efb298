@@ -11,6 +11,23 @@ function fmt(value: unknown) {
   return String(value);
 }
 
+type WebhookDebugDetail = {
+  webhook_attempted?: boolean;
+  url?: string;
+  payload?: unknown;
+  response_status?: number | null;
+  response_body?: string | null;
+  error_message?: string | null;
+  source?: string;
+};
+
+type WebhookDebugRow = {
+  id: string;
+  created_at: string;
+  action: string;
+  diff: WebhookDebugDetail | null;
+};
+
 export function N8nWebhookDebugPanel() {
   const qc = useQueryClient();
   const fetchRows = useServerFn(listN8nWebhookDebug);
@@ -31,14 +48,14 @@ export function N8nWebhookDebugPanel() {
         `Test webhook sent${result.response_status ? ` · ${result.response_status}` : ""}`,
       );
       await qc.invalidateQueries({ queryKey: ["admin-n8n-webhook-debug"] });
-    } catch (error: any) {
-      toast.error(error?.message ?? "Test webhook failed");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Test webhook failed");
     } finally {
       setSending(false);
     }
   };
 
-  const rows = logs.data ?? [];
+  const rows = (logs.data ?? []) as WebhookDebugRow[];
 
   return (
     <Card
@@ -68,7 +85,7 @@ export function N8nWebhookDebugPanel() {
         <Empty>No n8n webhook attempts have been recorded yet.</Empty>
       ) : (
         <ul className="divide-y divide-ink/10">
-          {rows.map((row: any) => {
+          {rows.map((row) => {
             const detail = row.diff ?? {};
             const isOpen = openId === row.id;
             return (
