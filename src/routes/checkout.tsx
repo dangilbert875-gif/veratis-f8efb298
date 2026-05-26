@@ -112,7 +112,12 @@ function CheckoutPage() {
   const RESERVED_KEY = "veratis:checkout:reserved-order-number";
   const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    return window.sessionStorage.getItem(RESERVED_KEY);
+    const stored = window.sessionStorage.getItem(RESERVED_KEY);
+    // Only honor numeric reservations (e.g. "1533"). Wipe legacy
+    // placeholders like "DRAFT-XXXX" left over from earlier sessions.
+    if (stored && /^[0-9]{3,12}$/.test(stored)) return stored;
+    try { window.sessionStorage.removeItem(RESERVED_KEY); } catch {}
+    return null;
   });
   useEffect(() => {
     if (reservedOrderNumber) return;
