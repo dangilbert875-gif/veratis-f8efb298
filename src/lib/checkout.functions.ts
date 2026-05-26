@@ -36,6 +36,7 @@ const checkoutSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   payment_proof_url: z.string().url().max(1024).optional().nullable(),
   payment_tx_id: z.string().max(256).optional().nullable(),
+  btc_amount_quoted: z.string().max(32).optional().nullable(),
   promo_code: z
     .string()
     .min(2)
@@ -86,6 +87,34 @@ function btcQuoteOrNA(value: unknown): string {
   if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(8);
   return valueOrNA(value);
 }
+
+type NewOrderWebhookPayload = {
+  ordernumber: string;
+  customername: string | null;
+  customeremail: string | null;
+  customerphone: string | null;
+  products: Array<{ name: string; quantity: number | string }>;
+  ordertotal: number;
+  paymentmethod: string;
+  paymentstatus: string;
+  btcamountquoted: string;
+  btctxid: string;
+  btcpaymentproofurl: string;
+  venmousername: string;
+  venmonotes: string;
+  venmopaymentproofurl: string;
+  fulfillmentstatus: string | null;
+  shippingaddress: {
+    name: string | null;
+    address1: string | null;
+    address2: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    country: string | null;
+  };
+  timestamp: string;
+};
 
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
@@ -158,8 +187,17 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     // Lock the BTC quote at the time of checkout so the admin can see
     // exactly how much BTC the customer was asked to pay.
-    const btcRate = isVenmo ? null : await fetchBtcUsdRate();
-    const btcAmount = !isVenmo && btcRate ? Number((total / btcRate).toFixed(8)) : null;
+    const submittedBtcQuote = !isVenmo ? Number(data.btc_amount_quoted) : null;
+    const btcRate = !isVenmo && (!submittedBtcQuote || !Number.isFinite(submittedBtcQuote) || submittedBtcQuote <= 0)
+      ? await fetchBtcUsdRate()
+      : null;
+    const btcAmount = !isVenmo
+      ? submittedBtcQuote && Number.isFinite(submittedBtcQuote) && submittedBtcQuote > 0
+        ? Number(submittedBtcQuote.toFixed(8))
+        : btcRate
+          ? Number((total / btcRate).toFixed(8))
+          : null
+      : null;
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
@@ -198,16 +236,12 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
-    const orderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
-      name?: string;
-      quantity?: number;
-      price?: number;
-    }>;
-    const productsArray = orderItems.map((item) => ({
+    const orderItems = pricedItems;
+    const productsArray: NewOrderWebhookPayload["products"] = orderItems.map((item) => ({
       name: valueOrNA(item.name),
       quantity: Number.isFinite(Number(item.quantity)) ? Number(item.quantity) : "N/A",
     }));
-    const normalizedPaymentMethod = valueOrNA(data.payment_method ?? order!.payment_method).toLowerCase();
+    const normalizedPaymentMethod = valueOrNA(order!.payment_method ?? data.payment_method).toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
     const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
@@ -221,7 +255,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const venmousername = isVenmoOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
     const venmonotes = isVenmoOrder ? valueOrNA(submittedPaymentNotes) : "N/A";
     const venmopaymentproofurl = isVenmoOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
-    const newOrderWebhookPayload: Record<string, unknown> = {
+    const newOrderWebhookPayload: NewOrderWebhookPayload = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
       customeremail: order!.customer_email,

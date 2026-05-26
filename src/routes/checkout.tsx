@@ -353,6 +353,7 @@ function CheckoutPage() {
           })),
           payment_proof_url: proofUrl,
           payment_tx_id: txId.trim() || null,
+          btc_amount_quoted: paymentMethod === "btc" ? btcAmount : null,
           promo_code: promo?.code ?? null,
           payment_method: paymentMethod,
           reserved_order_number: reservedOrderNumber,

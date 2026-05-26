@@ -7,13 +7,19 @@ export type N8nOrderWebhookPayload = {
   customername: string | null;
   customeremail: string | null;
   customerphone: string | null;
-  products: {
-    name: string | null;
-    quantity: number | null;
-    price: number | null;
-  };
+  products: Array<{
+    name: string;
+    quantity: number | string;
+  }>;
   ordertotal: number;
+  paymentmethod: string;
   paymentstatus: string | null;
+  btcamountquoted: string;
+  btctxid: string;
+  btcpaymentproofurl: string;
+  venmousername: string;
+  venmonotes: string;
+  venmopaymentproofurl: string;
   fulfillmentstatus: string | null;
   shippingaddress: {
     name: string | null;
@@ -86,6 +92,7 @@ export async function postN8nOrderWebhook({
     result.webhook_attempted = true;
     console.log("[n8n new-order-clean webhook] webhook attempted", true);
     console.log("[n8n new-order-clean webhook] full URL used", result.url);
+    console.log("FINAL N8N WEBHOOK PAYLOAD", payload);
     console.log("[n8n new-order-clean webhook] JSON payload", JSON.stringify(payload));
 
     const response = await fetch(result.url, {
@@ -116,13 +123,21 @@ export function createSampleN8nOrderPayload(): N8nOrderWebhookPayload {
     customername: "Test Customer",
     customeremail: "test@example.com",
     customerphone: "555-0100",
-    products: {
-      name: "Test Product",
-      quantity: 1,
-      price: 99,
-    },
+    products: [
+      {
+        name: "Test Product",
+        quantity: 1,
+      },
+    ],
     ordertotal: 99,
+    paymentmethod: "Bitcoin",
     paymentstatus: "pending",
+    btcamountquoted: "0.00123456",
+    btctxid: "sample-btc-txid",
+    btcpaymentproofurl: "https://example.com/btc-proof.png",
+    venmousername: "N/A",
+    venmonotes: "N/A",
+    venmopaymentproofurl: "N/A",
     fulfillmentstatus: "not_started",
     shippingaddress: {
       name: "Test Customer",
