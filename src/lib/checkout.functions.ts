@@ -355,30 +355,11 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       },
       timestamp: order!.created_at,
     };
-    try {
-      console.log("[checkout order n8n webhook] webhook attempted", true);
-      console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
-      console.log("FINAL N8N WEBHOOK PAYLOAD", newOrderWebhookPayload);
-      console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(newOrderWebhookPayload));
-
-      const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newOrderWebhookPayload),
-      });
-
-      const webhookResponseBody = await webhookResponse.text();
-      console.log("[checkout order n8n webhook] response status", webhookResponse.status);
-      console.log("[checkout order n8n webhook] response body", webhookResponseBody);
-    } catch (webhookError) {
-      console.error(
-        "[checkout order n8n webhook] error message",
-        webhookError instanceof Error ? webhookError.message : String(webhookError),
-      );
-    }
+    await sendOrderCreatedWebhookOnce(newOrderWebhookPayload);
 
     // Ops bot: notify Telegram via n8n that a new order was created.
-    await postN8nOpsEvent("ORDER_CREATED", newOrderWebhookPayload);
+    // Disabled here to keep ORDER_CREATED single-shot per order_number; payment
+    // and fulfillment updates continue to use postN8nOpsEvent in their own routes.
 
     // Best-effort line items
     if (order?.id) {
