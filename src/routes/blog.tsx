@@ -27,7 +27,6 @@ function formatDate(iso: string) {
 
 function Blog() {
   const enabled = usePageEnabled("education");
-  if (enabled === "disabled") return <PageDisabled title="Education unavailable" />;
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<ArticleCategory | "All">("All");
 
@@ -50,6 +49,8 @@ function Blog() {
       );
     });
   }, [query, active]);
+
+  if (enabled === "disabled") return <PageDisabled title="Education unavailable" />;
 
   return (
     <Layout>
