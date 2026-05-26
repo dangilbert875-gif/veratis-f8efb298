@@ -763,7 +763,7 @@ export const listN8nWebhookDebug = createServerFn({ method: "GET" })
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("audit_logs")
       .select("id, created_at, action, entity_id, diff")
       .eq("entity_type", "n8n_webhook")
