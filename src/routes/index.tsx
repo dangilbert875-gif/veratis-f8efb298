@@ -54,6 +54,11 @@ function Home() {
   const recentLots = batches.slice(0, 8).map((b) => b.lot);
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
   const { products } = useCatalog();
+  const bpcProduct = products.find((p) => p.slug === "bpc-157-12mg");
+  const bpcImage =
+    bpcProduct?.image && !bpcProduct.image.endsWith("vial-master.jpg")
+      ? bpcProduct.image
+      : heroVial;
 
   // Featured product configuration — slug → badge / stock / tagline
   const featuredConfig: Record<string, { badge?: { label: string; tone?: "amber" | "gray" | "green" }; stockText?: string; stockTone?: "default" | "amber"; tagline?: string }> = {
@@ -165,7 +170,7 @@ function Home() {
           </div>
           <div className="md:col-span-5 relative">
             <div className="aspect-[4/5] bg-mist rounded-2xl overflow-hidden border border-border shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
-              <img src={heroVial} alt="VERATIS BPC-157 lyophilized vial, Lot PP-2426" width={1024} height={1280} className="w-full h-full object-cover" />
+              <img src={bpcImage} alt="VERATIS BPC-157 12 mg lyophilized vial, Lot PP-2426" width={1024} height={1280} className="w-full h-full object-cover" />
             </div>
             {/* Lot certificate card */}
             <div className="absolute -bottom-8 -left-6 md:-left-10 bg-background border border-border rounded-xl p-5 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)] hidden md:block w-[290px]">
@@ -175,7 +180,7 @@ function Home() {
                   <BadgeCheck size={12} strokeWidth={2} /> Lab verified
                 </span>
               </div>
-              <p className="mt-2.5 font-display text-[15px] text-ink leading-tight">BPC-157 · 5 mg lyophilized</p>
+              <p className="mt-2.5 font-display text-[15px] text-ink leading-tight">BPC-157 · 12 mg lyophilized</p>
               <p className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">Lot PP-2426 · Tested 04 May 2026</p>
               <dl className="mt-4 space-y-2 text-[12px]">
                 {[
