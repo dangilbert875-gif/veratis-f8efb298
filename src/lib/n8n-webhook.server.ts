@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-export const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
+export const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
 
 export type N8nOrderWebhookPayload = {
   ordernumber: string;
