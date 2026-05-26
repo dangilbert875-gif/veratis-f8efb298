@@ -3,6 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
+import type { N8nOrderWebhookPayload } from "@/lib/n8n-webhook.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
@@ -198,16 +199,12 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
-    const orderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
-      name?: string;
-      quantity?: number;
-      price?: number;
-    }>;
-    const productsArray = orderItems.map((item) => ({
+    const orderItems = pricedItems;
+    const productsArray: N8nOrderWebhookPayload["products"] = orderItems.map((item) => ({
       name: valueOrNA(item.name),
       quantity: Number.isFinite(Number(item.quantity)) ? Number(item.quantity) : "N/A",
     }));
-    const normalizedPaymentMethod = valueOrNA(data.payment_method ?? order!.payment_method).toLowerCase();
+    const normalizedPaymentMethod = valueOrNA(order!.payment_method ?? data.payment_method).toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
     const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
@@ -221,7 +218,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const venmousername = isVenmoOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
     const venmonotes = isVenmoOrder ? valueOrNA(submittedPaymentNotes) : "N/A";
     const venmopaymentproofurl = isVenmoOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
-    const newOrderWebhookPayload: Record<string, unknown> = {
+    const newOrderWebhookPayload: N8nOrderWebhookPayload = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
       customeremail: order!.customer_email,
