@@ -119,6 +119,75 @@ type NewOrderWebhookPayload = {
   timestamp: string;
 };
 
+async function resetOrderCreatedWebhookFlag(orderNumber: string): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from("orders")
+    .update({ order_created_webhook_sent: false, updated_at: new Date().toISOString() })
+    .eq("order_number", orderNumber);
+
+  if (error) {
+    console.error("[checkout order n8n webhook] idempotency reset failed", {
+      orderNumber,
+      error: error.message,
+    });
+  }
+}
+
+async function sendOrderCreatedWebhookOnce(payload: NewOrderWebhookPayload): Promise<void> {
+  const orderNumber = payload.ordernumber;
+  const { data: claimedOrder, error: claimError } = await supabaseAdmin
+    .from("orders")
+    .update({ order_created_webhook_sent: true, updated_at: new Date().toISOString() })
+    .eq("order_number", orderNumber)
+    .eq("order_created_webhook_sent", false)
+    .select("order_number")
+    .maybeSingle();
+
+  if (claimError) {
+    console.error("[checkout order n8n webhook] idempotency claim failed", {
+      orderNumber,
+      error: claimError.message,
+    });
+    return;
+  }
+
+  if (!claimedOrder) {
+    console.log("[checkout order n8n webhook] duplicate ORDER_CREATED skipped", { orderNumber });
+    return;
+  }
+
+  try {
+    console.log("[checkout order n8n webhook] webhook attempted", true);
+    console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
+    console.log("FINAL N8N WEBHOOK PAYLOAD", payload);
+    console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(payload));
+
+    const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const webhookResponseBody = await webhookResponse.text();
+    console.log("[checkout order n8n webhook] response status", webhookResponse.status);
+    console.log("[checkout order n8n webhook] response body", webhookResponseBody);
+
+    if (!webhookResponse.ok) {
+      await resetOrderCreatedWebhookFlag(orderNumber);
+      console.error("[checkout order n8n webhook] non-success response; idempotency flag reset", {
+        orderNumber,
+        status: webhookResponse.status,
+      });
+    }
+  } catch (webhookError) {
+    await resetOrderCreatedWebhookFlag(orderNumber);
+    console.error(
+      "[checkout order n8n webhook] error message",
+      webhookError instanceof Error ? webhookError.message : String(webhookError),
+    );
+  }
+}
+
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
@@ -191,9 +260,11 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     // Lock the BTC quote at the time of checkout so the admin can see
     // exactly how much BTC the customer was asked to pay.
     const submittedBtcQuote = !isVenmo ? Number(data.btc_amount_quoted) : null;
-    const btcRate = !isVenmo && (!submittedBtcQuote || !Number.isFinite(submittedBtcQuote) || submittedBtcQuote <= 0)
-      ? await fetchBtcUsdRate()
-      : null;
+    const btcRate =
+      !isVenmo &&
+      (!submittedBtcQuote || !Number.isFinite(submittedBtcQuote) || submittedBtcQuote <= 0)
+        ? await fetchBtcUsdRate()
+        : null;
     const btcAmount = !isVenmo
       ? submittedBtcQuote && Number.isFinite(submittedBtcQuote) && submittedBtcQuote > 0
         ? Number(submittedBtcQuote.toFixed(8))
@@ -240,7 +311,9 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
     const orderItems = pricedItems;
-    const normalizedPaymentMethod = valueOrNA(order!.payment_method ?? data.payment_method).toLowerCase();
+    const normalizedPaymentMethod = valueOrNA(
+      order!.payment_method ?? data.payment_method,
+    ).toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
     const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
@@ -286,30 +359,11 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       },
       timestamp: order!.created_at,
     };
-    try {
-      console.log("[checkout order n8n webhook] webhook attempted", true);
-      console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
-      console.log("FINAL N8N WEBHOOK PAYLOAD", newOrderWebhookPayload);
-      console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(newOrderWebhookPayload));
-
-      const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newOrderWebhookPayload),
-      });
-
-      const webhookResponseBody = await webhookResponse.text();
-      console.log("[checkout order n8n webhook] response status", webhookResponse.status);
-      console.log("[checkout order n8n webhook] response body", webhookResponseBody);
-    } catch (webhookError) {
-      console.error(
-        "[checkout order n8n webhook] error message",
-        webhookError instanceof Error ? webhookError.message : String(webhookError),
-      );
-    }
+    await sendOrderCreatedWebhookOnce(newOrderWebhookPayload);
 
     // Ops bot: notify Telegram via n8n that a new order was created.
-    await postN8nOpsEvent("ORDER_CREATED", newOrderWebhookPayload);
+    // Disabled here to keep ORDER_CREATED single-shot per order_number; payment
+    // and fulfillment updates continue to use postN8nOpsEvent in their own routes.
 
     // Best-effort line items
     if (order?.id) {
@@ -345,10 +399,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         .select("name, slug, inventory_count, low_stock_threshold")
         .eq("slug", i.slug)
         .maybeSingle();
-      if (
-        prod &&
-        Number(prod.inventory_count ?? 0) <= Number(prod.low_stock_threshold ?? 0)
-      ) {
+      if (prod && Number(prod.inventory_count ?? 0) <= Number(prod.low_stock_threshold ?? 0)) {
         await postN8nOpsEvent("LOW_STOCK", {
           name: prod.name,
           slug: prod.slug,

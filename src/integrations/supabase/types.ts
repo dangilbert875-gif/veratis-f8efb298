@@ -490,6 +490,7 @@ export type Database = {
           invoice_number: string | null
           items: Json
           notes: string | null
+          order_created_webhook_sent: boolean
           order_number: string
           payment_expires_at: string | null
           payment_method: string | null
@@ -537,6 +538,7 @@ export type Database = {
           invoice_number?: string | null
           items?: Json
           notes?: string | null
+          order_created_webhook_sent?: boolean
           order_number: string
           payment_expires_at?: string | null
           payment_method?: string | null
@@ -584,6 +586,7 @@ export type Database = {
           invoice_number?: string | null
           items?: Json
           notes?: string | null
+          order_created_webhook_sent?: boolean
           order_number?: string
           payment_expires_at?: string | null
           payment_method?: string | null
