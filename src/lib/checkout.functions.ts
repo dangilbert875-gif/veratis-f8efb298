@@ -76,6 +76,17 @@ async function fetchBtcUsdRate(): Promise<number | null> {
   }
 }
 
+function valueOrNA(value: unknown): string {
+  if (value === null || value === undefined) return "N/A";
+  const normalized = String(value).trim();
+  return normalized.length > 0 ? normalized : "N/A";
+}
+
+function btcQuoteOrNA(value: unknown): string {
+  if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(8);
+  return valueOrNA(value);
+}
+
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
@@ -193,8 +204,20 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       price?: number;
     }>;
     const firstOrderItem = savedOrderItems[0];
-    const isVenmoOrder = order!.payment_method === "venmo";
-    const isBtcOrder = order!.payment_method === "btc";
+    const normalizedPaymentMethod = String(data.payment_method ?? order!.payment_method ?? "btc").toLowerCase();
+    const isVenmoOrder = normalizedPaymentMethod === "venmo";
+    const isBtcOrder = !isVenmoOrder;
+    const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
+    const submittedPaymentTxId = data.payment_tx_id?.trim() || order!.payment_tx_id;
+    const submittedPaymentProofUrl = data.payment_proof_url || order!.payment_proof_url;
+    const submittedPaymentNotes = data.notes?.trim() || order!.notes;
+    const submittedBtcAmountQuoted = order!.btc_amount ?? btcAmount;
+    const btcamountquoted = isBtcOrder ? btcQuoteOrNA(submittedBtcAmountQuoted) : "N/A";
+    const btctxid = isBtcOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
+    const btcpaymentproofurl = isBtcOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
+    const venmousername = isVenmoOrder ? valueOrNA(submittedPaymentTxId) : "N/A";
+    const venmonotes = isVenmoOrder ? valueOrNA(submittedPaymentNotes) : "N/A";
+    const venmopaymentproofurl = isVenmoOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
     const newOrderWebhookPayload: Record<string, unknown> = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
@@ -206,8 +229,14 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         price: firstOrderItem?.price ?? null,
       },
       ordertotal: Number(order!.total_usd),
-      paymentmethod: order!.payment_method,
+      paymentmethod: paymentMethodLabel,
       paymentstatus: order!.payment_status,
+      btcamountquoted,
+      btctxid,
+      btcpaymentproofurl,
+      venmousername,
+      venmonotes,
+      venmopaymentproofurl,
       fulfillmentstatus: order!.fulfillment_status,
       shippingaddress: {
         name: order!.shipping_name,
@@ -220,38 +249,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       },
       timestamp: order!.created_at,
     };
-
-    // Always include all payment-method fields. Use "N/A" for the unused
-    // method so n8n/Telegram never receives blank values.
-    const NA = "N/A";
-    if (isBtcOrder) {
-      newOrderWebhookPayload.btcamountquoted = order!.btc_amount ?? NA;
-      newOrderWebhookPayload.btctxid = order!.payment_tx_id ?? NA;
-      newOrderWebhookPayload.btcpaymentproofurl = order!.payment_proof_url ?? NA;
-      newOrderWebhookPayload.venmousername = NA;
-      newOrderWebhookPayload.venmonotes = NA;
-      newOrderWebhookPayload.venmopaymentproofurl = NA;
-    } else if (isVenmoOrder) {
-      // Venmo username is captured via payment_tx_id on the checkout form,
-      // payment proof URL via payment_proof_url, and any buyer note via notes.
-      newOrderWebhookPayload.venmousername = order!.payment_tx_id ?? NA;
-      newOrderWebhookPayload.venmonotes = order!.notes ?? NA;
-      newOrderWebhookPayload.venmopaymentproofurl = order!.payment_proof_url ?? NA;
-      newOrderWebhookPayload.btcamountquoted = NA;
-      newOrderWebhookPayload.btctxid = NA;
-      newOrderWebhookPayload.btcpaymentproofurl = NA;
-    } else {
-      newOrderWebhookPayload.btcamountquoted = NA;
-      newOrderWebhookPayload.btctxid = NA;
-      newOrderWebhookPayload.btcpaymentproofurl = NA;
-      newOrderWebhookPayload.venmousername = NA;
-      newOrderWebhookPayload.venmonotes = NA;
-      newOrderWebhookPayload.venmopaymentproofurl = NA;
-    }
-
     try {
       console.log("[checkout order n8n webhook] webhook attempted", true);
       console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
+      console.log("[checkout order n8n webhook] FINAL payload before fetch", JSON.stringify(newOrderWebhookPayload));
       console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(newOrderWebhookPayload));
 
       const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
