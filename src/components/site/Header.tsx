@@ -84,6 +84,10 @@ export function Header() {
   const { count, openCart, lastAddedAt } = useCart();
   const [pulse, setPulse] = useState(false);
   const initial = useRef(true);
+  const educationState = usePageEnabled("education");
+  const nav = baseNav.filter(
+    (n) => !(n.to === "/blog" && educationState === "disabled"),
+  );
   useEffect(() => {
     if (initial.current) { initial.current = false; return; }
     if (!lastAddedAt) return;
