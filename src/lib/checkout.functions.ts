@@ -194,16 +194,24 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
       // Best-effort n8n webhook — fired once per order at creation.
       try {
-        const adminOrderUrl = `${siteOrigin}/admin/dashboard?order=${order!.order_number}`;
-        await fetch("https://veratis.app.n8n.cloud/webhook-test/new-order", {
+        await fetch("https://veratis.app.n8n.cloud/webhook/new-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            order_id: order!.id,
             order_number: order!.order_number,
             customer_name: data.customer.name,
             customer_email: data.customer.email,
-            customer_phone: data.customer.phone || null,
+            products: pricedItems.map((i) => ({
+              name: i.name,
+              quantity: i.quantity,
+            })),
+            quantities: pricedItems.reduce(
+              (acc, i) => acc + Number(i.quantity || 0),
+              0,
+            ),
+            order_total: total,
+            payment_status: "pending",
+            fulfillment_status: "not_started",
             shipping_address: {
               name: data.shipping.name,
               address_1: data.shipping.address_1,
@@ -213,23 +221,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
               zip: data.shipping.zip,
               country: data.shipping.country,
             },
-            products: pricedItems.map((i) => ({
-              slug: i.slug,
-              name: i.name,
-              quantity: i.quantity,
-              unit_price: i.price,
-              lot: i.lot || null,
-            })),
-            quantities: pricedItems.reduce(
-              (acc, i) => acc + Number(i.quantity || 0),
-              0,
-            ),
-            order_total: total,
-            payment_method: data.payment_method,
-            payment_status: "pending",
-            fulfillment_status: "not_started",
             timestamp: new Date().toISOString(),
-            admin_order_url: adminOrderUrl,
           }),
         });
       } catch (e) {
