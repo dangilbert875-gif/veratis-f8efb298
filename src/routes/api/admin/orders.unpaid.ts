@@ -10,7 +10,11 @@ export const Route = createFileRoute("/api/admin/orders/unpaid")({
 
         const { data, error } = await supabaseAdmin
           .from("orders")
-          .select("order_number, customer_name, total_usd, payment_method, payment_status")
+          .select(
+            "order_number, customer_name, total_usd, payment_method, payment_status, " +
+            "btc_amount, btc_tx_hash, payment_proof_url, " +
+            "created_at, payment_tx_id, notes"
+          )
           .neq("payment_status", "confirmed")
           .is("archived_at", null)
           .order("created_at", { ascending: false })
@@ -24,6 +28,13 @@ export const Route = createFileRoute("/api/admin/orders/unpaid")({
           ordertotal: Number(o.total_usd ?? 0),
           paymentmethod: o.payment_method ?? "",
           paymentstatus: o.payment_status ?? "",
+          btcamountquoted: o.btc_amount ? Number(o.btc_amount) : null,
+          btctxid: o.btc_tx_hash ?? null,
+          btcpaymentproofurl: o.payment_proof_url ?? null,
+          venmousername: o.payment_tx_id ?? null,
+          venmonotes: o.notes ?? null,
+          venmopaymentproofurl: o.payment_proof_url ?? null,
+          createdat: o.created_at ?? null,
         }));
 
         return json({ orders });
