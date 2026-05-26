@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
@@ -34,9 +35,19 @@ const checkoutSchema = z.object({
   items: z.array(itemSchema).min(1).max(50),
   payment_proof_url: z.string().url().max(1024).optional().nullable(),
   payment_tx_id: z.string().max(256).optional().nullable(),
-  promo_code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/).optional().nullable(),
+  promo_code: z
+    .string()
+    .min(2)
+    .max(32)
+    .regex(/^[A-Za-z0-9_-]+$/)
+    .optional()
+    .nullable(),
   payment_method: z.enum(["btc", "venmo"]).optional().default("btc"),
-  reserved_order_number: z.string().regex(/^[0-9]{3,12}$/).optional().nullable(),
+  reserved_order_number: z
+    .string()
+    .regex(/^[0-9]{3,12}$/)
+    .optional()
+    .nullable(),
 });
 
 async function nextOrderNumber(): Promise<string> {
@@ -45,11 +56,10 @@ async function nextOrderNumber(): Promise<string> {
   return String(data);
 }
 
-export const reserveOrderNumber = createServerFn({ method: "POST" })
-  .handler(async () => {
-    const order_number = await nextOrderNumber();
-    return { order_number };
-  });
+export const reserveOrderNumber = createServerFn({ method: "POST" }).handler(async () => {
+  const order_number = await nextOrderNumber();
+  return { order_number };
+});
 
 async function fetchBtcUsdRate(): Promise<number | null> {
   try {
@@ -88,10 +98,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       }
       return { ...i, price: dbPrice };
     });
-    const itemsTotal = pricedItems.reduce(
-      (s, i) => s + Number(i.price) * Number(i.quantity),
-      0,
-    );
+    const itemsTotal = pricedItems.reduce((s, i) => s + Number(i.price) * Number(i.quantity), 0);
     const shippingCost = itemsTotal >= 150 ? 0 : 18;
 
     // Validate promo code server-side (never trust the client price)
@@ -114,10 +121,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       }
     }
 
-    const total = Math.max(
-      0,
-      Math.round((itemsTotal + shippingCost - discountAmount) * 100) / 100,
-    );
+    const total = Math.max(0, Math.round((itemsTotal + shippingCost - discountAmount) * 100) / 100);
 
     // Sequential order number starting at 1501 (1501, 1502, 1503…) — always
     // assigned server-side. If the client pre-reserved a number for this
@@ -168,32 +172,44 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         shipping_country: data.shipping.country.trim(),
         shipping_method: data.shipping_method,
         notes: data.notes?.trim() || null,
-        items: pricedItems as any,
+        items: pricedItems as unknown as Json,
         payment_proof_url: data.payment_proof_url || null,
         payment_tx_id: data.payment_tx_id?.trim() || null,
         discount_code: appliedCode,
         discount_amount_usd: discountAmount,
       })
-      .select("id, order_number, access_token, customer_email, customer_name, payment_status, fulfillment_status, total_usd, items, created_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country")
+      .select(
+        "id, order_number, access_token, customer_email, customer_name, payment_status, fulfillment_status, total_usd, items, created_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country",
+      )
       .single();
 
     if (error) throw new Error(error.message);
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
-    const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order";
+    const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
+    const savedOrderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
+      name?: string;
+      quantity?: number;
+      price?: number;
+    }>;
+    const firstOrderItem = savedOrderItems[0];
     const newOrderWebhookPayload = {
-      order_number: order!.order_number,
-      customer_name: order!.customer_name,
-      customer_email: order!.customer_email,
-      customer_phone: data.customer.phone || null,
-      products: order!.items,
-      order_total: Number(order!.total_usd),
-      payment_status: order!.payment_status,
-      fulfillment_status: order!.fulfillment_status,
-      shipping_address: {
+      ordernumber: order!.order_number,
+      customername: order!.customer_name,
+      customeremail: order!.customer_email,
+      customerphone: data.customer.phone || null,
+      products: {
+        name: firstOrderItem?.name ?? null,
+        quantity: firstOrderItem?.quantity ?? null,
+        price: firstOrderItem?.price ?? null,
+      },
+      ordertotal: Number(order!.total_usd),
+      paymentstatus: order!.payment_status,
+      fulfillmentstatus: order!.fulfillment_status,
+      shippingaddress: {
         name: order!.shipping_name,
-        address_1: order!.shipping_address_1,
-        address_2: order!.shipping_address_2,
+        address1: order!.shipping_address_1,
+        address2: order!.shipping_address_2,
         city: order!.shipping_city,
         state: order!.shipping_state,
         zip: order!.shipping_zip,
@@ -203,10 +219,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     };
 
     try {
-      console.log("[n8n new-order webhook] Webhook attempted");
-      console.log("[n8n new-order webhook] URL", newOrderWebhookUrl);
+      console.log("[n8n new-order-clean webhook] Webhook attempted");
+      console.log("[n8n new-order-clean webhook] URL called", newOrderWebhookUrl);
       console.log(
-        "[n8n new-order webhook] Payload sent",
+        "[n8n new-order-clean webhook] JSON payload sent",
         JSON.stringify(newOrderWebhookPayload),
       );
 
@@ -217,16 +233,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       });
       const webhookResponseBody = await webhookResponse.text();
 
-      console.log(
-        "[n8n new-order webhook] Response status",
-        webhookResponse.status,
-      );
-      console.log(
-        "[n8n new-order webhook] Response body",
-        webhookResponseBody,
-      );
+      console.log("[n8n new-order-clean webhook] Response status", webhookResponse.status);
+      console.log("[n8n new-order-clean webhook] Response body", webhookResponseBody);
     } catch (e) {
-      console.error("[n8n new-order webhook] Caught error", e);
+      console.error("[n8n new-order-clean webhook] Request error", e);
     }
 
     // Best-effort line items
@@ -245,10 +255,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     // Decrement inventory atomically for each line item. Best-effort: log
     // errors but never fail the order — the order is already recorded.
     for (const i of pricedItems) {
-      const { error: decErr } = await supabaseAdmin.rpc(
-        "decrement_product_inventory",
-        { _slug: i.slug, _qty: i.quantity },
-      );
+      const { error: decErr } = await supabaseAdmin.rpc("decrement_product_inventory", {
+        _slug: i.slug,
+        _qty: i.quantity,
+      });
       if (decErr) {
         console.error("Inventory decrement failed", {
           slug: i.slug,
@@ -260,8 +270,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort order confirmation email — never fail the order if email errors.
     try {
-      const siteOrigin =
-        process.env.SITE_URL || "https://veratis.lovable.app";
+      const siteOrigin = process.env.SITE_URL || "https://veratis.lovable.app";
 
       await enqueueTransactionalEmail({
         templateName: "order-confirmation",
@@ -304,9 +313,15 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
 export const validatePromoCode = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({
-      code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/),
-    }).parse(d),
+    z
+      .object({
+        code: z
+          .string()
+          .min(2)
+          .max(32)
+          .regex(/^[A-Za-z0-9_-]+$/),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     const { data: rows, error } = await supabaseAdmin.rpc("lookup_promo_code", {
@@ -328,10 +343,16 @@ export const validatePromoCode = createServerFn({ method: "POST" })
 
 export const getCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
-    z.object({
-      order_number: z.string().min(3).max(32),
-      access_token: z.string().min(8).max(128).regex(/^[A-Za-z0-9_-]+$/),
-    }).parse(d),
+    z
+      .object({
+        order_number: z.string().min(3).max(32),
+        access_token: z
+          .string()
+          .min(8)
+          .max(128)
+          .regex(/^[A-Za-z0-9_-]+$/),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     const { data: order, error } = await supabaseAdmin
@@ -353,20 +374,21 @@ export const getCheckoutOrder = createServerFn({ method: "POST" })
     return { ...order, btc_address: order.btc_address ?? STATIC_BTC_ADDRESS };
   });
 
-export const getBtcUsdRate = createServerFn({ method: "GET" }).handler(
-  async () => {
-    try {
-      const res = await fetch(
-        "https://api.coinbase.com/v2/prices/BTC-USD/spot",
-        { headers: { Accept: "application/json" } },
-      );
-      if (!res.ok) throw new Error(`Coinbase ${res.status}`);
-      const json = (await res.json()) as { data?: { amount?: string } };
-      const rate = Number(json?.data?.amount);
-      if (!Number.isFinite(rate) || rate <= 0) throw new Error("bad rate");
-      return { rate, fetched_at: new Date().toISOString() };
-    } catch (e) {
-      return { rate: null as number | null, fetched_at: new Date().toISOString(), error: (e as Error).message };
-    }
-  },
-);
+export const getBtcUsdRate = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const res = await fetch("https://api.coinbase.com/v2/prices/BTC-USD/spot", {
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) throw new Error(`Coinbase ${res.status}`);
+    const json = (await res.json()) as { data?: { amount?: string } };
+    const rate = Number(json?.data?.amount);
+    if (!Number.isFinite(rate) || rate <= 0) throw new Error("bad rate");
+    return { rate, fetched_at: new Date().toISOString() };
+  } catch (e) {
+    return {
+      rate: null as number | null,
+      fetched_at: new Date().toISOString(),
+      error: (e as Error).message,
+    };
+  }
+});
