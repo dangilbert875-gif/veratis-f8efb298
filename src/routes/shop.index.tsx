@@ -378,7 +378,7 @@ function ShopPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-5 md:gap-x-8 gap-y-10 sm:gap-y-14 md:gap-y-16">
                 {visible.map((p) => {
-                  const stock = stockForSlug(p.slug);
+                  const stock = stockForProduct(p);
                   return (
                     <ProductCard
                       key={p.slug}
