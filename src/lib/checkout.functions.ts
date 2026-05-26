@@ -3,6 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
+import { postN8nOpsEvent } from "@/lib/n8n-webhook.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
@@ -305,6 +306,9 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       );
     }
 
+    // Ops bot: notify Telegram via n8n that a new order was created.
+    await postN8nOpsEvent("ORDER_CREATED", newOrderWebhookPayload);
+
     // Best-effort line items
     if (order?.id) {
       await supabaseAdmin.from("order_items").insert(
@@ -330,6 +334,24 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
           slug: i.slug,
           qty: i.quantity,
           error: decErr.message,
+        });
+        continue;
+      }
+      // Check if product is now at/below its low_stock_threshold and emit LOW_STOCK.
+      const { data: prod } = await supabaseAdmin
+        .from("products")
+        .select("name, slug, inventory_count, low_stock_threshold")
+        .eq("slug", i.slug)
+        .maybeSingle();
+      if (
+        prod &&
+        Number(prod.inventory_count ?? 0) <= Number(prod.low_stock_threshold ?? 0)
+      ) {
+        await postN8nOpsEvent("LOW_STOCK", {
+          name: prod.name,
+          slug: prod.slug,
+          inventory_count: Number(prod.inventory_count ?? 0),
+          low_stock_threshold: Number(prod.low_stock_threshold ?? 0),
         });
       }
     }
