@@ -54,6 +54,8 @@ function Home() {
   const recentLots = batches.slice(0, 8).map((b) => b.lot);
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
   const { products } = useCatalog();
+  const bpcProduct = products.find((p) => p.slug === "bpc-157");
+  const bpcImage = bpcProduct?.image && !bpcProduct.image.endsWith("vial-master.jpg") ? bpcProduct.image : heroVial;
 
   // Featured product configuration — slug → badge / stock / tagline
   const featuredConfig: Record<string, { badge?: { label: string; tone?: "amber" | "gray" | "green" }; stockText?: string; stockTone?: "default" | "amber"; tagline?: string }> = {
