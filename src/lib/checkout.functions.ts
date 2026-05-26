@@ -36,6 +36,7 @@ const checkoutSchema = z.object({
   payment_tx_id: z.string().max(256).optional().nullable(),
   promo_code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/).optional().nullable(),
   payment_method: z.enum(["btc", "venmo"]).optional().default("btc"),
+  reserved_order_number: z.string().regex(/^[0-9]{3,12}$/).optional().nullable(),
 });
 
 async function nextOrderNumber(): Promise<string> {
@@ -43,6 +44,12 @@ async function nextOrderNumber(): Promise<string> {
   if (error) throw new Error(error.message);
   return String(data);
 }
+
+export const reserveOrderNumber = createServerFn({ method: "POST" })
+  .handler(async () => {
+    const order_number = await nextOrderNumber();
+    return { order_number };
+  });
 
 async function fetchBtcUsdRate(): Promise<number | null> {
   try {
@@ -113,8 +120,22 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     );
 
     // Sequential order number starting at 1501 (1501, 1502, 1503…) — always
-    // assigned server-side so clients cannot influence it.
-    const order_number = await nextOrderNumber();
+    // assigned server-side. If the client pre-reserved a number for this
+    // checkout session (so the buyer sees the same # in the Venmo/BTC note
+    // that they'll see on the receipt), reuse it as long as it isn't already
+    // in use; otherwise mint a new one.
+    let order_number: string;
+    const reserved = data.reserved_order_number?.trim();
+    if (reserved) {
+      const { data: existing } = await supabaseAdmin
+        .from("orders")
+        .select("id")
+        .eq("order_number", reserved)
+        .maybeSingle();
+      order_number = existing ? await nextOrderNumber() : reserved;
+    } else {
+      order_number = await nextOrderNumber();
+    }
 
     const isVenmo = data.payment_method === "venmo";
     const btcAddress = isVenmo ? null : STATIC_BTC_ADDRESS;
