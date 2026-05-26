@@ -3,6 +3,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
+import { postN8nOrderWebhook } from "@/lib/n8n-webhook.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
 
@@ -186,7 +187,6 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
-    const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
     const savedOrderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
       name?: string;
       quantity?: number;
@@ -218,26 +218,11 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       timestamp: order!.created_at,
     };
 
-    try {
-      console.log("[n8n new-order-clean webhook] Webhook attempted");
-      console.log("[n8n new-order-clean webhook] URL called", newOrderWebhookUrl);
-      console.log(
-        "[n8n new-order-clean webhook] JSON payload sent",
-        JSON.stringify(newOrderWebhookPayload),
-      );
-
-      const webhookResponse = await fetch(newOrderWebhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newOrderWebhookPayload),
-      });
-      const webhookResponseBody = await webhookResponse.text();
-
-      console.log("[n8n new-order-clean webhook] Response status", webhookResponse.status);
-      console.log("[n8n new-order-clean webhook] Response body", webhookResponseBody);
-    } catch (e) {
-      console.error("[n8n new-order-clean webhook] Request error", e);
-    }
+    await postN8nOrderWebhook({
+      payload: newOrderWebhookPayload,
+      source: "checkout_order_created",
+      entityId: order!.id,
+    });
 
     // Best-effort line items
     if (order?.id) {

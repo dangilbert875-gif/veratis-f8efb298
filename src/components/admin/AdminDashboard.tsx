@@ -15,6 +15,7 @@ import { CommandBar } from "./CommandBar";
 import { ActivityPanel } from "./panels/ActivityPanel";
 import { AuditLogPanel } from "./panels/AuditLogPanel";
 import { PaymentMethodsPanel } from "./panels/PaymentMethodsPanel";
+import { N8nWebhookDebugPanel } from "./panels/N8nWebhookDebugPanel";
 
 export type AdminDebugState = {
   userId: string | null;
@@ -68,6 +69,7 @@ const sectionGroups = [
     heading: "System",
     items: [
       { id: "audit", label: "Audit Log" },
+      { id: "n8n-debug", label: "n8n Debug" },
       { id: "payment-methods", label: "Payment Methods" },
     ],
   },
@@ -86,12 +88,11 @@ export type SectionId =
   | "referrals"
   | "payouts"
   | "customers"
+  | "n8n-debug"
   | "payment-methods";
 
 type SectionItem = { id: SectionId; label: string };
-const sections: SectionItem[] = sectionGroups.flatMap(
-  (g) => g.items as readonly SectionItem[],
-);
+const sections: SectionItem[] = sectionGroups.flatMap((g) => g.items as readonly SectionItem[]);
 
 export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: AdminDebugState }) {
   const [active, setActive] = useState<SectionId>("overview");
@@ -99,7 +100,9 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
   const [diagOpen, setDiagOpen] = useState(false);
   const [lastSync, setLastSync] = useState<Date>(() => new Date());
   const [, force] = useState(0);
-  const [ordersInitialFilter, setOrdersInitialFilter] = useState<"all"|"unpaid"|"unshipped"|"flagged"|"refunded">("all");
+  const [ordersInitialFilter, setOrdersInitialFilter] = useState<
+    "all" | "unpaid" | "unshipped" | "flagged" | "refunded"
+  >("all");
   const navigate = useNavigate();
 
   // Re-render every 10s so the "last synchronized" timestamp ticks.
@@ -134,7 +137,10 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
     navigate({ to: "/admin/login", replace: true });
   };
 
-  const handleNavigate = (s: SectionId, opts?: { ordersFilter?: "unshipped"|"unpaid"|"flagged"|"refunded" }) => {
+  const handleNavigate = (
+    s: SectionId,
+    opts?: { ordersFilter?: "unshipped" | "unpaid" | "flagged" | "refunded" },
+  ) => {
     if (s === "orders" && opts?.ordersFilter) {
       setOrdersInitialFilter(opts.ordersFilter);
     }
@@ -151,10 +157,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
         </div>
         <nav className="flex-1 px-3 py-5 overflow-y-auto">
           {sectionGroups.map((g, gi) => (
-            <div
-              key={g.heading}
-              className={gi > 0 ? "mt-5 pt-5 border-t border-ink/8" : ""}
-            >
+            <div key={g.heading} className={gi > 0 ? "mt-5 pt-5 border-t border-ink/8" : ""}>
               <div className="px-3 mb-2 text-[9px] tracking-[0.3em] uppercase text-foreground/40">
                 {g.heading}
               </div>
@@ -180,7 +183,9 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
         <div className="px-6 py-5 border-t border-ink/10 text-[11px] text-foreground/60">
           <div className="truncate">{viewer.email}</div>
           <div className="mt-2 flex items-center gap-3 text-[10px] tracking-[0.2em] uppercase">
-            <a href="/admin/account" className="text-foreground/50 hover:text-ink">Account</a>
+            <a href="/admin/account" className="text-foreground/50 hover:text-ink">
+              Account
+            </a>
             <span className="text-foreground/20">·</span>
             <button type="button" onClick={signOut} className="text-foreground/50 hover:text-ink">
               Sign out
@@ -196,9 +201,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
             <div className="text-[9px] tracking-[0.32em] uppercase text-foreground/45">
               {sections.find((s) => s.id === active)?.label}
             </div>
-            <h1 className="mt-1 text-[20px] font-medium tracking-tight">
-              {titleFor(active)}
-            </h1>
+            <h1 className="mt-1 text-[20px] font-medium tracking-tight">{titleFor(active)}</h1>
           </div>
           <div className="flex items-center gap-3">
             <SystemStatus lastSync={lastSync} />
@@ -230,7 +233,9 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
               onChange={(e) => setActive(e.target.value as SectionId)}
             >
               {sections.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
               ))}
             </select>
             <button
@@ -260,6 +265,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           {active === "overview" && <OverviewPanel onNavigate={handleNavigate} />}
           {active === "activity" && <ActivityPanel />}
           {active === "audit" && <AuditLogPanel />}
+          {active === "n8n-debug" && <N8nWebhookDebugPanel />}
           {active === "orders" && <OrdersPanel initialQuickFilter={ordersInitialFilter} />}
           {active === "referrals" && <ReferralsPanel />}
           {active === "payouts" && <PayoutsPanel />}
@@ -310,7 +316,9 @@ function SystemStatus({ lastSync }: { lastSync: Date }) {
 function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
   return (
     <div className="border-t border-ink/10 bg-mist/25 p-3 text-[11px] leading-relaxed text-foreground/65">
-      <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">Auth debug</div>
+      <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">
+        Auth debug
+      </div>
       <div>Supabase user id: {debug.userId ?? "—"}</div>
       <div>Session exists: {debug.sessionExists ? "true" : "false"}</div>
       <div>Profile role: {debug.profileRole ?? "—"}</div>
@@ -322,18 +330,33 @@ function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
 
 function titleFor(id: SectionId): string {
   switch (id) {
-    case "overview": return "Operational overview";
-    case "activity": return "Operational activity";
-    case "audit": return "Audit log";
-    case "orders": return "Order management";
-    case "referrals": return "Research-partner referrals";
-    case "payouts": return "Partner payouts";
-    case "products": return "Catalog";
-    case "archive": return "Verification archive";
-    case "coa": return "Certificate uploads";
-    case "articles": return "Educational publications";
-    case "partners": return "Research partners";
-    case "customers": return "Customer registry";
-    default: return "Operations";
+    case "overview":
+      return "Operational overview";
+    case "activity":
+      return "Operational activity";
+    case "audit":
+      return "Audit log";
+    case "n8n-debug":
+      return "n8n webhook debug";
+    case "orders":
+      return "Order management";
+    case "referrals":
+      return "Research-partner referrals";
+    case "payouts":
+      return "Partner payouts";
+    case "products":
+      return "Catalog";
+    case "archive":
+      return "Verification archive";
+    case "coa":
+      return "Certificate uploads";
+    case "articles":
+      return "Educational publications";
+    case "partners":
+      return "Research partners";
+    case "customers":
+      return "Customer registry";
+    default:
+      return "Operations";
   }
 }

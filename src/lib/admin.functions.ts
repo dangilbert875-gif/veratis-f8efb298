@@ -3,14 +3,21 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
+import { createSampleN8nOrderPayload, postN8nOrderWebhook } from "@/lib/n8n-webhook.server";
 
-async function sendOrderStatusEmail(orderId: string, newStatus: string, priorStatus?: string | null) {
+async function sendOrderStatusEmail(
+  orderId: string,
+  newStatus: string,
+  priorStatus?: string | null,
+) {
   if (priorStatus === newStatus) return;
   if (newStatus !== "shipped" && newStatus !== "cancelled") return;
   try {
     const { data: order } = await supabaseAdmin
       .from("orders")
-      .select("order_number, customer_email, customer_name, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, tracking_number, carrier")
+      .select(
+        "order_number, customer_email, customer_name, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country, tracking_number, carrier",
+      )
       .eq("id", orderId)
       .maybeSingle();
     if (!order?.customer_email) return;
@@ -25,15 +32,17 @@ async function sendOrderStatusEmail(orderId: string, newStatus: string, priorSta
           customerName: order.customer_name || order.shipping_name || undefined,
           trackingNumber: order.tracking_number || undefined,
           carrier: order.carrier || undefined,
-          shippingAddress: order.shipping_address_1 ? {
-            name: order.shipping_name,
-            address_1: order.shipping_address_1,
-            address_2: order.shipping_address_2,
-            city: order.shipping_city,
-            state: order.shipping_state,
-            zip: order.shipping_zip,
-            country: order.shipping_country,
-          } : undefined,
+          shippingAddress: order.shipping_address_1
+            ? {
+                name: order.shipping_name,
+                address_1: order.shipping_address_1,
+                address_2: order.shipping_address_2,
+                city: order.shipping_city,
+                state: order.shipping_state,
+                zip: order.shipping_zip,
+                country: order.shipping_country,
+              }
+            : undefined,
         },
       });
     } else if (newStatus === "cancelled") {
@@ -69,10 +78,7 @@ export const getViewerContext = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabase, userId } = context as any;
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", userId);
     const { data: profile } = await supabase
       .from("profiles")
       .select("email, full_name")
@@ -91,19 +97,20 @@ export const getViewerContext = createServerFn({ method: "GET" })
 export const getAdminOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
-    z
-      .object({ scope: z.enum(["today", "7d", "30d", "all"]).optional() })
-      .parse(d ?? {}),
+    z.object({ scope: z.enum(["today", "7d", "30d", "all"]).optional() }).parse(d ?? {}),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
     const scope = data.scope ?? "30d";
-    const scopeDays =
-      scope === "today" ? 1 : scope === "7d" ? 7 : scope === "30d" ? 30 : null;
+    const scopeDays = scope === "today" ? 1 : scope === "7d" ? 7 : scope === "30d" ? 30 : null;
 
     const [orders, referrals, payouts, profiles, products, lots] = await Promise.all([
-      supabase.from("orders").select("id, status, payment_status, fulfillment_status, total_usd, created_at, customer_email, risk_flag, archived_at"),
+      supabase
+        .from("orders")
+        .select(
+          "id, status, payment_status, fulfillment_status, total_usd, created_at, customer_email, risk_flag, archived_at",
+        ),
       supabase.from("referrals").select("id, clicks, conversions, revenue_usd"),
       supabase.from("payouts").select("id, status, amount_usd"),
       supabase.from("profiles").select("id, created_at"),
@@ -193,9 +200,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
 
     // Action-required counts
     const awaitingPaymentCount = orderRows.filter(isAwaitingPayment).length;
-    const flaggedCount = orderRows.filter(
-      (o: any) => o.risk_flag && !o.archived_at,
-    ).length;
+    const flaggedCount = orderRows.filter((o: any) => o.risk_flag && !o.archived_at).length;
     const refundsPendingCount = orderRows.filter(isRefundLike).length;
 
     // Inventory health
@@ -204,8 +209,7 @@ export const getAdminOverview = createServerFn({ method: "GET" })
     const lowStockCount = productRows.filter(
       (p: any) =>
         p.status === "published" &&
-        Number(p.inventory_count ?? 0) <=
-          Number(p.low_stock_threshold ?? 0),
+        Number(p.inventory_count ?? 0) <= Number(p.low_stock_threshold ?? 0),
     ).length;
     const today = new Date().toISOString().slice(0, 10);
     const in30 = new Date(now + 30 * 86400000).toISOString().slice(0, 10);
@@ -222,7 +226,9 @@ export const getAdminOverview = createServerFn({ method: "GET" })
       scope,
       orders: {
         total: orderRows.length,
-        pending: orderRows.filter((o: any) => o.status === "pending" || o.status === "awaiting_payment").length,
+        pending: orderRows.filter(
+          (o: any) => o.status === "pending" || o.status === "awaiting_payment",
+        ).length,
         unshipped: orderRows.filter(isUnshipped).length,
         awaitingPayment: awaitingPaymentCount,
         flagged: flaggedCount,
@@ -240,12 +246,20 @@ export const getAdminOverview = createServerFn({ method: "GET" })
       referrals: {
         total: (referrals.data ?? []).length,
         clicks: (referrals.data ?? []).reduce((s: number, r: any) => s + Number(r.clicks ?? 0), 0),
-        conversions: (referrals.data ?? []).reduce((s: number, r: any) => s + Number(r.conversions ?? 0), 0),
-        revenue: (referrals.data ?? []).reduce((s: number, r: any) => s + Number(r.revenue_usd ?? 0), 0),
+        conversions: (referrals.data ?? []).reduce(
+          (s: number, r: any) => s + Number(r.conversions ?? 0),
+          0,
+        ),
+        revenue: (referrals.data ?? []).reduce(
+          (s: number, r: any) => s + Number(r.revenue_usd ?? 0),
+          0,
+        ),
       },
       payouts: {
         total: (payouts.data ?? []).length,
-        pending: (payouts.data ?? []).filter((p: any) => p.status === "pending" || p.status === "approved").length,
+        pending: (payouts.data ?? []).filter(
+          (p: any) => p.status === "pending" || p.status === "approved",
+        ).length,
         outstanding: (payouts.data ?? [])
           .filter((p: any) => p.status !== "sent" && p.status !== "cancelled")
           .reduce((s: number, p: any) => s + Number(p.amount_usd ?? 0), 0),
@@ -282,12 +296,14 @@ export const getOrderDetail = createServerFn({ method: "POST" })
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
     const { data: order, error } = await supabase
-      .from("orders").select("*").eq("id", data.id).maybeSingle();
+      .from("orders")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
     if (error) throw new Error(error.message);
     if (!order) throw new Error("Order not found");
 
-    const { data: items } = await supabase
-      .from("order_items").select("*").eq("order_id", data.id);
+    const { data: items } = await supabase.from("order_items").select("*").eq("order_id", data.id);
 
     let customerStats: any = null;
     if (order.customer_id || order.user_id) {
@@ -300,11 +316,9 @@ export const getOrderDetail = createServerFn({ method: "POST" })
       customerStats = {
         total_orders: rows.length,
         lifetime_spend: rows
-          .filter((r: any) => ["paid","shipped","delivered"].includes(r.status))
+          .filter((r: any) => ["paid", "shipped", "delivered"].includes(r.status))
           .reduce((s: number, r: any) => s + Number(r.total_usd ?? 0), 0),
-        first_order_at: rows.length
-          ? rows.map((r: any) => r.created_at).sort()[0]
-          : null,
+        first_order_at: rows.length ? rows.map((r: any) => r.created_at).sort()[0] : null,
       };
     }
 
@@ -316,7 +330,17 @@ const orderPatchInput = z.object({
   patch: z.object({
     payment_status: z.string().max(32).optional(),
     fulfillment_status: z.string().max(32).optional(),
-    status: z.enum(["pending","awaiting_payment","paid","shipped","delivered","cancelled","refunded"]).optional(),
+    status: z
+      .enum([
+        "pending",
+        "awaiting_payment",
+        "paid",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "refunded",
+      ])
+      .optional(),
     risk_flag: z.boolean().optional(),
     tracking_number: z.string().max(128).nullable().optional(),
     carrier: z.string().max(64).nullable().optional(),
@@ -353,7 +377,9 @@ export const patchOrder = createServerFn({ method: "POST" })
     // Snapshot prior state for audit logging
     const { data: prior } = await supabase
       .from("orders")
-      .select("order_number, payment_status, fulfillment_status, status, tracking_number, carrier, archived_at, risk_flag")
+      .select(
+        "order_number, payment_status, fulfillment_status, status, tracking_number, carrier, archived_at, risk_flag",
+      )
       .eq("id", data.id)
       .maybeSingle();
 
@@ -368,7 +394,15 @@ export const patchOrder = createServerFn({ method: "POST" })
     try {
       if (prior) {
         const entries: Array<{ field: string; from: any; to: any }> = [];
-        const watch = ["payment_status", "fulfillment_status", "status", "tracking_number", "carrier", "risk_flag", "archived_at"];
+        const watch = [
+          "payment_status",
+          "fulfillment_status",
+          "status",
+          "tracking_number",
+          "carrier",
+          "risk_flag",
+          "archived_at",
+        ];
         for (const k of watch) {
           if (k in data.patch && (prior as any)[k] !== (data.patch as any)[k]) {
             entries.push({ field: k, from: (prior as any)[k], to: (data.patch as any)[k] });
@@ -407,8 +441,14 @@ export const patchOrder = createServerFn({ method: "POST" })
 const bulkOrderInput = z.object({
   ids: z.array(z.string().uuid()).min(1).max(200),
   action: z.enum([
-    "mark_processing","mark_packed","mark_shipped","mark_delivered",
-    "mark_paid","archive","unarchive","delete",
+    "mark_processing",
+    "mark_packed",
+    "mark_shipped",
+    "mark_delivered",
+    "mark_paid",
+    "archive",
+    "unarchive",
+    "delete",
   ]),
 });
 
@@ -422,9 +462,12 @@ export const bulkOrderAction = createServerFn({ method: "POST" })
     let patch: Record<string, any> = {};
     if (data.action === "mark_processing") patch = { fulfillment_status: "processing" };
     else if (data.action === "mark_packed") patch = { fulfillment_status: "packed" };
-    else if (data.action === "mark_shipped") patch = { fulfillment_status: "shipped", shipped_at: now, status: "shipped" };
-    else if (data.action === "mark_delivered") patch = { fulfillment_status: "delivered", delivered_at: now, status: "delivered" };
-    else if (data.action === "mark_paid") patch = { payment_status: "confirmed", payment_received_at: now, status: "paid" };
+    else if (data.action === "mark_shipped")
+      patch = { fulfillment_status: "shipped", shipped_at: now, status: "shipped" };
+    else if (data.action === "mark_delivered")
+      patch = { fulfillment_status: "delivered", delivered_at: now, status: "delivered" };
+    else if (data.action === "mark_paid")
+      patch = { payment_status: "confirmed", payment_received_at: now, status: "paid" };
     else if (data.action === "archive") patch = { archived_at: now };
     else if (data.action === "unarchive") patch = { archived_at: null };
     else if (data.action === "delete") {
@@ -445,7 +488,15 @@ const orderInput = z.object({
   id: z.string().uuid().optional(),
   order_number: z.string().min(1).max(64),
   customer_email: z.string().email(),
-  status: z.enum(["pending", "awaiting_payment", "paid", "shipped", "delivered", "cancelled", "refunded"]),
+  status: z.enum([
+    "pending",
+    "awaiting_payment",
+    "paid",
+    "shipped",
+    "delivered",
+    "cancelled",
+    "refunded",
+  ]),
   total_usd: z.number().min(0),
   btc_amount: z.number().nullable().optional(),
   btc_address: z.string().nullable().optional(),
@@ -491,7 +542,11 @@ export const listReferrals = createServerFn({ method: "GET" })
 const referralInput = z.object({
   id: z.string().uuid().optional(),
   partner_id: z.string().uuid().nullable().optional(),
-  code: z.string().min(2).max(32).regex(/^[A-Za-z0-9_-]+$/),
+  code: z
+    .string()
+    .min(2)
+    .max(32)
+    .regex(/^[A-Za-z0-9_-]+$/),
   label: z.string().max(128).nullable().optional(),
   clicks: z.number().int().min(0).optional(),
   conversions: z.number().int().min(0).optional(),
@@ -580,7 +635,11 @@ export const listCustomers = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
-    let query = supabase.from("profiles").select("id, email, full_name, created_at").order("created_at", { ascending: false }).limit(200);
+    let query = supabase
+      .from("profiles")
+      .select("id, email, full_name, created_at")
+      .order("created_at", { ascending: false })
+      .limit(200);
     if (data.q) {
       query = query.or(`email.ilike.%${data.q}%,full_name.ilike.%${data.q}%`);
     }
@@ -588,7 +647,10 @@ export const listCustomers = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const ids = (profiles ?? []).map((p: any) => p.id);
     if (!ids.length) return [];
-    const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("user_id", ids);
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("user_id", ids);
     const roleMap: Record<string, Role[]> = {};
     (roles ?? []).forEach((r: any) => {
       roleMap[r.user_id] = [...(roleMap[r.user_id] ?? []), r.role];
@@ -599,17 +661,21 @@ export const listCustomers = createServerFn({ method: "GET" })
 export const setUserRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
-    z.object({
-      user_id: z.string().uuid(),
-      role: z.enum(["admin", "research_partner", "customer"]),
-      enabled: z.boolean(),
-    }).parse(d),
+    z
+      .object({
+        user_id: z.string().uuid(),
+        role: z.enum(["admin", "research_partner", "customer"]),
+        enabled: z.boolean(),
+      })
+      .parse(d),
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context as any;
     await assertAdmin(supabase, userId);
     if (data.enabled) {
-      const { error } = await supabase.from("user_roles").upsert({ user_id: data.user_id, role: data.role });
+      const { error } = await supabase
+        .from("user_roles")
+        .upsert({ user_id: data.user_id, role: data.role });
       if (error) throw new Error(error.message);
     } else {
       const { error } = await supabase
@@ -662,9 +728,7 @@ export const getAdminAlerts = createServerFn({ method: "GET" })
 
     const pendingPayouts = payouts.data ?? [];
     const flaggedOrders = (orders.data ?? []).filter((o: any) => o.risk_flag);
-    const unfulfilledOrders = (orders.data ?? []).filter(
-      (o: any) => o.status === "paid",
-    );
+    const unfulfilledOrders = (orders.data ?? []).filter((o: any) => o.status === "paid");
 
     return {
       lowStock: lowStock.map((p: any) => ({
@@ -680,10 +744,7 @@ export const getAdminAlerts = createServerFn({ method: "GET" })
       })),
       pendingPayouts: {
         count: pendingPayouts.length,
-        total: pendingPayouts.reduce(
-          (s: number, p: any) => s + Number(p.amount_usd ?? 0),
-          0,
-        ),
+        total: pendingPayouts.reduce((s: number, p: any) => s + Number(p.amount_usd ?? 0), 0),
       },
       flaggedOrders: flaggedOrders.map((o: any) => ({
         id: o.id,
@@ -693,6 +754,38 @@ export const getAdminAlerts = createServerFn({ method: "GET" })
         count: unfulfilledOrders.length,
       },
     };
+  });
+
+// ───── n8n webhook debug ─────
+export const listN8nWebhookDebug = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+
+    const { data, error } = await supabaseAdmin
+      .from("audit_logs")
+      .select("id, created_at, action, entity_id, diff")
+      .eq("entity_type", "n8n_webhook")
+      .order("created_at", { ascending: false })
+      .limit(25);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const sendTestN8nWebhook = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context as any;
+    await assertAdmin(supabase, userId);
+
+    const result = await postN8nOrderWebhook({
+      payload: createSampleN8nOrderPayload(),
+      source: "admin_test_button",
+      entityId: "TEST-1530",
+      actorId: userId,
+    });
+    return result;
   });
 
 // ───── Global command-bar search (Phase 2.5 A) ─────
@@ -714,34 +807,39 @@ export const commandSearch = createServerFn({ method: "POST" })
       return qb;
     };
 
-    const [products, orders, customers, articles, lots, affiliates, partners] =
-      await Promise.all([
-        limited("products", "id, name, slug, status", (qb: any) =>
-          like ? qb.or(`name.ilike.${like},slug.ilike.${like}`) : qb.order("updated_at", { ascending: false }),
-        ),
-        limited("orders", "id, order_number, customer_email, status", (qb: any) =>
-          like
-            ? qb.or(`order_number.ilike.${like},customer_email.ilike.${like}`)
-            : qb.order("created_at", { ascending: false }),
-        ),
-        limited("profiles", "id, email, full_name", (qb: any) =>
-          like ? qb.or(`email.ilike.${like},full_name.ilike.${like}`) : qb.order("created_at", { ascending: false }),
-        ),
-        limited("educational_articles", "id, title, slug, status", (qb: any) =>
-          like ? qb.or(`title.ilike.${like},slug.ilike.${like}`) : qb.order("updated_at", { ascending: false }),
-        ),
-        limited("product_lots", "id, lot_number, product_id, active", (qb: any) =>
-          like ? qb.ilike("lot_number", like) : qb.order("created_at", { ascending: false }),
-        ),
-        limited("affiliates", "id, affiliate_code, user_id, status", (qb: any) =>
-          like ? qb.ilike("affiliate_code", like) : qb.order("created_at", { ascending: false }),
-        ),
-        limited("research_partners", "id, institution, contact_email, status", (qb: any) =>
-          like
-            ? qb.or(`institution.ilike.${like},contact_email.ilike.${like}`)
-            : qb.order("created_at", { ascending: false }),
-        ),
-      ]);
+    const [products, orders, customers, articles, lots, affiliates, partners] = await Promise.all([
+      limited("products", "id, name, slug, status", (qb: any) =>
+        like
+          ? qb.or(`name.ilike.${like},slug.ilike.${like}`)
+          : qb.order("updated_at", { ascending: false }),
+      ),
+      limited("orders", "id, order_number, customer_email, status", (qb: any) =>
+        like
+          ? qb.or(`order_number.ilike.${like},customer_email.ilike.${like}`)
+          : qb.order("created_at", { ascending: false }),
+      ),
+      limited("profiles", "id, email, full_name", (qb: any) =>
+        like
+          ? qb.or(`email.ilike.${like},full_name.ilike.${like}`)
+          : qb.order("created_at", { ascending: false }),
+      ),
+      limited("educational_articles", "id, title, slug, status", (qb: any) =>
+        like
+          ? qb.or(`title.ilike.${like},slug.ilike.${like}`)
+          : qb.order("updated_at", { ascending: false }),
+      ),
+      limited("product_lots", "id, lot_number, product_id, active", (qb: any) =>
+        like ? qb.ilike("lot_number", like) : qb.order("created_at", { ascending: false }),
+      ),
+      limited("affiliates", "id, affiliate_code, user_id, status", (qb: any) =>
+        like ? qb.ilike("affiliate_code", like) : qb.order("created_at", { ascending: false }),
+      ),
+      limited("research_partners", "id, institution, contact_email, status", (qb: any) =>
+        like
+          ? qb.or(`institution.ilike.${like},contact_email.ilike.${like}`)
+          : qb.order("created_at", { ascending: false }),
+      ),
+    ]);
 
     return {
       products: products.data ?? [],
