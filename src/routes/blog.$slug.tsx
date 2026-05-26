@@ -7,6 +7,8 @@ import { findBatch } from "@/data/batches";
 import { Figure } from "@/components/site/ArticleVisuals";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import { ReferencedSources, pepPediaSource } from "@/components/site/ReferencedSources";
+import { usePageEnabled } from "@/hooks/usePageEnabled";
+import { PageDisabled } from "@/components/site/PageDisabled";
 
 export const Route = createFileRoute("/blog/$slug")({
   head: ({ params }) => {
@@ -126,6 +128,7 @@ function ReadingProgress() {
 }
 
 function ArticlePage() {
+  const enabled = usePageEnabled("education");
   const { article } = Route.useLoaderData() as { article: Article };
   const related = relatedArticles(article.slug, article.category);
   const compounds = (article.relatedCompounds ?? [])
