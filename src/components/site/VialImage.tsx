@@ -50,6 +50,7 @@ export function VialImage({
   purity,
   size = "card",
   alt,
+  imageUrl,
 }: {
   name: string;
   dosage: string;
@@ -57,7 +58,32 @@ export function VialImage({
   purity?: string;
   size?: Size;
   alt?: string;
+  /**
+   * Backend-uploaded product image. When provided and different from the
+   * bundled vial-master placeholder, it is rendered as the canonical product
+   * photo (no synthetic label overlay). Falls back to the rendered vial when
+   * the backend has not uploaded a featured image.
+   */
+  imageUrl?: string | null;
 }) {
+  // If the backend has supplied a real featured image (anything other than
+  // the bundled vial-master placeholder), trust it as the source of truth.
+  const hasUploadedImage =
+    !!imageUrl && imageUrl !== vialMaster && !imageUrl.endsWith("vial-master.jpg");
+
+  if (hasUploadedImage) {
+    return (
+      <img
+        src={imageUrl as string}
+        alt={alt ?? `${name} ${dosage}`}
+        loading="lazy"
+        width={1024}
+        height={1024}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
   const displayName = labelName(name);
   const displayDosage = labelDosage(dosage);
 
