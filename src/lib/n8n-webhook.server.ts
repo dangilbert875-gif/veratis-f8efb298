@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/New-Order-Clean";
 
 export type N8nOrderWebhookPayload = {
+  webhookversion: string;
   ordernumber: string;
   customername: string | null;
   customeremail: string | null;
@@ -119,6 +120,7 @@ export async function postN8nOrderWebhook({
 
 export function createSampleN8nOrderPayload(): N8nOrderWebhookPayload {
   return {
+    webhookversion: "v2-payment-products-array",
     ordernumber: "TEST-1530",
     customername: "Test Customer",
     customeremail: "test@example.com",
