@@ -14,6 +14,10 @@ export type Product = {
   inStock?: boolean;
   classification?: string;
   lot: string;
+  /** Real on-hand count, when known from the backend. */
+  inventoryCount?: number;
+  /** Per-product low-stock threshold (defaults to 20 site-wide). */
+  lowStockThreshold?: number;
 };
 
 export const products: Product[] = [
