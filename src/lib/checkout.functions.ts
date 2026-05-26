@@ -181,7 +181,9 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
     const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
-    const firstOrderItem = Array.isArray(order!.items) ? order!.items[0] : pricedItems[0];
+    const firstOrderItem = (Array.isArray(order!.items) ? order!.items[0] : pricedItems[0]) as
+      | { name?: string; quantity?: number; price?: number }
+      | undefined;
     const newOrderWebhookPayload = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
