@@ -4,8 +4,9 @@ import { Logo } from "./Logo";
 import { useCart } from "@/lib/cart";
 import { SearchOverlay } from "./SearchOverlay";
 import { batches } from "@/data/batches";
+import { usePageEnabled } from "@/hooks/usePageEnabled";
 
-const nav = [
+const baseNav = [
   { to: "/shop", label: "Shop" },
   { to: "/coa-archive", label: "COA Archive" },
   { to: "/blog", label: "Education" },
