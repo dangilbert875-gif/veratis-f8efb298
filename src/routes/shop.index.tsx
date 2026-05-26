@@ -44,13 +44,20 @@ const TAGLINES: Record<string, string> = {
   "tirzepatide-30mg": "GLP-1/GIP dual agonist",
 };
 
-// Deterministic stock state by slug
-function stockForSlug(slug: string): { state: "in_stock" | "low" | "last3"; count?: number } {
-  let h = 0;
-  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0;
-  const bucket = h % 10;
-  if (bucket === 0) return { state: "last3" };
-  if (bucket <= 2) return { state: "low", count: 2 + (h % 4) }; // 2–5 left
+// Real stock state derived from backend inventory.
+// Falls back to "in_stock" when no inventory data is present (static catalog).
+const LOW_STOCK_FLOOR = 20;
+function stockForProduct(p: Product): {
+  state: "in_stock" | "low" | "last3";
+  count?: number;
+} {
+  if (p.inStock === false) return { state: "in_stock" };
+  const n = p.inventoryCount;
+  if (typeof n !== "number") return { state: "in_stock" };
+  if (n <= 0) return { state: "in_stock" }; // out_of_stock handled via inStock=false
+  if (n <= 3) return { state: "last3", count: n };
+  const threshold = p.lowStockThreshold ?? LOW_STOCK_FLOOR;
+  if (n <= threshold) return { state: "low", count: n };
   return { state: "in_stock" };
 }
 
