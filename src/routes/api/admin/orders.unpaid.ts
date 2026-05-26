@@ -10,11 +10,7 @@ export const Route = createFileRoute("/api/admin/orders/unpaid")({
 
         const { data, error } = await supabaseAdmin
           .from("orders")
-          .select(
-            "order_number, customer_name, total_usd, payment_method, payment_status, " +
-            "btc_amount, btc_tx_hash, payment_proof_url, " +
-            "created_at, payment_tx_id, notes"
-          )
+          .select("order_number, customer_name, total_usd, payment_method, payment_status, btc_amount, btc_tx_hash, payment_proof_url, created_at, payment_tx_id, notes")
           .neq("payment_status", "confirmed")
           .is("archived_at", null)
           .order("created_at", { ascending: false })
