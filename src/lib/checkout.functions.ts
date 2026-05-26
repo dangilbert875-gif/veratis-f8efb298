@@ -221,16 +221,32 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       timestamp: order!.created_at,
     };
 
+    // Always include all payment-method fields. Use "N/A" for the unused
+    // method so n8n/Telegram never receives blank values.
+    const NA = "N/A";
     if (isBtcOrder) {
-      newOrderWebhookPayload.btcamountquoted = order!.btc_amount;
-      newOrderWebhookPayload.btctxid = order!.payment_tx_id;
-      newOrderWebhookPayload.btcpaymentproofurl = order!.payment_proof_url;
+      newOrderWebhookPayload.btcamountquoted = order!.btc_amount ?? NA;
+      newOrderWebhookPayload.btctxid = order!.payment_tx_id ?? NA;
+      newOrderWebhookPayload.btcpaymentproofurl = order!.payment_proof_url ?? NA;
+      newOrderWebhookPayload.venmousername = NA;
+      newOrderWebhookPayload.venmonotes = NA;
+      newOrderWebhookPayload.venmopaymentproofurl = NA;
     } else if (isVenmoOrder) {
       // Venmo username is captured via payment_tx_id on the checkout form,
       // payment proof URL via payment_proof_url, and any buyer note via notes.
-      newOrderWebhookPayload.venmousername = order!.payment_tx_id;
-      newOrderWebhookPayload.venmopaymentproofurl = order!.payment_proof_url;
-      newOrderWebhookPayload.venmonotes = order!.notes;
+      newOrderWebhookPayload.venmousername = order!.payment_tx_id ?? NA;
+      newOrderWebhookPayload.venmonotes = order!.notes ?? NA;
+      newOrderWebhookPayload.venmopaymentproofurl = order!.payment_proof_url ?? NA;
+      newOrderWebhookPayload.btcamountquoted = NA;
+      newOrderWebhookPayload.btctxid = NA;
+      newOrderWebhookPayload.btcpaymentproofurl = NA;
+    } else {
+      newOrderWebhookPayload.btcamountquoted = NA;
+      newOrderWebhookPayload.btctxid = NA;
+      newOrderWebhookPayload.btcpaymentproofurl = NA;
+      newOrderWebhookPayload.venmousername = NA;
+      newOrderWebhookPayload.venmonotes = NA;
+      newOrderWebhookPayload.venmopaymentproofurl = NA;
     }
 
     try {
