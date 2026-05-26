@@ -267,13 +267,40 @@ function ProductPage() {
             <Link to="/verify" className="inline-flex items-center gap-2 text-ink hover:text-primary transition">
               <FileText size={13} /> Retrieve COA for lot {lotId}
             </Link>
-            <span className="inline-flex items-center gap-2 font-mono uppercase tracking-[0.16em] text-foreground/50">
-              <span className="relative inline-flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
-              </span>
-              In stock
-            </span>
+            {(() => {
+              const inv = (p as any).inventoryCount as number | undefined;
+              const threshold = ((p as any).lowStockThreshold as number | undefined) ?? 20;
+              const isLow = typeof inv === "number" && inv > 0 && inv <= threshold;
+              const isCritical = typeof inv === "number" && inv > 0 && inv <= 3;
+              const label = !available
+                ? "Reserved"
+                : isCritical
+                ? `Only ${inv} left`
+                : isLow
+                ? `Low stock · ${inv} left`
+                : "In stock";
+              const dotClass = !available
+                ? "bg-foreground/30"
+                : isLow
+                ? "bg-amber-600"
+                : "bg-primary";
+              const textClass = !available
+                ? "text-foreground/50"
+                : isLow
+                ? "text-amber-700"
+                : "text-foreground/50";
+              return (
+                <span className={`inline-flex items-center gap-2 font-mono uppercase tracking-[0.16em] ${textClass}`}>
+                  <span className="relative inline-flex h-1.5 w-1.5">
+                    {available && !isLow ? (
+                      <span className="absolute inline-flex h-full w-full rounded-full bg-primary/60 animate-ping" />
+                    ) : null}
+                    <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${dotClass}`} />
+                  </span>
+                  {label}
+                </span>
+              );
+            })()}
           </div>
 
           <ul className="mt-8 pt-6 border-t border-border grid grid-cols-2 gap-x-6 gap-y-3 text-[12px]">

@@ -6,7 +6,7 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const COLUMNS =
-  "id, slug, name, category, dosage, size_label, price_usd, purity, endotoxin, lot_number, stock_status, featured, featured_image, short_description, full_description, molecular_class, sort_order";
+  "id, slug, name, category, dosage, size_label, price_usd, purity, endotoxin, lot_number, stock_status, inventory_count, low_stock_threshold, featured, featured_image, short_description, full_description, molecular_class, sort_order";
 
 export const listPublishedProducts = createServerFn({ method: "GET" })
   .handler(async () => {

@@ -21,6 +21,10 @@ export function mapDbProduct(row: any): Product {
     lot: row.lot_number ?? "—",
     short: row.short_description ?? "",
     description: row.full_description ?? row.short_description ?? "",
+    inventoryCount:
+      typeof row.inventory_count === "number" ? row.inventory_count : undefined,
+    lowStockThreshold:
+      typeof row.low_stock_threshold === "number" ? row.low_stock_threshold : undefined,
   };
 }
 
