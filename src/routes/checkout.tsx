@@ -560,10 +560,13 @@ function CheckoutPage() {
                            className="w-[160px] h-[160px] sm:w-[120px] sm:h-[120px] block"
                          />
                        </div>
-                       <div className="w-full sm:flex-1 min-w-0 flex flex-col gap-2 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30">
-                         <span className="block w-full text-[11px] sm:text-[11.5px] text-ink font-mono leading-relaxed whitespace-nowrap overflow-x-auto">
-                           {BTC_ADDRESS}
-                         </span>
+                        <div className="w-full sm:flex-1 min-w-0 flex flex-col gap-2 px-3.5 py-3 border border-border rounded-[3px] bg-mist/30">
+                          <span
+                            className="block w-full text-[10px] sm:text-[10.5px] text-ink font-mono whitespace-nowrap overflow-x-auto"
+                            style={{ wordBreak: "keep-all", overflowWrap: "normal" }}
+                          >
+                            {BTC_ADDRESS}
+                          </span>
                          <button
                            type="button"
                            onClick={() => copyVal("addr", BTC_ADDRESS)}
