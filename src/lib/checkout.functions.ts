@@ -164,6 +164,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       order_number: order!.order_number,
       customer_name: data.customer.name,
       customer_email: data.customer.email,
+      customer_phone: data.customer.phone || null,
       products: pricedItems.map((i) => ({
         name: i.name,
         quantity: i.quantity,
