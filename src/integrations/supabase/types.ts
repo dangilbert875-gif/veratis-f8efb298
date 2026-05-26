@@ -1180,6 +1180,10 @@ export type Database = {
     }
     Functions: {
       current_user_is_admin: { Args: never; Returns: boolean }
+      decrement_product_inventory: {
+        Args: { _qty: number; _slug: string }
+        Returns: number
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean

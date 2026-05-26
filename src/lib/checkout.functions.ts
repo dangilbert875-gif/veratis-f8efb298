@@ -171,6 +171,22 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       );
     }
 
+    // Decrement inventory atomically for each line item. Best-effort: log
+    // errors but never fail the order — the order is already recorded.
+    for (const i of pricedItems) {
+      const { error: decErr } = await supabaseAdmin.rpc(
+        "decrement_product_inventory",
+        { _slug: i.slug, _qty: i.quantity },
+      );
+      if (decErr) {
+        console.error("Inventory decrement failed", {
+          slug: i.slug,
+          qty: i.quantity,
+          error: decErr.message,
+        });
+      }
+    }
+
     // Best-effort order confirmation email — never fail the order if email errors.
     try {
       const siteOrigin =
