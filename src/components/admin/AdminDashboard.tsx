@@ -15,6 +15,7 @@ import { CommandBar } from "./CommandBar";
 import { ActivityPanel } from "./panels/ActivityPanel";
 import { AuditLogPanel } from "./panels/AuditLogPanel";
 import { PaymentMethodsPanel } from "./panels/PaymentMethodsPanel";
+import { N8nWebhookDebugPanel } from "./panels/N8nWebhookDebugPanel";
 
 export type AdminDebugState = {
   userId: string | null;
@@ -68,6 +69,7 @@ const sectionGroups = [
     heading: "System",
     items: [
       { id: "audit", label: "Audit Log" },
+      { id: "n8n-debug", label: "n8n Debug" },
       { id: "payment-methods", label: "Payment Methods" },
     ],
   },
@@ -86,6 +88,7 @@ export type SectionId =
   | "referrals"
   | "payouts"
   | "customers"
+  | "n8n-debug"
   | "payment-methods";
 
 type SectionItem = { id: SectionId; label: string };
@@ -260,6 +263,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           {active === "overview" && <OverviewPanel onNavigate={handleNavigate} />}
           {active === "activity" && <ActivityPanel />}
           {active === "audit" && <AuditLogPanel />}
+          {active === "n8n-debug" && <N8nWebhookDebugPanel />}
           {active === "orders" && <OrdersPanel initialQuickFilter={ordersInitialFilter} />}
           {active === "referrals" && <ReferralsPanel />}
           {active === "payouts" && <PayoutsPanel />}
@@ -325,6 +329,7 @@ function titleFor(id: SectionId): string {
     case "overview": return "Operational overview";
     case "activity": return "Operational activity";
     case "audit": return "Audit log";
+    case "n8n-debug": return "n8n webhook debug";
     case "orders": return "Order management";
     case "referrals": return "Research-partner referrals";
     case "payouts": return "Partner payouts";
