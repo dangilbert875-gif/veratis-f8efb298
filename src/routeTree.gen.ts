@@ -52,6 +52,7 @@ import { Route as ApiAdminOrdersPendingRouteImport } from './routes/api/admin/or
 import { Route as ApiAdminOrdersLowstockRouteImport } from './routes/api/admin/orders.lowstock'
 import { Route as ApiAdminOrdersOrderNumberRouteImport } from './routes/api/admin/orders.$orderNumber'
 import { Route as ApiAdminCustomersEmailRouteImport } from './routes/api/admin/customers.$email'
+import { Route as ApiAdminOrdersOrderNumberPaymentStatusRouteImport } from './routes/api/admin/orders.$orderNumber.payment-status'
 import { Route as ApiAdminOrdersOrderNumberMarkShippedRouteImport } from './routes/api/admin/orders.$orderNumber.mark-shipped'
 
 const VerifyRoute = VerifyRouteImport.update({
@@ -274,6 +275,12 @@ const ApiAdminCustomersEmailRoute = ApiAdminCustomersEmailRouteImport.update({
   path: '/api/admin/customers/$email',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminOrdersOrderNumberPaymentStatusRoute =
+  ApiAdminOrdersOrderNumberPaymentStatusRouteImport.update({
+    id: '/payment-status',
+    path: '/payment-status',
+    getParentRoute: () => ApiAdminOrdersOrderNumberRoute,
+  } as any)
 const ApiAdminOrdersOrderNumberMarkShippedRoute =
   ApiAdminOrdersOrderNumberMarkShippedRouteImport.update({
     id: '/mark-shipped',
@@ -326,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/api/admin/orders/$orderNumber/mark-shipped': typeof ApiAdminOrdersOrderNumberMarkShippedRoute
+  '/api/admin/orders/$orderNumber/payment-status': typeof ApiAdminOrdersOrderNumberPaymentStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -372,6 +380,7 @@ export interface FileRoutesByTo {
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/api/admin/orders/$orderNumber/mark-shipped': typeof ApiAdminOrdersOrderNumberMarkShippedRoute
+  '/api/admin/orders/$orderNumber/payment-status': typeof ApiAdminOrdersOrderNumberPaymentStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -419,6 +428,7 @@ export interface FileRoutesById {
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/api/admin/orders/$orderNumber/mark-shipped': typeof ApiAdminOrdersOrderNumberMarkShippedRoute
+  '/api/admin/orders/$orderNumber/payment-status': typeof ApiAdminOrdersOrderNumberPaymentStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -467,6 +477,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
     | '/api/admin/orders/$orderNumber/mark-shipped'
+    | '/api/admin/orders/$orderNumber/payment-status'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -513,6 +524,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
     | '/api/admin/orders/$orderNumber/mark-shipped'
+    | '/api/admin/orders/$orderNumber/payment-status'
   id:
     | '__root__'
     | '/'
@@ -559,6 +571,7 @@ export interface FileRouteTypes {
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
     | '/api/admin/orders/$orderNumber/mark-shipped'
+    | '/api/admin/orders/$orderNumber/payment-status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -904,6 +917,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminCustomersEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/orders/$orderNumber/payment-status': {
+      id: '/api/admin/orders/$orderNumber/payment-status'
+      path: '/payment-status'
+      fullPath: '/api/admin/orders/$orderNumber/payment-status'
+      preLoaderRoute: typeof ApiAdminOrdersOrderNumberPaymentStatusRouteImport
+      parentRoute: typeof ApiAdminOrdersOrderNumberRoute
+    }
     '/api/admin/orders/$orderNumber/mark-shipped': {
       id: '/api/admin/orders/$orderNumber/mark-shipped'
       path: '/mark-shipped'
@@ -954,12 +974,15 @@ const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
 
 interface ApiAdminOrdersOrderNumberRouteChildren {
   ApiAdminOrdersOrderNumberMarkShippedRoute: typeof ApiAdminOrdersOrderNumberMarkShippedRoute
+  ApiAdminOrdersOrderNumberPaymentStatusRoute: typeof ApiAdminOrdersOrderNumberPaymentStatusRoute
 }
 
 const ApiAdminOrdersOrderNumberRouteChildren: ApiAdminOrdersOrderNumberRouteChildren =
   {
     ApiAdminOrdersOrderNumberMarkShippedRoute:
       ApiAdminOrdersOrderNumberMarkShippedRoute,
+    ApiAdminOrdersOrderNumberPaymentStatusRoute:
+      ApiAdminOrdersOrderNumberPaymentStatusRoute,
   }
 
 const ApiAdminOrdersOrderNumberRouteWithChildren =
