@@ -158,6 +158,61 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
+    // Best-effort n8n webhook — fired once per order immediately after DB creation.
+    const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order";
+    const newOrderWebhookPayload = {
+      order_number: order!.order_number,
+      customer_name: data.customer.name,
+      customer_email: data.customer.email,
+      products: pricedItems.map((i) => ({
+        name: i.name,
+        quantity: i.quantity,
+      })),
+      quantities: pricedItems.reduce(
+        (acc, i) => acc + Number(i.quantity || 0),
+        0,
+      ),
+      order_total: total,
+      payment_status: "pending",
+      fulfillment_status: "not_started",
+      shipping_address: {
+        name: data.shipping.name,
+        address_1: data.shipping.address_1,
+        address_2: data.shipping.address_2 || null,
+        city: data.shipping.city,
+        state: data.shipping.state,
+        zip: data.shipping.zip,
+        country: data.shipping.country,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      console.log("[n8n new-order webhook] URL", newOrderWebhookUrl);
+      console.log(
+        "[n8n new-order webhook] Payload",
+        JSON.stringify(newOrderWebhookPayload),
+      );
+
+      const webhookResponse = await fetch(newOrderWebhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrderWebhookPayload),
+      });
+      const webhookResponseBody = await webhookResponse.text();
+
+      console.log(
+        "[n8n new-order webhook] Response status",
+        webhookResponse.status,
+      );
+      console.log(
+        "[n8n new-order webhook] Response body",
+        webhookResponseBody,
+      );
+    } catch (e) {
+      console.error("[n8n new-order webhook] Caught error", e);
+    }
+
     // Best-effort line items
     if (order?.id) {
       await supabaseAdmin.from("order_items").insert(
@@ -191,42 +246,6 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     try {
       const siteOrigin =
         process.env.SITE_URL || "https://veratis.lovable.app";
-
-      // Best-effort n8n webhook — fired once per order at creation.
-      try {
-        await fetch("https://veratis.app.n8n.cloud/webhook/new-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            order_number: order!.order_number,
-            customer_name: data.customer.name,
-            customer_email: data.customer.email,
-            products: pricedItems.map((i) => ({
-              name: i.name,
-              quantity: i.quantity,
-            })),
-            quantities: pricedItems.reduce(
-              (acc, i) => acc + Number(i.quantity || 0),
-              0,
-            ),
-            order_total: total,
-            payment_status: "pending",
-            fulfillment_status: "not_started",
-            shipping_address: {
-              name: data.shipping.name,
-              address_1: data.shipping.address_1,
-              address_2: data.shipping.address_2 || null,
-              city: data.shipping.city,
-              state: data.shipping.state,
-              zip: data.shipping.zip,
-              country: data.shipping.country,
-            },
-            timestamp: new Date().toISOString(),
-          }),
-        });
-      } catch (e) {
-        console.error("n8n new-order webhook failed", e);
-      }
 
       await enqueueTransactionalEmail({
         templateName: "order-confirmation",
