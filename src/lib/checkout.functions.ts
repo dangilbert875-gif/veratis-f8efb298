@@ -203,7 +203,10 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       quantity?: number;
       price?: number;
     }>;
-    const firstOrderItem = savedOrderItems[0];
+    const productsArray = savedOrderItems.map((it) => ({
+      name: it?.name ?? "Unknown",
+      quantity: Number(it?.quantity ?? 0),
+    }));
     const normalizedPaymentMethod = String(data.payment_method ?? order!.payment_method ?? "btc").toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
@@ -223,11 +226,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       customername: order!.customer_name,
       customeremail: order!.customer_email,
       customerphone: data.customer.phone || null,
-      products: {
-        name: firstOrderItem?.name ?? null,
-        quantity: firstOrderItem?.quantity ?? null,
-        price: firstOrderItem?.price ?? null,
-      },
+      products: productsArray,
       ordertotal: Number(order!.total_usd),
       paymentmethod: paymentMethodLabel,
       paymentstatus: order!.payment_status,
