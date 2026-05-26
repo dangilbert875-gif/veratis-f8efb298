@@ -76,6 +76,17 @@ async function fetchBtcUsdRate(): Promise<number | null> {
   }
 }
 
+function valueOrNA(value: unknown): string {
+  if (value === null || value === undefined) return "N/A";
+  const normalized = String(value).trim();
+  return normalized.length > 0 ? normalized : "N/A";
+}
+
+function btcQuoteOrNA(value: unknown): string {
+  if (typeof value === "number" && Number.isFinite(value)) return value.toFixed(8);
+  return valueOrNA(value);
+}
+
 export const createCheckoutOrder = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => checkoutSchema.parse(d))
   .handler(async ({ data }) => {
