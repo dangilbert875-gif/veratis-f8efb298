@@ -1,9 +1,9 @@
 import { createFileRoute, Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { useCart } from "@/lib/cart";
-import { createCheckoutOrder, getBtcUsdRate, validatePromoCode } from "@/lib/checkout.functions";
+import { createCheckoutOrder, getBtcUsdRate, reserveOrderNumber, validatePromoCode } from "@/lib/checkout.functions";
 import { ShieldCheck, Lock, Snowflake, ArrowRight, ArrowLeft, Bitcoin, Copy, Check, Upload, X, Image as ImageIcon, RefreshCw, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import btcQr from "@/assets/btc-qr.jpg";
@@ -42,6 +42,7 @@ function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
   const navigate = useNavigate();
   const submit = useServerFn(createCheckoutOrder);
+  const reserveNumber = useServerFn(reserveOrderNumber);
 
   const [step, setStep] = useState<Step>(1);
   const [submitting, setSubmitting] = useState(false);
@@ -105,17 +106,29 @@ function CheckoutPage() {
     };
   }, []);
 
-  // Draft order reference shown to the buyer for support purposes before the
-  // real order_number is issued on submit. Persisted for the tab session.
-  const draftRef = useMemo(() => {
-    if (typeof window === "undefined") return "DRAFT-000000";
-    const key = "veratis:checkout:draft-ref";
-    const existing = window.sessionStorage.getItem(key);
-    if (existing) return existing;
-    const ref = "DRAFT-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    window.sessionStorage.setItem(key, ref);
-    return ref;
-  }, []);
+  // Reserve the real order_number up-front so the # the buyer pastes into
+  // their Venmo note / BTC reference matches the order # they receive on
+  // the confirmation page. Persisted for the tab session.
+  const RESERVED_KEY = "veratis:checkout:reserved-order-number";
+  const [reservedOrderNumber, setReservedOrderNumber] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return window.sessionStorage.getItem(RESERVED_KEY);
+  });
+  useEffect(() => {
+    if (reservedOrderNumber) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await reserveNumber();
+        if (cancelled) return;
+        setReservedOrderNumber(res.order_number);
+        try { window.sessionStorage.setItem(RESERVED_KEY, res.order_number); } catch {}
+      } catch {
+        /* fall back to placeholder; the server will mint one on submit */
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [reservedOrderNumber, reserveNumber]);
 
   // Promo / referral code
   const [promoInput, setPromoInput] = useState("");
@@ -258,10 +271,9 @@ function CheckoutPage() {
     setTimeout(() => setCopied(null), 1400);
   }
 
-  // The real order_number is assigned server-side when the order is submitted.
-  // Until then, show the session-scoped draft reference to the buyer (so the
-  // Venmo note / support emails have something to reference).
-  const orderReference = draftRef;
+  // Show the pre-reserved order number (same value the server will use on
+  // submit) so the Venmo note / BTC reference matches the receipt.
+  const orderReference = reservedOrderNumber ?? "—";
 
   if (items.length === 0) {
     return (
@@ -338,10 +350,11 @@ function CheckoutPage() {
           payment_tx_id: txId.trim() || null,
           promo_code: promo?.code ?? null,
           payment_method: paymentMethod,
+          reserved_order_number: reservedOrderNumber,
         },
       });
       clear();
-      try { window.sessionStorage.removeItem("veratis:checkout:draft-ref"); } catch {}
+      try { window.sessionStorage.removeItem(RESERVED_KEY); } catch {}
       navigate({
         to: "/checkout/thank-you/$orderNumber",
         params: { orderNumber: res.order_number },
