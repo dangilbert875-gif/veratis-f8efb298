@@ -185,6 +185,7 @@ function ProductPage() {
                 purity={p.purity}
                 size="detail"
                 alt={`${title} — lyophilized research vial`}
+                imageUrl={p.image}
               />
             </div>
             <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 flex items-center justify-between gap-2 text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.2em] text-foreground/55">

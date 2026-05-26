@@ -146,6 +146,7 @@ export function ProductCard({
               purity={p.purity}
               size="card"
               alt={`${title} — ${sizeFor(p.size)} lyophilized research vial`}
+              imageUrl={p.image}
             />
           </div>
 
