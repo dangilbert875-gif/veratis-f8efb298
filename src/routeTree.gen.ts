@@ -44,6 +44,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiAdminStatsTodayRouteImport } from './routes/api/admin/stats.today'
 import { Route as ApiAdminOrdersUnpaidRouteImport } from './routes/api/admin/orders.unpaid'
 import { Route as ApiAdminOrdersToshipRouteImport } from './routes/api/admin/orders.toship'
 import { Route as ApiAdminOrdersTodayRouteImport } from './routes/api/admin/orders.today'
@@ -232,6 +233,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminStatsTodayRoute = ApiAdminStatsTodayRouteImport.update({
+  id: '/api/admin/stats/today',
+  path: '/api/admin/stats/today',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminOrdersUnpaidRoute = ApiAdminOrdersUnpaidRouteImport.update({
   id: '/api/admin/orders/unpaid',
   path: '/api/admin/orders/unpaid',
@@ -313,6 +319,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/orders/today': typeof ApiAdminOrdersTodayRoute
   '/api/admin/orders/toship': typeof ApiAdminOrdersToshipRoute
   '/api/admin/orders/unpaid': typeof ApiAdminOrdersUnpaidRoute
+  '/api/admin/stats/today': typeof ApiAdminStatsTodayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -358,6 +365,7 @@ export interface FileRoutesByTo {
   '/api/admin/orders/today': typeof ApiAdminOrdersTodayRoute
   '/api/admin/orders/toship': typeof ApiAdminOrdersToshipRoute
   '/api/admin/orders/unpaid': typeof ApiAdminOrdersUnpaidRoute
+  '/api/admin/stats/today': typeof ApiAdminStatsTodayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -404,6 +412,7 @@ export interface FileRoutesById {
   '/api/admin/orders/today': typeof ApiAdminOrdersTodayRoute
   '/api/admin/orders/toship': typeof ApiAdminOrdersToshipRoute
   '/api/admin/orders/unpaid': typeof ApiAdminOrdersUnpaidRoute
+  '/api/admin/stats/today': typeof ApiAdminStatsTodayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -451,6 +460,7 @@ export interface FileRouteTypes {
     | '/api/admin/orders/today'
     | '/api/admin/orders/toship'
     | '/api/admin/orders/unpaid'
+    | '/api/admin/stats/today'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -496,6 +506,7 @@ export interface FileRouteTypes {
     | '/api/admin/orders/today'
     | '/api/admin/orders/toship'
     | '/api/admin/orders/unpaid'
+    | '/api/admin/stats/today'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -541,6 +552,7 @@ export interface FileRouteTypes {
     | '/api/admin/orders/today'
     | '/api/admin/orders/toship'
     | '/api/admin/orders/unpaid'
+    | '/api/admin/stats/today'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -581,6 +593,7 @@ export interface RootRouteChildren {
   ApiAdminOrdersTodayRoute: typeof ApiAdminOrdersTodayRoute
   ApiAdminOrdersToshipRoute: typeof ApiAdminOrdersToshipRoute
   ApiAdminOrdersUnpaidRoute: typeof ApiAdminOrdersUnpaidRoute
+  ApiAdminStatsTodayRoute: typeof ApiAdminStatsTodayRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -835,6 +848,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/stats/today': {
+      id: '/api/admin/stats/today'
+      path: '/api/admin/stats/today'
+      fullPath: '/api/admin/stats/today'
+      preLoaderRoute: typeof ApiAdminStatsTodayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/orders/unpaid': {
       id: '/api/admin/orders/unpaid'
       path: '/api/admin/orders/unpaid'
@@ -979,6 +999,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminOrdersTodayRoute: ApiAdminOrdersTodayRoute,
   ApiAdminOrdersToshipRoute: ApiAdminOrdersToshipRoute,
   ApiAdminOrdersUnpaidRoute: ApiAdminOrdersUnpaidRoute,
+  ApiAdminStatsTodayRoute: ApiAdminStatsTodayRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
