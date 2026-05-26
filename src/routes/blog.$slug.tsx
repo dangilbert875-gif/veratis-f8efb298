@@ -156,6 +156,8 @@ function ArticlePage() {
     [article]
   );
 
+  if (enabled === "disabled") return <PageDisabled title="Education unavailable" />;
+
   return (
     <Layout>
       <ReadingProgress />
