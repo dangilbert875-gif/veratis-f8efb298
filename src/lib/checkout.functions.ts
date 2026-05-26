@@ -180,7 +180,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         discount_amount_usd: discountAmount,
       })
       .select(
-        "id, order_number, access_token, customer_email, customer_name, payment_status, fulfillment_status, total_usd, items, created_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country",
+        "id, order_number, access_token, customer_email, customer_name, payment_method, payment_status, fulfillment_status, total_usd, btc_amount, payment_tx_id, payment_proof_url, notes, items, created_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country",
       )
       .single();
 
@@ -193,7 +193,9 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       price?: number;
     }>;
     const firstOrderItem = savedOrderItems[0];
-    const newOrderWebhookPayload = {
+    const isVenmoOrder = order!.payment_method === "venmo";
+    const isBtcOrder = order!.payment_method === "btc";
+    const newOrderWebhookPayload: Record<string, unknown> = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
       customeremail: order!.customer_email,
@@ -204,6 +206,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         price: firstOrderItem?.price ?? null,
       },
       ordertotal: Number(order!.total_usd),
+      paymentmethod: order!.payment_method,
       paymentstatus: order!.payment_status,
       fulfillmentstatus: order!.fulfillment_status,
       shippingaddress: {
@@ -217,6 +220,18 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       },
       timestamp: order!.created_at,
     };
+
+    if (isBtcOrder) {
+      newOrderWebhookPayload.btcamountquoted = order!.btc_amount;
+      newOrderWebhookPayload.btctxid = order!.payment_tx_id;
+      newOrderWebhookPayload.btcpaymentproofurl = order!.payment_proof_url;
+    } else if (isVenmoOrder) {
+      // Venmo username is captured via payment_tx_id on the checkout form,
+      // payment proof URL via payment_proof_url, and any buyer note via notes.
+      newOrderWebhookPayload.venmousername = order!.payment_tx_id;
+      newOrderWebhookPayload.venmopaymentproofurl = order!.payment_proof_url;
+      newOrderWebhookPayload.venmonotes = order!.notes;
+    }
 
     try {
       console.log("[checkout order n8n webhook] webhook attempted", true);
