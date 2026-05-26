@@ -2,11 +2,20 @@ import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { batches, labPartner } from "@/data/batches";
 import { ArrowRight, ShieldCheck, Snowflake, Lock, Archive } from "lucide-react";
+import { usePageEnabled } from "@/hooks/usePageEnabled";
 
 export function Footer() {
   const lotCount = batches.length;
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
   const lastRelease = batches[0]?.testedOn ?? "—";
+  const educationState = usePageEnabled("education");
+  const companyLinks: Array<[string, string]> = [
+    ["About", "/about"],
+    ...(educationState === "disabled" ? [] : ([["Education", "/blog"]] as Array<[string, string]>)),
+    ["FAQ", "/faq"],
+    ["How to pay", "/how-to-pay"],
+    ["Contact", "/contact"],
+  ];
 
   return (
     <footer className="bg-ink text-background/80 mt-20">
