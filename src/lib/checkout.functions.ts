@@ -89,6 +89,7 @@ function btcQuoteOrNA(value: unknown): string {
 }
 
 type NewOrderWebhookPayload = {
+  webhookversion: string;
   ordernumber: string;
   customername: string | null;
   customeremail: string | null;
@@ -252,6 +253,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const venmonotes = isVenmoOrder ? valueOrNA(submittedPaymentNotes) : "N/A";
     const venmopaymentproofurl = isVenmoOrder ? valueOrNA(submittedPaymentProofUrl) : "N/A";
     const newOrderWebhookPayload: NewOrderWebhookPayload = {
+      webhookversion: "v2-payment-products-array",
       ordernumber: order!.order_number,
       customername: order!.customer_name,
       customeremail: order!.customer_email,
