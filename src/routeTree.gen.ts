@@ -50,6 +50,7 @@ import { Route as ApiAdminOrdersTodayRouteImport } from './routes/api/admin/orde
 import { Route as ApiAdminOrdersPendingRouteImport } from './routes/api/admin/orders.pending'
 import { Route as ApiAdminOrdersLowstockRouteImport } from './routes/api/admin/orders.lowstock'
 import { Route as ApiAdminOrdersOrderNumberRouteImport } from './routes/api/admin/orders.$orderNumber'
+import { Route as ApiAdminCustomersEmailRouteImport } from './routes/api/admin/customers.$email'
 import { Route as ApiAdminOrdersOrderNumberMarkShippedRouteImport } from './routes/api/admin/orders.$orderNumber.mark-shipped'
 
 const VerifyRoute = VerifyRouteImport.update({
@@ -262,6 +263,11 @@ const ApiAdminOrdersOrderNumberRoute =
     path: '/api/admin/orders/$orderNumber',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminCustomersEmailRoute = ApiAdminCustomersEmailRouteImport.update({
+  id: '/api/admin/customers/$email',
+  path: '/api/admin/customers/$email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminOrdersOrderNumberMarkShippedRoute =
   ApiAdminOrdersOrderNumberMarkShippedRouteImport.update({
     id: '/mark-shipped',
@@ -300,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/shop/': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
   '/api/admin/orders/$orderNumber': typeof ApiAdminOrdersOrderNumberRouteWithChildren
   '/api/admin/orders/lowstock': typeof ApiAdminOrdersLowstockRoute
   '/api/admin/orders/pending': typeof ApiAdminOrdersPendingRoute
@@ -344,6 +351,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
   '/api/admin/orders/$orderNumber': typeof ApiAdminOrdersOrderNumberRouteWithChildren
   '/api/admin/orders/lowstock': typeof ApiAdminOrdersLowstockRoute
   '/api/admin/orders/pending': typeof ApiAdminOrdersPendingRoute
@@ -389,6 +397,7 @@ export interface FileRoutesById {
   '/shop/': typeof ShopIndexRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
   '/api/admin/orders/$orderNumber': typeof ApiAdminOrdersOrderNumberRouteWithChildren
   '/api/admin/orders/lowstock': typeof ApiAdminOrdersLowstockRoute
   '/api/admin/orders/pending': typeof ApiAdminOrdersPendingRoute
@@ -435,6 +444,7 @@ export interface FileRouteTypes {
     | '/shop/'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
+    | '/api/admin/customers/$email'
     | '/api/admin/orders/$orderNumber'
     | '/api/admin/orders/lowstock'
     | '/api/admin/orders/pending'
@@ -479,6 +489,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
+    | '/api/admin/customers/$email'
     | '/api/admin/orders/$orderNumber'
     | '/api/admin/orders/lowstock'
     | '/api/admin/orders/pending'
@@ -523,6 +534,7 @@ export interface FileRouteTypes {
     | '/shop/'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
+    | '/api/admin/customers/$email'
     | '/api/admin/orders/$orderNumber'
     | '/api/admin/orders/lowstock'
     | '/api/admin/orders/pending'
@@ -562,6 +574,7 @@ export interface RootRouteChildren {
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiAdminCustomersEmailRoute: typeof ApiAdminCustomersEmailRoute
   ApiAdminOrdersOrderNumberRoute: typeof ApiAdminOrdersOrderNumberRouteWithChildren
   ApiAdminOrdersLowstockRoute: typeof ApiAdminOrdersLowstockRoute
   ApiAdminOrdersPendingRoute: typeof ApiAdminOrdersPendingRoute
@@ -864,6 +877,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminOrdersOrderNumberRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/customers/$email': {
+      id: '/api/admin/customers/$email'
+      path: '/api/admin/customers/$email'
+      fullPath: '/api/admin/customers/$email'
+      preLoaderRoute: typeof ApiAdminCustomersEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/orders/$orderNumber/mark-shipped': {
       id: '/api/admin/orders/$orderNumber/mark-shipped'
       path: '/mark-shipped'
@@ -952,6 +972,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiAdminCustomersEmailRoute: ApiAdminCustomersEmailRoute,
   ApiAdminOrdersOrderNumberRoute: ApiAdminOrdersOrderNumberRouteWithChildren,
   ApiAdminOrdersLowstockRoute: ApiAdminOrdersLowstockRoute,
   ApiAdminOrdersPendingRoute: ApiAdminOrdersPendingRoute,
