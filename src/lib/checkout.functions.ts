@@ -3,9 +3,9 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
-import { postN8nOrderWebhook } from "@/lib/n8n-webhook.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
+const N8N_NEW_ORDER_WEBHOOK_URL = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
 
 const itemSchema = z.object({
   slug: z.string().min(1).max(128),
@@ -218,11 +218,26 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       timestamp: order!.created_at,
     };
 
-    await postN8nOrderWebhook({
-      payload: newOrderWebhookPayload,
-      source: "checkout_order_created",
-      entityId: order!.id,
-    });
+    try {
+      console.log("[checkout order n8n webhook] webhook attempted", true);
+      console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
+      console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(newOrderWebhookPayload));
+
+      const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrderWebhookPayload),
+      });
+
+      const webhookResponseBody = await webhookResponse.text();
+      console.log("[checkout order n8n webhook] response status", webhookResponse.status);
+      console.log("[checkout order n8n webhook] response body", webhookResponseBody);
+    } catch (webhookError) {
+      console.error(
+        "[checkout order n8n webhook] error message",
+        webhookError instanceof Error ? webhookError.message : String(webhookError),
+      );
+    }
 
     // Best-effort line items
     if (order?.id) {
