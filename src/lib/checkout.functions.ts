@@ -153,7 +153,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         discount_code: appliedCode,
         discount_amount_usd: discountAmount,
       })
-      .select("id, order_number, access_token")
+      .select("id, order_number, access_token, customer_email, customer_name, payment_status, fulfillment_status, total_usd, items, created_at, shipping_name, shipping_address_1, shipping_address_2, shipping_city, shipping_state, shipping_zip, shipping_country")
       .single();
 
     if (error) throw new Error(error.message);
@@ -162,36 +162,30 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order";
     const newOrderWebhookPayload = {
       order_number: order!.order_number,
-      customer_name: data.customer.name,
-      customer_email: data.customer.email,
+      customer_name: order!.customer_name,
+      customer_email: order!.customer_email,
       customer_phone: data.customer.phone || null,
-      products: pricedItems.map((i) => ({
-        name: i.name,
-        quantity: i.quantity,
-      })),
-      quantities: pricedItems.reduce(
-        (acc, i) => acc + Number(i.quantity || 0),
-        0,
-      ),
-      order_total: total,
-      payment_status: "pending",
-      fulfillment_status: "not_started",
+      products: order!.items,
+      order_total: Number(order!.total_usd),
+      payment_status: order!.payment_status,
+      fulfillment_status: order!.fulfillment_status,
       shipping_address: {
-        name: data.shipping.name,
-        address_1: data.shipping.address_1,
-        address_2: data.shipping.address_2 || null,
-        city: data.shipping.city,
-        state: data.shipping.state,
-        zip: data.shipping.zip,
-        country: data.shipping.country,
+        name: order!.shipping_name,
+        address_1: order!.shipping_address_1,
+        address_2: order!.shipping_address_2,
+        city: order!.shipping_city,
+        state: order!.shipping_state,
+        zip: order!.shipping_zip,
+        country: order!.shipping_country,
       },
-      timestamp: new Date().toISOString(),
+      timestamp: order!.created_at,
     };
 
     try {
+      console.log("[n8n new-order webhook] Webhook attempted");
       console.log("[n8n new-order webhook] URL", newOrderWebhookUrl);
       console.log(
-        "[n8n new-order webhook] Payload",
+        "[n8n new-order webhook] Payload sent",
         JSON.stringify(newOrderWebhookPayload),
       );
 
