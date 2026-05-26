@@ -198,16 +198,16 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
-    const savedOrderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
+    const orderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
       name?: string;
       quantity?: number;
       price?: number;
     }>;
-    const productsArray = savedOrderItems.map((it) => ({
-      name: it?.name ?? "Unknown",
-      quantity: Number(it?.quantity ?? 0),
+    const productsArray = orderItems.map((item) => ({
+      name: valueOrNA(item.name),
+      quantity: Number.isFinite(Number(item.quantity)) ? Number(item.quantity) : "N/A",
     }));
-    const normalizedPaymentMethod = String(data.payment_method ?? order!.payment_method ?? "btc").toLowerCase();
+    const normalizedPaymentMethod = valueOrNA(data.payment_method ?? order!.payment_method).toLowerCase();
     const isVenmoOrder = normalizedPaymentMethod === "venmo";
     const isBtcOrder = !isVenmoOrder;
     const paymentMethodLabel = isVenmoOrder ? "Venmo" : "Bitcoin";
@@ -229,7 +229,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       products: productsArray,
       ordertotal: Number(order!.total_usd),
       paymentmethod: paymentMethodLabel,
-      paymentstatus: order!.payment_status,
+      paymentstatus: valueOrNA(order!.payment_status),
       btcamountquoted,
       btctxid,
       btcpaymentproofurl,
@@ -251,7 +251,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     try {
       console.log("[checkout order n8n webhook] webhook attempted", true);
       console.log("[checkout order n8n webhook] full URL used", N8N_NEW_ORDER_WEBHOOK_URL);
-      console.log("[checkout order n8n webhook] FINAL payload before fetch", JSON.stringify(newOrderWebhookPayload));
+      console.log("FINAL N8N WEBHOOK PAYLOAD", newOrderWebhookPayload);
       console.log("[checkout order n8n webhook] JSON payload", JSON.stringify(newOrderWebhookPayload));
 
       const webhookResponse = await fetch(N8N_NEW_ORDER_WEBHOOK_URL, {
