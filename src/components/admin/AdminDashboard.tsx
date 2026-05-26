@@ -16,6 +16,7 @@ import { ActivityPanel } from "./panels/ActivityPanel";
 import { AuditLogPanel } from "./panels/AuditLogPanel";
 import { PaymentMethodsPanel } from "./panels/PaymentMethodsPanel";
 import { N8nWebhookDebugPanel } from "./panels/N8nWebhookDebugPanel";
+import { PagesPanel } from "./panels/PagesPanel";
 
 export type AdminDebugState = {
   userId: string | null;
@@ -71,6 +72,7 @@ const sectionGroups = [
       { id: "audit", label: "Audit Log" },
       { id: "n8n-debug", label: "n8n Debug" },
       { id: "payment-methods", label: "Payment Methods" },
+      { id: "pages", label: "Pages" },
     ],
   },
 ] as const;
@@ -89,7 +91,8 @@ export type SectionId =
   | "payouts"
   | "customers"
   | "n8n-debug"
-  | "payment-methods";
+  | "payment-methods"
+  | "pages";
 
 type SectionItem = { id: SectionId; label: string };
 const sections: SectionItem[] = sectionGroups.flatMap((g) => g.items as readonly SectionItem[]);
@@ -276,6 +279,7 @@ export function AdminDashboard({ viewer, debug }: { viewer: Viewer; debug?: Admi
           {active === "partners" && <PartnersPanel />}
           {active === "customers" && <CustomersPanel />}
           {active === "payment-methods" && <PaymentMethodsPanel />}
+          {active === "pages" && <PagesPanel />}
         </div>
       </main>
 
