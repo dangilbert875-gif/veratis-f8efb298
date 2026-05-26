@@ -71,6 +71,7 @@ export function CartDrawer() {
                         purity={item.purity}
                         size="card"
                         alt={t}
+                        imageUrl={item.image}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
