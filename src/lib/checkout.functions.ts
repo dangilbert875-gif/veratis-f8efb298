@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Json } from "@/integrations/supabase/types";
 import { enqueueTransactionalEmail } from "@/lib/email/enqueue.server";
 
 const STATIC_BTC_ADDRESS = "3FD7Djem6ME9rnwx9YbdD3v7BiNF8PCvhq";
@@ -171,7 +172,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
         shipping_country: data.shipping.country.trim(),
         shipping_method: data.shipping_method,
         notes: data.notes?.trim() || null,
-        items: pricedItems as any,
+        items: pricedItems as unknown as Json,
         payment_proof_url: data.payment_proof_url || null,
         payment_tx_id: data.payment_tx_id?.trim() || null,
         discount_code: appliedCode,
@@ -186,9 +187,12 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     // Best-effort n8n webhook — fired once per order immediately after DB creation.
     const newOrderWebhookUrl = "https://veratis.app.n8n.cloud/webhook/new-order-clean";
-    const firstOrderItem = (Array.isArray(order!.items) ? order!.items[0] : pricedItems[0]) as
-      | { name?: string; quantity?: number; price?: number }
-      | undefined;
+    const savedOrderItems = (Array.isArray(order!.items) ? order!.items : pricedItems) as Array<{
+      name?: string;
+      quantity?: number;
+      price?: number;
+    }>;
+    const firstOrderItem = savedOrderItems[0];
     const newOrderWebhookPayload = {
       ordernumber: order!.order_number,
       customername: order!.customer_name,
