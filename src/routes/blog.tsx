@@ -4,6 +4,8 @@ import { Layout, PageHeader } from "@/components/site/Layout";
 import { articles, categories, type ArticleCategory } from "@/data/articles";
 import { Search } from "lucide-react";
 import { ReferencedSources, pepPediaSource } from "@/components/site/ReferencedSources";
+import { usePageEnabled } from "@/hooks/usePageEnabled";
+import { PageDisabled } from "@/components/site/PageDisabled";
 
 export const Route = createFileRoute("/blog")({
   head: () => ({
@@ -24,6 +26,7 @@ function formatDate(iso: string) {
 }
 
 function Blog() {
+  const enabled = usePageEnabled("education");
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<ArticleCategory | "All">("All");
 
@@ -46,6 +49,8 @@ function Blog() {
       );
     });
   }, [query, active]);
+
+  if (enabled === "disabled") return <PageDisabled title="Education unavailable" />;
 
   return (
     <Layout>

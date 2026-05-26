@@ -614,6 +614,27 @@ export type Database = {
         }
         Relationships: []
       }
+      page_toggles: {
+        Row: {
+          enabled: boolean
+          label: string
+          page_key: string
+          updated_at: string
+        }
+        Insert: {
+          enabled?: boolean
+          label: string
+          page_key: string
+          updated_at?: string
+        }
+        Update: {
+          enabled?: boolean
+          label?: string
+          page_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           enabled: boolean

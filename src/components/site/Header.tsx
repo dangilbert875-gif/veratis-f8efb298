@@ -4,8 +4,9 @@ import { Logo } from "./Logo";
 import { useCart } from "@/lib/cart";
 import { SearchOverlay } from "./SearchOverlay";
 import { batches } from "@/data/batches";
+import { usePageEnabled } from "@/hooks/usePageEnabled";
 
-const nav = [
+const baseNav = [
   { to: "/shop", label: "Shop" },
   { to: "/coa-archive", label: "COA Archive" },
   { to: "/blog", label: "Education" },
@@ -83,6 +84,10 @@ export function Header() {
   const { count, openCart, lastAddedAt } = useCart();
   const [pulse, setPulse] = useState(false);
   const initial = useRef(true);
+  const educationState = usePageEnabled("education");
+  const nav = baseNav.filter(
+    (n) => !(n.to === "/blog" && educationState === "disabled"),
+  );
   useEffect(() => {
     if (initial.current) { initial.current = false; return; }
     if (!lastAddedAt) return;
