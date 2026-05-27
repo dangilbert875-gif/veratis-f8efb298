@@ -39,6 +39,7 @@ import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminAccountRouteImport } from './routes/admin.account'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as CheckoutThankYouOrderNumberRouteImport } from './routes/checkout.thank-you.$orderNumber'
+import { Route as ApiPublicRevealSecretsRouteImport } from './routes/api/public/reveal-secrets'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -206,6 +207,11 @@ const CheckoutThankYouOrderNumberRoute =
     path: '/thank-you/$orderNumber',
     getParentRoute: () => CheckoutRoute,
   } as any)
+const ApiPublicRevealSecretsRoute = ApiPublicRevealSecretsRouteImport.update({
+  id: '/api/public/reveal-secrets',
+  path: '/api/public/reveal-secrets',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -317,6 +323,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
+  '/api/public/reveal-secrets': typeof ApiPublicRevealSecretsRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
@@ -364,6 +371,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
+  '/api/public/reveal-secrets': typeof ApiPublicRevealSecretsRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
@@ -412,6 +420,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
+  '/api/public/reveal-secrets': typeof ApiPublicRevealSecretsRoute
   '/checkout/thank-you/$orderNumber': typeof CheckoutThankYouOrderNumberRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/admin/customers/$email': typeof ApiAdminCustomersEmailRoute
@@ -461,6 +470,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/shop/$slug'
     | '/shop/'
+    | '/api/public/reveal-secrets'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
     | '/api/admin/customers/$email'
@@ -508,6 +518,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/shop/$slug'
     | '/shop'
+    | '/api/public/reveal-secrets'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
     | '/api/admin/customers/$email'
@@ -555,6 +566,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/shop/$slug'
     | '/shop/'
+    | '/api/public/reveal-secrets'
     | '/checkout/thank-you/$orderNumber'
     | '/lovable/email/suppression'
     | '/api/admin/customers/$email'
@@ -598,6 +610,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
+  ApiPublicRevealSecretsRoute: typeof ApiPublicRevealSecretsRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiAdminCustomersEmailRoute: typeof ApiAdminCustomersEmailRoute
   ApiAdminOrdersOrderNumberRoute: typeof ApiAdminOrdersOrderNumberRouteWithChildren
@@ -826,6 +839,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutThankYouOrderNumberRouteImport
       parentRoute: typeof CheckoutRoute
     }
+    '/api/public/reveal-secrets': {
+      id: '/api/public/reveal-secrets'
+      path: '/api/public/reveal-secrets'
+      fullPath: '/api/public/reveal-secrets'
+      preLoaderRoute: typeof ApiPublicRevealSecretsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -1014,6 +1034,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
+  ApiPublicRevealSecretsRoute: ApiPublicRevealSecretsRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiAdminCustomersEmailRoute: ApiAdminCustomersEmailRoute,
   ApiAdminOrdersOrderNumberRoute: ApiAdminOrdersOrderNumberRouteWithChildren,
