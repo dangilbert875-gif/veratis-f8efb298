@@ -13,6 +13,10 @@ import pillarPerform from "@/assets/pillar-perform.jpg";
 import pillarLongevity from "@/assets/pillar-longevity.jpg";
 import pillarRegenerate from "@/assets/pillar-regenerate.jpg";
 import travertineWall from "@/assets/travertine-wall.jpg";
+import sysRestore from "@/assets/sys-restore.jpg";
+import sysAscent from "@/assets/sys-ascent.jpg";
+import sysVector from "@/assets/sys-vector.jpg";
+import sysEclipse from "@/assets/sys-eclipse.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,13 +58,14 @@ function Home() {
 
   // Editorial product identifier — colored marque + protocol word
   const identifierMap: Record<string, { word: string; hex: string }> = {
-    "bpc-157-12mg": { word: "REPAIR", hex: "#b87333" },
-    "tb-500-fragment-12mg": { word: "RESTORE", hex: "#8a6b3d" },
-    "ghk-cu-100mg": { word: "REGENERATE", hex: "#6b5b3f" },
-    "mots-c-10mg": { word: "ASCENT", hex: "#3f4a2e" },
-    "ipamorelin-5mg": { word: "SHIFT", hex: "#9a6b4a" },
-    "tesamorelin-5mg": { word: "VECTOR", hex: "#5a4a35" },
-    "melanotan-ii-10mg": { word: "ECLIPSE", hex: "#3a2e25" },
+    "bpc-157-12mg": { word: "REPAIR", hex: "#3f4a2e" },          // green
+    "tb-500-fragment-12mg": { word: "RESTORE", hex: "#2d5a5a" }, // teal
+    "ghk-cu-100mg": { word: "REGENERATE", hex: "#b87333" },      // copper
+    "mots-c-10mg": { word: "ASCENT", hex: "#1f2d4a" },           // navy
+    "ipamorelin-5mg": { word: "SHIFT", hex: "#9a6b4a" },         // cognac
+    "tesamorelin-5mg": { word: "VECTOR", hex: "#6b6b3f" },       // olive
+    "melanotan-ii-10mg": { word: "ECLIPSE", hex: "#5a4a35" },    // bronze
+    "epitalon-50mg": { word: "REJUVENATE", hex: "#3a5878" },     // blue
   };
 
   return (
@@ -120,16 +125,16 @@ function Home() {
         <div className="mx-auto max-w-7xl px-6 pt-24 md:pt-32 pb-10">
           <div className="grid md:grid-cols-12 gap-8 items-end">
             <div className="md:col-span-7">
-              <p className="eyebrow">— The Four Pillars</p>
+              <p className="eyebrow">— The Veratis System</p>
               <h2 className="mt-5 font-display text-4xl md:text-6xl text-ink leading-[1.02] tracking-[-0.02em] font-light [text-wrap:balance]">
-                A protocol for the<br /><span className="italic">long arc</span> of human performance.
+                Eight disciplines for the<br /><span className="italic">long arc</span> of human performance.
               </h2>
             </div>
             <div className="md:col-span-5 md:pl-8">
               <p className="text-[15px] text-muted-foreground leading-[1.8] font-light max-w-md">
-                Veratis is built around four disciplines that compound over decades.
-                Each compound in our catalog answers to one of them — and to the
-                certificate that proves it.
+                Every Veratis protocol is named for the change it makes — and answers
+                to the certificate that proves it. Eight identities. One standard of
+                evidence.
               </p>
             </div>
           </div>
@@ -137,10 +142,14 @@ function Home() {
 
         <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { title: "RECOVER", sub: "Repair & restoration", body: "Tissue, sleep, soft-tissue recovery, gastric integrity.", img: pillarRecover },
-            { title: "PERFORM", sub: "Physical & cognitive performance", body: "Output, focus, body composition, executive endurance.", img: pillarPerform },
-            { title: "LONGEVITY", sub: "Healthspan & optimization", body: "Mitochondrial function, metabolic resilience, the long game.", img: pillarLongevity },
-            { title: "REGENERATE", sub: "Cellular renewal", body: "Skin, connective tissue, copper-peptide signaling, ritual.", img: pillarRegenerate },
+            { title: "REPAIR",     sub: "Restore what matters.",  body: "Soft tissue, gut lining, ligament & tendon integrity.", img: pillarRecover,    hex: "#3f4a2e" },
+            { title: "RESTORE",    sub: "Recover stronger.",      body: "Sleep architecture, nervous-system reset, hormonal recovery.", img: sysRestore,  hex: "#2d5a5a" },
+            { title: "REGENERATE", sub: "Renew from within.",     body: "Skin, hair, connective tissue, copper-peptide signaling.", img: pillarRegenerate, hex: "#b87333" },
+            { title: "ASCENT",     sub: "Elevate performance.",   body: "Mitochondrial output, executive endurance, the long climb.", img: sysAscent,    hex: "#1f2d4a" },
+            { title: "SHIFT",      sub: "Change trajectory.",     body: "Body composition, metabolic flexibility, growth-hormone rhythm.", img: pillarPerform, hex: "#9a6b4a" },
+            { title: "VECTOR",     sub: "Move with intention.",   body: "Visceral fat, lipid signaling, directional metabolic change.", img: sysVector,   hex: "#6b6b3f" },
+            { title: "ECLIPSE",    sub: "Own the outcome.",       body: "Pigmentation, melanocortin pathways, ritual control.", img: sysEclipse,         hex: "#5a4a35" },
+            { title: "REJUVENATE", sub: "Energy reimagined.",     body: "Telomeric reserve, mitochondrial youth, cellular vitality.", img: pillarLongevity, hex: "#3a5878" },
           ].map((p) => (
             <article
               key={p.title}
@@ -156,6 +165,12 @@ function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/15 to-transparent" />
               <div className="absolute inset-0 p-6 md:p-7 flex flex-col justify-end text-background">
+                <span
+                  className="inline-flex items-center gap-2 text-[10px] tracking-[0.28em] uppercase font-medium text-background/85"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: p.hex, boxShadow: `0 0 0 3px ${p.hex}33` }} />
+                  Identity
+                </span>
                 <h3 className="font-display text-[1.75rem] md:text-[2rem] tracking-[0.04em] font-light leading-none">
                   {p.title}
                 </h3>
