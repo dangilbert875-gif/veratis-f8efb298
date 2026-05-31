@@ -135,25 +135,6 @@ export function Footer() {
       {/* Legal */}
       <div className="border-t border-background/10">
         <div className="mx-auto max-w-7xl px-6 py-8 text-[11px] leading-relaxed text-background/45 space-y-4">
-          <div className="flex items-center gap-3 text-background/55">
-            <span className="text-[9.5px] font-mono uppercase tracking-[0.18em] text-background/40">Secure checkout</span>
-            <span className="h-px flex-1 max-w-[40px] bg-background/15" aria-hidden />
-            <div className="flex items-center gap-2.5 opacity-80" aria-label="Accepted payment methods">
-              {/* Stripe */}
-              <span className="inline-flex items-center justify-center h-6 px-2 rounded-[3px] border border-background/20 text-[9.5px] font-bold tracking-wide text-background/70">stripe</span>
-              {/* Visa */}
-              <span className="inline-flex items-center justify-center h-6 px-2 rounded-[3px] border border-background/20 text-[9.5px] font-bold italic tracking-wider text-background/70">VISA</span>
-              {/* Mastercard */}
-              <span className="inline-flex items-center justify-center h-6 w-9 rounded-[3px] border border-background/20" aria-label="Mastercard">
-                <span className="relative inline-block w-6 h-3">
-                  <span className="absolute left-0 top-0 w-3 h-3 rounded-full bg-background/55" />
-                  <span className="absolute right-0 top-0 w-3 h-3 rounded-full bg-background/35" />
-                </span>
-              </span>
-              {/* Amex */}
-              <span className="inline-flex items-center justify-center h-6 px-2 rounded-[3px] border border-background/20 text-[9.5px] font-bold tracking-tight text-background/70">AMEX</span>
-            </div>
-          </div>
           <p className="max-w-4xl">
             For research use only. Products are intended for in-vitro laboratory and research applications and are not intended to diagnose, treat, cure, or prevent any disease. Not for human or veterinary consumption.
           </p>
