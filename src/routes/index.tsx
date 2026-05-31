@@ -416,9 +416,9 @@ function FAQSection() {
   const items = [
     { q: "Are your peptides legal to purchase?", a: "Yes. Products are sold for laboratory and research use only. They are not intended for human or veterinary consumption." },
     { q: "How fast do orders ship?", a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs." },
-    { q: "What happens if my lot fails verification?", a: "Every lot is independently assayed before release. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately." },
-    { q: "How do I verify my vial's certificate?", a: "Enter the lot number printed on the vial or carton into our verification tool. The archive returns the original COA in under one second." },
-    { q: "What payment methods do you accept?", a: "All major credit cards via encrypted checkout. For cryptocurrency or bulk research orders, contact us directly." },
+    { q: "What happens if my lot fails verification?", a: "Any lot that fails to meet Veratis quality standards is rejected and never released for sale. Only lots that successfully pass identity, purity, and applicable quality testing are made available. If you receive a Veratis product, that lot has already passed our release standards." },
+    { q: "How do I verify my vial's certificate?", a: "Enter the lot number printed on your vial or carton into the verification archive. The archive returns the original certificate associated with that specific lot. Researchers may also use the lot information to obtain the corresponding report directly from our independent laboratory partner." },
+    { q: "What payment methods do you accept?", a: "We currently accept Bitcoin (BTC), USDC, and USDT. Additional payment options may be added in the future as we continue expanding our payment infrastructure. Current accepted methods are always displayed during checkout." },
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
