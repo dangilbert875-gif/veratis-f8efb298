@@ -75,6 +75,14 @@
   --state-warning: oklch(0.62 0.08 75);
   --state-danger:  oklch(0.55 0.10 25);
   --state-archived: oklch(0.50 0.04 240);
+  --protocol-repair: oklch(0.5 0.08 145);
+  --protocol-restore: oklch(0.53 0.08 210);
+  --protocol-regenerate: oklch(0.6 0.09 45);
+  --protocol-ascent: oklch(0.39 0.09 255);
+  --protocol-shift: oklch(0.56 0.09 55);
+  --protocol-vector: oklch(0.52 0.08 110);
+  --protocol-rejuvenate: oklch(0.55 0.11 255);
+  --protocol-enhance: oklch(0.58 0.08 60);
 }
 
 .dark {
@@ -181,6 +189,12 @@
   opacity: 0.035;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+.protocol-chip {
+  border: 1px solid color-mix(in oklab, var(--border) 86%, transparent);
+  background: color-mix(in oklab, var(--background) 92%, var(--mist));
+  color: var(--ink);
 }
 
 /* Command palette (admin). Restrained, archival. */
