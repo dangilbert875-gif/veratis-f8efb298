@@ -147,6 +147,23 @@ function ProductPage() {
     product: Product;
     allProducts: Product[];
   };
+  const protocolMap: Record<string, { name: string; purpose: string; color: string }> = {
+    "bpc-157-12mg": { name: "Repair", purpose: "Tissue recovery", color: "oklch(0.55 0.08 145)" },
+    "bpc-tb-500-blend": { name: "Restore", purpose: "Recovery support", color: "oklch(0.56 0.08 210)" },
+    "tb-500-fragment-12mg": { name: "Restore", purpose: "Recovery support", color: "oklch(0.56 0.08 210)" },
+    "tb-4-full-sequence-10mg": { name: "Restore", purpose: "Recovery support", color: "oklch(0.56 0.08 210)" },
+    "ghk-cu-100mg": { name: "Regenerate", purpose: "Regenerative signaling", color: "oklch(0.58 0.09 45)" },
+    "ghk-cu-50mg": { name: "Regenerate", purpose: "Regenerative signaling", color: "oklch(0.58 0.09 45)" },
+    "ipamorelin-10mg": { name: "Ascent", purpose: "Growth hormone support", color: "oklch(0.42 0.09 255)" },
+    "ghrp-6-10mg": { name: "Ascent", purpose: "Growth hormone support", color: "oklch(0.42 0.09 255)" },
+    "retatrutide-12mg": { name: "Shift", purpose: "Metabolic change", color: "oklch(0.56 0.09 55)" },
+    "retatrutide-30mg": { name: "Shift", purpose: "Metabolic change", color: "oklch(0.56 0.09 55)" },
+    "retatrutide-60mg": { name: "Shift", purpose: "Metabolic change", color: "oklch(0.56 0.09 55)" },
+    "tirzepatide-10mg": { name: "Vector", purpose: "Weight management", color: "oklch(0.56 0.08 110)" },
+    "tirzepatide-30mg": { name: "Vector", purpose: "Weight management", color: "oklch(0.56 0.08 110)" },
+    "mots-c-10mg": { name: "Rejuvenate", purpose: "Mitochondrial vitality", color: "oklch(0.56 0.11 255)" },
+    "melanotan-2-10mg": { name: "Enhance", purpose: "Pigmentation support", color: "oklch(0.56 0.08 60)" },
+  };
   const lot = batches.find((b) => b.slug === p.slug);
   const lotId = lot?.lot ?? p.lot;
   const title = titleFor(p.name);
@@ -158,6 +175,7 @@ function ProductPage() {
   const related = allProducts.filter((x) => x.slug !== p.slug && x.category === p.category).slice(0, 4);
   const fallback = allProducts.filter((x) => x.slug !== p.slug).slice(0, 4);
   const relatedList = (related.length >= 3 ? related : fallback).slice(0, 4);
+  const protocol = protocolMap[p.slug];
   return (
     <Layout>
       <div className="mx-auto max-w-7xl px-5 sm:px-6 pt-8 sm:pt-10 pb-6 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/50 truncate">
@@ -197,8 +215,32 @@ function ProductPage() {
             <span className="h-px w-6 bg-foreground/20" />
             <LotTag lot={lotId} status="verified" linked />
           </div>
+          {protocol ? (
+            <div className="mt-5 rounded-[3px] border border-border bg-mist/40 p-4">
+              <div className="flex items-center gap-3">
+                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: protocol.color }} />
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">Protocol</p>
+              </div>
+              <div className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-1">
+                <p className="font-display text-[1.4rem] text-ink leading-none">{protocol.name}</p>
+                <p className="text-[12px] uppercase tracking-[0.14em] text-foreground/60">{protocol.purpose}</p>
+              </div>
+            </div>
+          ) : null}
           <h1 className="mt-5 text-3xl sm:text-4xl md:text-[3.25rem] text-ink leading-[1.05] tracking-[-0.022em] [text-wrap:balance] break-words">{title}</h1>
           <p className="mt-5 text-[15px] text-muted-foreground leading-relaxed">{p.short}</p>
+
+          <div className="mt-6 flex flex-wrap gap-2">
+            {[
+              "Lot Verified",
+              "Third-Party Tested",
+              "Archive Available",
+            ].map((label) => (
+              <span key={label} className="inline-flex items-center h-8 px-3 rounded-[3px] border border-border bg-background text-[10.5px] font-mono uppercase tracking-[0.16em] text-ink/80">
+                {label}
+              </span>
+            ))}
+          </div>
 
           <div className="mt-9 flex items-baseline gap-3 pb-6 border-b border-border">
             <span className="font-display text-[2.25rem] text-ink tabular-nums leading-none">${p.price}</span>
