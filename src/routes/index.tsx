@@ -21,10 +21,10 @@ import sysEclipse from "@/assets/sys-eclipse.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "VERATIS — Precision Longevity. Performance. Recovery." },
+      { title: "VERATIS. Precision Longevity. Performance. Recovery." },
       { name: "description", content: "Research-grade peptides for performance, recovery, and longevity. Backed by independent ISO 17025 verification and complete lot-level transparency." },
-      { property: "og:title", content: "VERATIS — Precision Longevity" },
-      { property: "og:description", content: "Operate at your highest level. Research-grade peptides with public, lot-level verification." },
+      { property: "og:title", content: "VERATIS. Precision Longevity" },
+      { property: "og:description", content: "Research-grade peptides with independent testing and public, lot-level verification." },
       { property: "og:url", content: "https://veratisbio.com" },
       { property: "og:image", content: "https://veratisbio.com/og-image.png" },
     ],
@@ -56,7 +56,7 @@ function Home() {
     .filter(Boolean) as typeof products;
   const featured = featuredProducts.length === 4 ? featuredProducts : products.slice(0, 4);
 
-  // Editorial product identifier — colored marque + protocol word
+  // Editorial product identifier: colored marque + identity word
   const identifierMap: Record<string, { word: string; hex: string }> = {
     "bpc-157-12mg": { word: "REPAIR", hex: "#3f4a2e" },          // green
     "tb-500-fragment-12mg": { word: "RESTORE", hex: "#2d5a5a" }, // teal
@@ -70,7 +70,7 @@ function Home() {
 
   return (
     <Layout>
-      {/* ─── SECTION 1 · HERO ─────────────────────────────────────────── */}
+      {/* SECTION 1 · HERO */}
       <section className="relative min-h-[88vh] md:min-h-[92vh] flex items-end overflow-hidden bg-ink">
         <img
           src={heroLongevity}
@@ -83,15 +83,15 @@ function Home() {
         <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink/40 to-transparent" />
 
-        <div className="relative mx-auto max-w-7xl w-full px-6 pb-16 md:pb-24 pt-32">
-          <p className="eyebrow text-background/70">— Precision Longevity</p>
-          <h1 className="mt-6 font-display text-background text-[2.75rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.5rem] leading-[0.98] tracking-[-0.02em] font-light [text-wrap:balance] max-w-5xl">
+        <div className="relative mx-auto max-w-7xl w-full px-6 pb-16 md:pb-24 pt-28 sm:pt-32">
+          <p className="eyebrow text-background/70">Precision Longevity</p>
+          <h1 className="mt-6 font-display text-background text-[2.25rem] xs:text-[2.75rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.5rem] leading-[1.02] sm:leading-[0.98] tracking-[-0.02em] font-light [text-wrap:balance] max-w-5xl">
             Performance.<br />
             Recovery. <span className="italic text-background/85">Longevity.</span>
           </h1>
           <p className="mt-8 max-w-xl text-[15px] md:text-[17px] text-background/80 leading-[1.7] font-light">
-            Research-grade peptides backed by independent verification and complete
-            lot-level transparency. Built for those who measure their life in decades.
+            Research-grade peptides backed by independent testing, public COAs, and
+            lot-level transparency. Built for those who expect proof with every vial.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
@@ -106,35 +106,35 @@ function Home() {
               className="group inline-flex items-center gap-2.5 border border-background/40 text-background pl-6 pr-5 py-[17px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:border-background hover:bg-background/5 transition backdrop-blur-sm"
             >
               <ShieldCheck size={14} strokeWidth={1.5} />
-              Verify a Lot
+              Verify A Lot
             </Link>
           </div>
 
           {/* Quiet status strip */}
           <div className="mt-16 md:mt-24 pt-6 border-t border-background/15 flex flex-wrap items-center justify-between gap-4 text-background/55">
-            <span className="eyebrow !text-background/55">— Independently Verified · ISO 17025</span>
+            <span className="eyebrow !text-background/55">Independently Verified · ISO 17025</span>
             <span className="font-display italic text-[13px] tracking-tight text-background/65">
-              Operate at your highest level.
+              Proof with every vial.
             </span>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION 2 · THE PILLARS ─────────────────────────────────── */}
+      {/* SECTION 2 · THE VERATIS SYSTEM */}
       <section className="bg-background">
         <div className="mx-auto max-w-7xl px-6 pt-24 md:pt-32 pb-10">
           <div className="grid md:grid-cols-12 gap-8 items-end">
             <div className="md:col-span-7">
-              <p className="eyebrow">— The Veratis System</p>
+              <p className="eyebrow">The Veratis System</p>
               <h2 className="mt-5 font-display text-4xl md:text-6xl text-ink leading-[1.02] tracking-[-0.02em] font-light [text-wrap:balance]">
-                Eight disciplines for the<br /><span className="italic">long arc</span> of human performance.
+                Eight research identities,<br />one <span className="italic">standard of evidence</span>.
               </h2>
             </div>
             <div className="md:col-span-5 md:pl-8">
               <p className="text-[15px] text-muted-foreground leading-[1.8] font-light max-w-md">
-                Every Veratis protocol is named for the change it makes — and answers
-                to the certificate that proves it. Eight identities. One standard of
-                evidence.
+                Every Veratis compound is named for the research category it serves,
+                and answers to the certificate that proves it. Eight identities. One
+                standard of evidence.
               </p>
             </div>
           </div>
@@ -142,14 +142,14 @@ function Home() {
 
         <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { title: "REPAIR",     sub: "Restore what matters.",  body: "Soft tissue, gut lining, ligament & tendon integrity.", img: pillarRecover,    hex: "#3f4a2e" },
-            { title: "RESTORE",    sub: "Recover stronger.",      body: "Sleep architecture, nervous-system reset, hormonal recovery.", img: sysRestore,  hex: "#2d5a5a" },
-            { title: "REGENERATE", sub: "Renew from within.",     body: "Skin, hair, connective tissue, copper-peptide signaling.", img: pillarRegenerate, hex: "#b87333" },
-            { title: "ASCENT",     sub: "Elevate performance.",   body: "Mitochondrial output, executive endurance, the long climb.", img: sysAscent,    hex: "#1f2d4a" },
-            { title: "SHIFT",      sub: "Change trajectory.",     body: "Body composition, metabolic flexibility, growth-hormone rhythm.", img: pillarPerform, hex: "#9a6b4a" },
-            { title: "VECTOR",     sub: "Move with intention.",   body: "Visceral fat, lipid signaling, directional metabolic change.", img: sysVector,   hex: "#6b6b3f" },
-            { title: "ECLIPSE",    sub: "Own the outcome.",       body: "Pigmentation, melanocortin pathways, ritual control.", img: sysEclipse,         hex: "#5a4a35" },
-            { title: "REJUVENATE", sub: "Energy reimagined.",     body: "Telomeric reserve, mitochondrial youth, cellular vitality.", img: pillarLongevity, hex: "#3a5878" },
+            { title: "REPAIR",     sub: "Tissue recovery research.",            body: "Soft tissue, gut lining, ligament and tendon research.",       img: pillarRecover,    hex: "#3f4a2e" },
+            { title: "RESTORE",    sub: "Recovery pathway research.",           body: "Recovery signaling and nervous-system pathway research.",      img: sysRestore,       hex: "#2d5a5a" },
+            { title: "REGENERATE", sub: "Copper peptide research.",             body: "Copper-peptide signaling, connective tissue research.",        img: pillarRegenerate, hex: "#b87333" },
+            { title: "ASCENT",     sub: "Growth hormone secretagogue research.",body: "Mitochondrial and growth-hormone secretagogue research.",      img: sysAscent,        hex: "#1f2d4a" },
+            { title: "SHIFT",      sub: "Metabolic research.",                  body: "Metabolic signaling and lipid pathway research.",              img: pillarPerform,    hex: "#9a6b4a" },
+            { title: "VECTOR",     sub: "Metabolic pathway research.",          body: "Lipid signaling and directional metabolic pathway research.",  img: sysVector,        hex: "#6b6b3f" },
+            { title: "ECLIPSE",    sub: "Melanocortin research.",               body: "Melanocortin receptor and pigmentation pathway research.",     img: sysEclipse,       hex: "#5a4a35" },
+            { title: "REJUVENATE", sub: "Mitochondrial research.",              body: "Mitochondrial signaling and cellular pathway research.",       img: pillarLongevity,  hex: "#3a5878" },
           ].map((p) => (
             <article
               key={p.title}
@@ -157,7 +157,7 @@ function Home() {
             >
               <img
                 src={p.img}
-                alt={`${p.title} — ${p.sub}`}
+                alt={`${p.title}. ${p.sub}`}
                 width={1024}
                 height={1280}
                 loading="lazy"
@@ -183,20 +183,19 @@ function Home() {
         </div>
       </section>
 
-      {/* ─── SECTION 3 · WHY VERATIS ─────────────────────────────────── */}
+      {/* SECTION 3 · WHY VERATIS */}
       <section className="relative bg-mist">
         <div className="mx-auto max-w-7xl px-6 py-24 md:py-36">
           <div className="max-w-4xl">
-            <p className="eyebrow">— Why Veratis</p>
+            <p className="eyebrow">Why Veratis</p>
             <h2 className="mt-6 font-display text-4xl md:text-6xl lg:text-7xl text-ink leading-[1.02] tracking-[-0.025em] font-light [text-wrap:balance]">
               Don't trust us.<br />
               <span className="italic text-primary/85">Verify for yourself.</span>
             </h2>
             <p className="mt-8 max-w-xl text-[16px] text-muted-foreground leading-[1.8] font-light">
-              The peptide industry runs on hidden lab reports, redacted names, and
-              certificates recycled across dozens of batches. Veratis was built on the
-              opposite premise — every claim is documentable, every lot retrievable,
-              every signature traceable to an accredited laboratory.
+              Most suppliers ask you to take their word for it. Veratis was built
+              around the opposite standard. Every lot is independently tested,
+              publicly archived, and traceable to the vial in hand.
             </p>
           </div>
 
@@ -233,14 +232,14 @@ function Home() {
         </div>
       </section>
 
-      {/* ─── SECTION 4 · FEATURED PRODUCTS ───────────────────────────── */}
+      {/* SECTION 4 · FEATURED PRODUCTS */}
       <section className="bg-background">
         <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
             <div className="max-w-2xl">
-              <p className="eyebrow">— The Protocol</p>
+              <p className="eyebrow">The Library</p>
               <h2 className="mt-5 font-display text-4xl md:text-5xl lg:text-6xl text-ink leading-[1.04] tracking-[-0.02em] font-light [text-wrap:balance]">
-                Each compound, <span className="italic">a discipline.</span>
+                Each compound, <span className="italic">independently verified.</span>
               </h2>
             </div>
             <Link
@@ -253,7 +252,7 @@ function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
             {featured.map((p) => {
-              const id = identifierMap[p.slug] ?? { word: "PROTOCOL", hex: "#8a6b3d" };
+              const id = identifierMap[p.slug] ?? { word: "RESEARCH", hex: "#8a6b3d" };
               return (
                 <div key={p.slug} className="group">
                   {/* Editorial identifier strip above the card */}
@@ -269,7 +268,7 @@ function Home() {
                       {id.word}
                     </span>
                   </div>
-                  <ProductCard p={p} />
+                  <ProductCard p={p} showQuantity showViewCoa stockState="in_stock" />
                 </div>
               );
             })}
@@ -277,7 +276,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ─── SECTION 5 · LOT VERIFICATION ────────────────────────────── */}
+      {/* SECTION 5 · LOT VERIFICATION */}
       <section
         className="relative bg-ink text-background overflow-hidden"
         style={{
@@ -288,23 +287,23 @@ function Home() {
       >
         <div className="mx-auto max-w-7xl px-6 py-24 md:py-36 grid lg:grid-cols-12 gap-14 lg:gap-20 items-start">
           <div className="lg:col-span-5">
-            <p className="eyebrow !text-primary/80">— Chain of Verification</p>
+            <p className="eyebrow !text-primary/80">Chain of Verification</p>
             <h2 className="mt-6 font-display text-4xl md:text-5xl lg:text-[3.75rem] leading-[1.04] tracking-[-0.02em] font-light text-background [text-wrap:balance]">
               The vial in your hand,<br />
               <span className="italic text-background/85">the document on the wall.</span>
             </h2>
             <p className="mt-8 text-[15px] text-background/70 leading-[1.8] font-light max-w-md">
               Enter the lot printed on the label. The archive returns the original
-              certificate — purity, identity, endotoxin — signed by an independent
+              certificate (purity, identity, endotoxin) signed by an independent
               laboratory at the moment of release.
             </p>
 
             <ol className="mt-12 space-y-6 max-w-md">
               {[
                 ["Lot number", "Stamped on every vial and tamper seal."],
-                ["QR code", "Scan the carton — resolves to the archive."],
+                ["QR code", "Scan the carton. Resolves to the archive."],
                 ["Certificate", "Original PDF, signed by the assaying lab."],
-                ["Chain of custody", "Synthesis → courier → ISO 17025 → release."],
+                ["Chain of custody", "Synthesis, courier, ISO 17025, release."],
               ].map(([k, v], i) => (
                 <li key={k} className="grid grid-cols-[auto_1fr] gap-5 items-start">
                   <span className="font-display tabular-nums text-[1.5rem] text-primary/70 leading-none font-light">
@@ -322,13 +321,13 @@ function Home() {
           <div className="lg:col-span-7">
             <BatchVerify />
             <p className="mt-5 eyebrow !text-background/45">
-              — Live query · permanent archive · 0.8s median
+              Live query · permanent archive · 0.8s median
             </p>
           </div>
         </div>
       </section>
 
-      {/* ─── SECTION 6 · THE STANDARD ────────────────────────────────── */}
+      {/* SECTION 6 · THE STANDARD */}
       <section className="travertine-surface relative overflow-hidden">
         <div className="absolute inset-0 opacity-30 pointer-events-none">
           <img
@@ -342,7 +341,7 @@ function Home() {
           />
         </div>
         <div className="relative mx-auto max-w-5xl px-6 py-32 md:py-48 text-center">
-          <p className="eyebrow">— The Standard</p>
+          <p className="eyebrow">The Standard</p>
           <h2 className="mt-10 font-display text-[3rem] sm:text-6xl md:text-8xl text-ink leading-[0.98] tracking-[-0.025em] font-light">
             Every lot.<br />
             Every time.<br />
@@ -352,9 +351,9 @@ function Home() {
           <div className="mx-auto mt-14 h-px w-24 bg-ink/30" />
 
           <p className="mt-14 max-w-2xl mx-auto text-[16px] md:text-[17px] text-foreground/75 leading-[1.85] font-light">
-            Veratis is a longevity company before it is a peptide supplier. We exist to
-            make the document a researcher receives correspond, exactly, to the vial in
-            their hand — not most of the time, not for the marketing batch, but every
+            Veratis is a longevity research brand before it is a peptide supplier.
+            The document a researcher receives corresponds, exactly, to the vial in
+            their hand. Not most of the time, not for the marketing batch, but every
             time, for every lot, archived forever.
           </p>
 
@@ -363,7 +362,7 @@ function Home() {
               to="/shop"
               className="inline-flex items-center gap-2.5 bg-ink text-background pl-7 pr-6 py-[18px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:bg-ink/90 transition"
             >
-              Begin the protocol <ArrowRight size={14} />
+              Browse Products <ArrowRight size={14} />
             </Link>
             <Link
               to="/coa-archive"
@@ -379,7 +378,7 @@ function Home() {
               <path d="M12 2 L12 22 M2 12 L22 12 M5 5 L19 19 M19 5 L5 19" stroke="currentColor" strokeWidth="0.5" />
               <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="0.5" />
             </svg>
-            <p className="eyebrow !text-foreground/45">— VERATIS · Precision Longevity</p>
+            <p className="eyebrow !text-foreground/45">VERATIS · Precision Longevity</p>
           </div>
         </div>
       </section>
@@ -395,9 +394,9 @@ function Home() {
 
 function FAQSection() {
   const items = [
-    { q: "Are your peptides legal to purchase?", a: "Yes — for laboratory and research use only. All products ship with a \"Research Use Only\" designation and are not intended for human or veterinary consumption." },
+    { q: "Are your peptides legal to purchase?", a: "Yes. Products are sold for laboratory and research use only. They are not intended for human or veterinary consumption." },
     { q: "How fast do orders ship?", a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs." },
-    { q: "What happens if my lot fails verification?", a: "It won't — every lot is independently assayed before release. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately." },
+    { q: "What happens if my lot fails verification?", a: "Every lot is independently assayed before release. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately." },
     { q: "How do I verify my vial's certificate?", a: "Enter the lot number printed on the vial or carton into our verification tool. The archive returns the original COA in under one second." },
     { q: "What payment methods do you accept?", a: "All major credit cards via encrypted checkout. For cryptocurrency or bulk research orders, contact us directly." },
   ];
@@ -406,7 +405,7 @@ function FAQSection() {
     <section className="bg-mist/50 border-y border-border">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-32 grid md:grid-cols-12 gap-12 md:gap-20">
         <div className="md:col-span-4">
-          <p className="eyebrow">— Common questions</p>
+          <p className="eyebrow">Common questions</p>
           <h2 className="mt-5 font-display text-4xl md:text-5xl text-ink leading-[1.05] tracking-[-0.02em] font-light">Quietly answered.</h2>
           <p className="mt-6 text-muted-foreground leading-[1.8] font-light max-w-xs">
             If you don't see your question, <Link to="/contact" className="text-ink underline underline-offset-4 hover:text-primary">write to us</Link>.
@@ -449,7 +448,7 @@ function EmailCapture() {
     <section className="bg-ink text-background">
       <div className="mx-auto max-w-7xl px-6 py-24 md:py-28 grid md:grid-cols-12 gap-12 md:gap-16 items-end">
         <div className="md:col-span-7">
-          <p className="eyebrow !text-primary/80">— Dispatch</p>
+          <p className="eyebrow !text-primary/80">Dispatch</p>
           <h2 className="mt-5 font-display text-4xl md:text-5xl text-background leading-[1.05] tracking-[-0.02em] font-light [text-wrap:balance]">
             Quiet correspondence. <span className="italic text-background/85">Monthly.</span>
           </h2>
