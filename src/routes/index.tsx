@@ -388,6 +388,7 @@ function Home() {
 
 function FAQSection() {
   const items = [
+    { q: "What is a COA?", a: "A Certificate of Analysis (COA) is a formal document issued by an independent, accredited laboratory that details the test results for a specific lot. It confirms identity, purity, endotoxin levels, and other analytical data measured at the time of release. Every Veratis lot receives its own COA, which is permanently archived and retrievable by the customer who holds that lot number." },
     { q: "Are your peptides legal to purchase?", a: "Yes. Products are sold for laboratory and research use only. They are not intended for human or veterinary consumption." },
     { q: "How fast do orders ship?", a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs." },
     { q: "What happens if my lot fails verification?", a: "Any lot that fails to meet Veratis quality standards is rejected and never released for sale. Only lots that successfully pass identity, purity, and applicable quality testing are made available. If you receive a Veratis product, that lot has already passed our release standards." },
