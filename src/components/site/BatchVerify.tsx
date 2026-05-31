@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type Batch, SAMPLE_LOT, labPartner } from "@/data/batches";
 import { useServerFn } from "@tanstack/react-start";
 import { lookupPublicLot } from "@/lib/public-catalog.functions";
@@ -15,11 +15,15 @@ type State =
   | { kind: "ok"; batch: Batch }
   | { kind: "notfound"; query: string };
 
-export function BatchVerify({ compact = false }: { compact?: boolean }) {
-  const [lot, setLot] = useState("");
+export function BatchVerify({ compact = false, initialLot = "" }: { compact?: boolean; initialLot?: string }) {
+  const [lot, setLot] = useState(initialLot);
   const [state, setState] = useState<State>({ kind: "idle" });
   const lookup = useServerFn(lookupPublicLot);
   const { batches } = usePublicLots();
+
+  useEffect(() => {
+    setLot(initialLot);
+  }, [initialLot]);
 
   const stats = {
     count: batches.length,
