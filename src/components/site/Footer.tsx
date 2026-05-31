@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Logo } from "./Logo";
 import { batches, labPartner } from "@/data/batches";
 import { ArrowRight, ShieldCheck, Snowflake, Lock, Archive } from "lucide-react";
@@ -9,6 +11,8 @@ export function Footer() {
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
   const lastRelease = batches[0]?.testedOn ?? ".";
   const educationState = usePageEnabled("education");
+  const navigate = useNavigate();
+  const [lot, setLot] = useState("");
   const companyLinks: Array<[string, string]> = [
     ["About", "/about"],
     ...(educationState === "disabled" ? [] : ([["Education", "/blog"]] as Array<[string, string]>)),
@@ -34,17 +38,29 @@ export function Footer() {
             <span className="hidden md:inline text-background/20">·</span>
             <span className="hidden md:inline tabular-nums">last release {lastRelease}</span>
           </div>
-          <Link
-            to="/verify"
-            className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 sm:h-11 sm:py-0 sm:pl-4 sm:pr-2 rounded-[3px] border border-background/15 bg-background/[0.04] hover:border-primary/60 active:scale-[0.99] transition w-full md:w-[340px]"
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const v = lot.trim();
+              if (!v) { navigate({ to: "/verify" }); return; }
+              navigate({ to: "/verify", search: { lot: v } as any });
+            }}
+            className="flex items-center gap-2 sm:h-11 p-1.5 sm:p-1 rounded-[3px] border border-background/15 bg-background/[0.04] focus-within:border-primary/60 transition w-full md:w-[340px]"
           >
-            <span className="font-mono text-[12px] tabular-nums tracking-[0.08em] text-background/55 px-1 sm:px-0">
-              PP-XXXX
-            </span>
-            <span className="inline-flex items-center justify-center gap-1.5 h-9 sm:h-8 px-3 rounded-[2px] bg-primary text-primary-foreground text-[10.5px] font-medium uppercase tracking-[0.16em]">
+            <input
+              aria-label="Lot number"
+              value={lot}
+              onChange={(e) => setLot(e.target.value.toUpperCase())}
+              placeholder="PP-XXXX"
+              className="flex-1 min-w-0 bg-transparent px-2 font-mono text-[12px] tabular-nums tracking-[0.08em] text-background placeholder:text-background/40 focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center gap-1.5 h-9 sm:h-8 px-3 rounded-[2px] bg-primary text-primary-foreground text-[10.5px] font-medium uppercase tracking-[0.16em] hover:bg-primary/90 transition"
+            >
               Verify <ArrowRight size={11} />
-            </span>
-          </Link>
+            </button>
+          </form>
         </div>
       </div>
 
