@@ -142,41 +142,47 @@ function Home() {
 
         <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { title: "REPAIR",     sub: "Tissue recovery research.",            body: "Soft tissue, gut lining, ligament and tendon research.",       img: pillarRecover,    hex: "#3f4a2e" },
-            { title: "RESTORE",    sub: "Recovery pathway research.",           body: "Recovery signaling and nervous-system pathway research.",      img: sysRestore,       hex: "#2d5a5a" },
-            { title: "REGENERATE", sub: "Copper peptide research.",             body: "Copper-peptide signaling, connective tissue research.",        img: pillarRegenerate, hex: "#b87333" },
-            { title: "ASCENT",     sub: "Growth hormone secretagogue research.",body: "Mitochondrial and growth-hormone secretagogue research.",      img: sysAscent,        hex: "#1f2d4a" },
-            { title: "SHIFT",      sub: "Metabolic research.",                  body: "Metabolic signaling and lipid pathway research.",              img: pillarPerform,    hex: "#9a6b4a" },
-            { title: "VECTOR",     sub: "Metabolic pathway research.",          body: "Lipid signaling and directional metabolic pathway research.",  img: sysVector,        hex: "#6b6b3f" },
-            { title: "ECLIPSE",    sub: "Melanocortin research.",               body: "Melanocortin receptor and pigmentation pathway research.",     img: sysEclipse,       hex: "#5a4a35" },
-            { title: "REJUVENATE", sub: "Mitochondrial research.",              body: "Mitochondrial signaling and cellular pathway research.",       img: pillarLongevity,  hex: "#3a5878" },
+            { title: "REPAIR",     compound: "BPC-157",      body: "Supports tissue, gut lining, ligament, and tendon research.",      img: pillarRecover,    hex: "#3f4a2e" },
+            { title: "RESTORE",    compound: "TB-500",       body: "Supports recovery pathway and soft-tissue repair research.",       img: sysRestore,       hex: "#2d5a5a" },
+            { title: "REGENERATE", compound: "GHK-Cu",       body: "Supports copper peptide, skin, hair, and connective tissue research.", img: pillarRegenerate, hex: "#b87333" },
+            { title: "ASCENT",     compound: "Ipamorelin",   body: "Supports growth hormone secretagogue research.",                   img: sysAscent,        hex: "#1f2d4a" },
+            { title: "SHIFT",      compound: "Retatrutide",  body: "Supports metabolic signaling and body composition research.",      img: pillarPerform,    hex: "#9a6b4a" },
+            { title: "VECTOR",     compound: "Tirzepatide",  body: "Supports metabolic pathway and weight-management research.",       img: sysVector,        hex: "#6b6b3f" },
+            { title: "ECLIPSE",    compound: "Melanotan-2",  body: "Supports melanocortin and pigmentation pathway research.",         img: sysEclipse,       hex: "#5a4a35" },
+            { title: "REJUVENATE", compound: "MOTS-C",       body: "Supports mitochondrial signaling and cellular energy research.",   img: pillarLongevity,  hex: "#3a5878" },
           ].map((p) => (
             <article
               key={p.title}
-              className="group relative aspect-[3/4] overflow-hidden rounded-sm bg-ink"
+              className="group relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-ink isolate"
             >
               <img
                 src={p.img}
-                alt={`${p.title}. ${p.sub}`}
+                alt={`${p.title}. ${p.compound}.`}
                 width={1024}
-                height={1280}
+                height={1365}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover transition duration-[1200ms] group-hover:scale-[1.04]"
+                className="absolute inset-0 w-full h-full object-cover object-center transition duration-[1200ms] group-hover:scale-[1.04]"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/15 to-transparent" />
+              {/* Stronger, evenly weighted bottom gradient for legibility on every image */}
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/92 via-ink/55 to-ink/10" />
               <div className="absolute inset-0 p-6 md:p-7 flex flex-col justify-end text-background">
-                <span
-                  className="inline-flex items-center gap-2 text-[10px] tracking-[0.28em] uppercase font-medium text-background/85"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: p.hex, boxShadow: `0 0 0 3px ${p.hex}33` }} />
+                <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.28em] uppercase font-medium text-background/85">
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: p.hex, boxShadow: `0 0 0 3px ${p.hex}33` }}
+                  />
                   Identity
                 </span>
-                <h3 className="font-display text-[1.75rem] md:text-[2rem] tracking-[0.04em] font-light leading-none">
+                <h3 className="mt-2 font-display text-[1.75rem] md:text-[2rem] tracking-[0.04em] font-light leading-none text-background">
                   {p.title}
                 </h3>
+                <p className="mt-2 text-[12px] uppercase tracking-[0.18em] text-background/85 font-light">
+                  {p.compound}
+                </p>
                 <div className="mt-3 h-px w-8 bg-background/60" />
-                <p className="mt-4 text-[12px] uppercase tracking-[0.18em] text-background/75 font-light">{p.sub}</p>
-                <p className="mt-2 text-[13px] text-background/65 leading-[1.55] font-light max-w-[24ch]">{p.body}</p>
+                <p className="mt-4 text-[13px] text-background/80 leading-[1.55] font-light">
+                  {p.body}
+                </p>
               </div>
             </article>
           ))}
