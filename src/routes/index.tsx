@@ -127,14 +127,14 @@ function Home() {
             <div className="md:col-span-7">
               <p className="eyebrow">The Veratis System</p>
               <h2 className="mt-5 font-display text-4xl md:text-6xl text-ink leading-[1.02] tracking-[-0.02em] font-light [text-wrap:balance]">
-                Eight research identities,<br />one <span className="italic">standard of evidence</span>.
+                Eight identities,<br />one <span className="italic">standard of evidence</span>.
               </h2>
             </div>
             <div className="md:col-span-5 md:pl-8">
               <p className="text-[15px] text-muted-foreground leading-[1.8] font-light max-w-md">
-                Every Veratis compound is named for the research category it serves,
-                and answers to the certificate that proves it. Eight identities. One
-                standard of evidence.
+                Eight protocol identities. One verification standard. Every compound
+                belongs to a defined pathway, and every lot answers to the same
+                evidence standard.
               </p>
             </div>
           </div>
@@ -142,18 +142,19 @@ function Home() {
 
         <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { title: "REPAIR",     compound: "BPC-157",      body: "Supports tissue, gut lining, ligament, and tendon research.",      img: pillarRecover,    hex: "#3f4a2e" },
-            { title: "RESTORE",    compound: "TB-500",       body: "Supports recovery pathway and soft-tissue repair research.",       img: sysRestore,       hex: "#2d5a5a" },
-            { title: "REGENERATE", compound: "GHK-Cu",       body: "Supports copper peptide, skin, hair, and connective tissue research.", img: pillarRegenerate, hex: "#b87333" },
-            { title: "ASCENT",     compound: "Ipamorelin",   body: "Supports growth hormone secretagogue research.",                   img: sysAscent,        hex: "#1f2d4a" },
-            { title: "SHIFT",      compound: "Retatrutide",  body: "Supports metabolic signaling and body composition research.",      img: pillarPerform,    hex: "#9a6b4a" },
-            { title: "VECTOR",     compound: "Tirzepatide",  body: "Supports metabolic pathway and weight-management research.",       img: sysVector,        hex: "#6b6b3f" },
-            { title: "ECLIPSE",    compound: "Melanotan-2",  body: "Supports melanocortin and pigmentation pathway research.",         img: sysEclipse,       hex: "#5a4a35" },
-            { title: "REJUVENATE", compound: "MOTS-C",       body: "Supports mitochondrial signaling and cellular energy research.",   img: pillarLongevity,  hex: "#3a5878" },
+            { title: "REPAIR",     compound: "BPC-157",     body: "Supports tissue, gut lining, ligament, and tendon recovery pathways.",       img: pillarRecover,    hex: "#3f4a2e" }, // green
+            { title: "RESTORE",    compound: "TB-500",      body: "Supports recovery pathways and soft-tissue repair.",                          img: sysRestore,       hex: "#2d5a5a" }, // teal
+            { title: "REGENERATE", compound: "GHK-Cu",      body: "Supports copper peptide, skin, hair, and connective tissue pathways.",       img: pillarRegenerate, hex: "#b87333" }, // copper
+            { title: "ASCENT",     compound: "Ipamorelin",  body: "Supports growth hormone secretagogue pathways.",                              img: sysAscent,        hex: "#1f2d4a" }, // navy
+            { title: "SHIFT",      compound: "Retatrutide", body: "Supports metabolic signaling and body composition pathways.",                 img: pillarPerform,    hex: "#9a6b4a" }, // cognac
+            { title: "VECTOR",     compound: "Tirzepatide", body: "Supports metabolic signaling and weight-management pathways.",                img: sysVector,        hex: "#6b6b3f" }, // olive
+            { title: "ECLIPSE",    compound: "Melanotan-2", body: "Supports melanocortin and pigmentation pathways.",                            img: sysEclipse,       hex: "#5a4a35" }, // bronze
+            { title: "REJUVENATE", compound: "MOTS-C",      body: "Supports mitochondrial signaling and cellular energy pathways.",              img: pillarLongevity,  hex: "#3a5878" }, // blue
           ].map((p) => (
             <article
               key={p.title}
-              className="group relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-ink isolate"
+              style={{ ["--accent" as any]: p.hex }}
+              className="group relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-ink isolate ring-1 ring-inset ring-background/0 hover:ring-[color:var(--accent)]/40 shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)] transition-[box-shadow,ring-color] duration-700 ease-out"
             >
               <img
                 src={p.img}
@@ -161,26 +162,39 @@ function Home() {
                 width={1024}
                 height={1365}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover object-center transition duration-[1200ms] group-hover:scale-[1.04]"
+                className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-[1400ms] ease-out group-hover:scale-[1.025]"
               />
-              {/* Stronger, evenly weighted bottom gradient for legibility on every image */}
+              {/* Consistent, evenly weighted bottom gradient for legibility across every image */}
               <div className="absolute inset-0 bg-gradient-to-t from-ink/92 via-ink/55 to-ink/10" />
+              {/* Subtle protocol-color wash that intensifies on hover */}
+              <div
+                className="absolute inset-x-0 bottom-0 h-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-soft-light pointer-events-none"
+                style={{ background: `linear-gradient(to top, ${p.hex}55, transparent)` }}
+              />
               <div className="absolute inset-0 p-6 md:p-7 flex flex-col justify-end text-background">
-                <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.28em] uppercase font-medium text-background/85">
+                {/* IDENTITY label */}
+                <span className="inline-flex items-center gap-2 text-[9.5px] tracking-[0.32em] uppercase font-medium text-background/70">
                   <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: p.hex, boxShadow: `0 0 0 3px ${p.hex}33` }}
+                    className="h-1.5 w-1.5 rounded-full transition-transform duration-500 group-hover:scale-110"
+                    style={{ backgroundColor: p.hex, boxShadow: `0 0 0 3px ${p.hex}22` }}
                   />
                   Identity
                 </span>
-                <h3 className="mt-2 font-display text-[1.75rem] md:text-[2rem] tracking-[0.04em] font-light leading-none text-background">
+                {/* PROTOCOL NAME — primary focus */}
+                <h3 className="mt-3 font-display text-[2rem] md:text-[2.4rem] tracking-[0.02em] font-light leading-[0.95] text-background">
                   {p.title}
                 </h3>
-                <p className="mt-2 text-[12px] uppercase tracking-[0.18em] text-background/85 font-light">
+                {/* Compound name */}
+                <p className="mt-3 font-display italic text-[1rem] md:text-[1.05rem] text-background/90 leading-none tracking-tight">
                   {p.compound}
                 </p>
-                <div className="mt-3 h-px w-8 bg-background/60" />
-                <p className="mt-4 text-[13px] text-background/80 leading-[1.55] font-light">
+                {/* Accent divider */}
+                <div
+                  className="mt-4 h-px w-8 group-hover:w-14 transition-all duration-700 ease-out"
+                  style={{ backgroundColor: p.hex, opacity: 0.85 }}
+                />
+                {/* Description */}
+                <p className="mt-4 text-[12.5px] text-background/75 leading-[1.6] font-light">
                   {p.body}
                 </p>
               </div>
