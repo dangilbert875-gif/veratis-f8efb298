@@ -7,7 +7,7 @@ import { BatchVerify } from "@/components/site/BatchVerify";
 import { batches, labPartner } from "@/data/batches";
 import { ArrowRight, ArrowUpRight, ShieldCheck, Mail, Plus, Minus } from "lucide-react";
 
-import heroLongevity from "@/assets/hero-longevity.jpg";
+import heroArchive from "@/assets/hero-archive.jpg";
 import pillarRecover from "@/assets/pillar-recover.jpg";
 import pillarPerform from "@/assets/pillar-perform.jpg";
 import pillarLongevity from "@/assets/pillar-longevity.jpg";
@@ -73,32 +73,34 @@ function Home() {
       {/* SECTION 1 · HERO */}
       <section className="relative min-h-[88vh] md:min-h-[92vh] flex items-end overflow-hidden bg-ink">
         <img
-          src={heroLongevity}
-          alt="Sunlit travertine sanctuary with an amber apothecary vial at golden hour"
+          src={heroArchive}
+          alt="A single amber laboratory vial on a travertine plinth beside an architectural certificate archive at golden hour"
           width={1920}
-          height={1216}
+          height={1080}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        {/* Warm bottom-up gradient for text legibility, never neon */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink/40 to-transparent" />
+        {/* Left-weighted scrim for text legibility while preserving the right-side vial + archive */}
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/82 via-ink/45 to-ink/5" />
+        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/70 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-ink/35 to-transparent" />
 
         <div className="relative mx-auto max-w-7xl w-full px-6 pb-16 md:pb-24 pt-28 sm:pt-32">
-          <p className="eyebrow text-background/70">Precision Longevity</p>
-          <h1 className="mt-6 font-display text-background text-[2.25rem] xs:text-[2.75rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.5rem] leading-[1.02] sm:leading-[0.98] tracking-[-0.02em] font-light [text-wrap:balance] max-w-5xl">
-            Performance.<br />
-            Recovery. <span className="italic text-background/85">Longevity.</span>
+          <p className="eyebrow text-background/70">The Standard of Evidence</p>
+          <h1 className="mt-6 font-display text-background text-[2.5rem] xs:text-[3rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.25rem] leading-[1.02] sm:leading-[0.98] tracking-[-0.02em] font-light [text-wrap:balance] max-w-5xl">
+            Every lot.<br />
+            Every time.<br />
+            <span className="italic text-background/90">Publicly verifiable.</span>
           </h1>
-          <p className="mt-8 max-w-xl text-[15px] md:text-[17px] text-background/80 leading-[1.7] font-light">
-            Research-grade peptides backed by independent testing, public COAs, and
-            lot-level transparency. Built for those who expect proof with every vial.
+          <p className="mt-10 max-w-xl text-[15px] md:text-[17px] text-background/80 leading-[1.7] font-light">
+            Every Veratis compound is independently tested, archived, and traceable
+            to the vial in your hand.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
               to="/shop"
               className="group inline-flex items-center gap-3 bg-background text-ink pl-7 pr-6 py-[18px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:bg-background/90 transition shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]"
             >
-              Browse Products
+              Browse Compounds
               <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
             </Link>
             <Link
@@ -110,12 +112,11 @@ function Home() {
             </Link>
           </div>
 
-          {/* Quiet status strip */}
-          <div className="mt-16 md:mt-24 pt-6 border-t border-background/15 flex flex-wrap items-center justify-between gap-4 text-background/55">
-            <span className="eyebrow !text-background/55">Independently Verified · ISO 17025</span>
-            <span className="font-display italic text-[13px] tracking-tight text-background/65">
-              Proof with every vial.
-            </span>
+          {/* Single quiet trust line */}
+          <div className="mt-14 md:mt-20 pt-6 border-t border-background/15">
+            <p className="text-[10.5px] font-medium tracking-[0.28em] uppercase text-background/60">
+              Independently Verified <span className="text-background/30 mx-2">•</span> ISO 17025 <span className="text-background/30 mx-2">•</span> Lot Archive
+            </p>
           </div>
         </div>
       </section>
