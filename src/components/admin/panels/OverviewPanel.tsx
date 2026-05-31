@@ -80,7 +80,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
 
   return (
     <div className="space-y-10">
-      {/* Scope toggle — applies to time-scoped row */}
+      {/* Scope toggle. applies to time-scoped row */}
       <div className="flex items-center justify-between gap-4 -mt-4">
         <div className="text-[11px] text-foreground/55">
           Metrics scoped to{" "}
@@ -89,7 +89,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
         <ScopeToggle scope={scope} onChange={setScope} />
       </div>
 
-      {/* ROW 1 — ACTION REQUIRED (prominent, clickable) */}
+      {/* ROW 1. ACTION REQUIRED (prominent, clickable) */}
       <section>
         <SectionHeading>Action required</SectionHeading>
         {isLoading || !data ? (
@@ -134,7 +134,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
         </div>
       </section>
 
-      {/* ROW 2 — TIME-SCOPED METRICS */}
+      {/* ROW 2. TIME-SCOPED METRICS */}
       <section>
         <SectionHeading>Time-scoped · {scopeSuffix}</SectionHeading>
         {isLoading || !data ? (
@@ -178,7 +178,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
         )}
       </section>
 
-      {/* ROW 3 — INVENTORY HEALTH */}
+      {/* ROW 3. INVENTORY HEALTH */}
       <section>
         <SectionHeading>Inventory health</SectionHeading>
         {isLoading || !data ? (
@@ -228,7 +228,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
         />
       </section>
 
-      {/* SECONDARY — referrals, payouts, customers, articles */}
+      {/* SECONDARY. referrals, payouts, customers, articles */}
       <section>
         <SectionHeading>Secondary · partners & audience</SectionHeading>
         {isLoading || !data ? (
@@ -263,7 +263,7 @@ export function OverviewPanel({ onNavigate }: { onNavigate: NavigateFn }) {
         )}
       </section>
 
-      {/* BOTTOM — operational notes */}
+      {/* BOTTOM. operational notes */}
       <section>
         <SectionHeading>Operational notes</SectionHeading>
         <Card>

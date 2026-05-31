@@ -14,7 +14,7 @@ const baseNav = [
 ] as const;
 
 /* ------------------------------------------------------------------ */
-/* Custom icon system — hairline 1.25 stroke, optically balanced.     */
+/* Custom icon system. hairline 1.25 stroke, optically balanced.     */
 /* Kept inline so the header has no third-party icon dependency and    */
 /* every glyph shares the same scientific drawing style.               */
 /* ------------------------------------------------------------------ */
@@ -65,7 +65,7 @@ const IconClose = ({ size = 18, className }: IconProps) => (
   </svg>
 );
 
-/* Signature detail: an "operational status" indicator — a tiny
+/* Signature detail: an "operational status" indicator. a tiny
    live dot + monospace tag. Used in the top utility bar and in the
    Verify-batch pill. Reads as "this system is currently online and
    audited" rather than as a marketing badge.                       */
@@ -96,7 +96,7 @@ export function Header() {
     return () => clearTimeout(t);
   }, [lastAddedAt]);
 
-  // Rotating proof points — specific numbers beat vague badges.
+  // Rotating proof points. specific numbers beat vague badges.
   const meanPurity = batches.length
     ? (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2)
     : "99.25";
@@ -114,7 +114,7 @@ export function Header() {
 
   return (
     <>
-      {/* Institutional certification bar — calibration signage, not a banner */}
+      {/* Institutional certification bar. calibration signage, not a banner */}
       <div className="w-full bg-ink text-background/90 text-[10px] leading-none tracking-[0.24em] uppercase font-medium antialiased">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 h-7 flex items-center justify-center gap-5 sm:gap-7">
           <span className="inline-flex items-center gap-2 shrink-0">
@@ -145,7 +145,7 @@ export function Header() {
           <div className="min-w-0 flex items-center gap-8 xl:gap-12">
             <Link
               to="/"
-              aria-label="VERATIS — home"
+              aria-label="VERATIS. home"
               className="shrink-0 block transition-opacity duration-200 hover:opacity-80"
             >
               <Logo className="h-auto w-[124px] sm:w-[142px] lg:w-[164px] xl:w-[176px]" />
@@ -156,7 +156,7 @@ export function Header() {
                   key={n.to}
                   to={n.to}
                   className={[
-                    // Signature detail: precision underline — a 14px
+                    // Signature detail: precision underline. a 14px
                     // centered tick that expands to the full label width
                     // on hover. Reads as a calibration mark rather than
                     // a typical link underline.
@@ -178,7 +178,7 @@ export function Header() {
           </div>
 
           <div className="shrink-0 flex items-center gap-1 text-foreground/65">
-            {/* Verify-batch — squared, tactile, with live status dot */}
+            {/* Verify-batch. squared, tactile, with live status dot */}
             <Link
               to="/verify"
               className="hidden md:inline-flex items-center gap-2 mr-2 h-9 px-3.5 text-[11.5px] font-medium uppercase tracking-[0.14em] text-ink bg-background border border-ink/15 rounded-[3px] shadow-[0_1px_0_rgba(15,23,42,0.04)] hover:bg-mist hover:border-ink/30 transition-colors duration-200"

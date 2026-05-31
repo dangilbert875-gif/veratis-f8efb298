@@ -3,7 +3,7 @@ import { Card, Empty } from "../ui";
 
 export function ArticlesPanel() {
   return (
-    <Card title="Educational publications" hint="Reference library — edit via src/data/articles.ts">
+    <Card title="Educational publications" hint="Reference library. edit via src/data/articles.ts">
       {!articles.length ? (
         <Empty>No articles.</Empty>
       ) : (

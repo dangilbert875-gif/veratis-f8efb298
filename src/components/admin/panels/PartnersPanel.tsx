@@ -30,8 +30,8 @@ export function PartnersPanel() {
             <tbody>
               {partners.map((p: any) => (
                 <tr key={p.id} className="border-b border-ink/5">
-                  <td className="px-5 py-3 font-mono text-foreground/80">{p.email ?? "—"}</td>
-                  <td className="px-5 py-3">{p.full_name ?? "—"}</td>
+                  <td className="px-5 py-3 font-mono text-foreground/80">{p.email ?? "."}</td>
+                  <td className="px-5 py-3">{p.full_name ?? "."}</td>
                   <td className="px-5 py-3 text-foreground/70">{formatDate(p.created_at)}</td>
                 </tr>
               ))}

@@ -52,8 +52,8 @@ export function CustomersPanel() {
                 const roles: Role[] = c.roles ?? [];
                 return (
                   <tr key={c.id} className="border-b border-ink/5 align-top">
-                    <td className="px-5 py-3 font-mono text-foreground/80">{c.email ?? "—"}</td>
-                    <td className="px-5 py-3">{c.full_name ?? "—"}</td>
+                    <td className="px-5 py-3 font-mono text-foreground/80">{c.email ?? "."}</td>
+                    <td className="px-5 py-3">{c.full_name ?? "."}</td>
                     <td className="px-5 py-3 text-foreground/70">{formatDate(c.created_at)}</td>
                     <td className="px-5 py-3">
                       <div className="flex flex-wrap gap-1.5">

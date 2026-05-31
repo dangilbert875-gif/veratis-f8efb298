@@ -8,7 +8,7 @@ import { BatchVerify } from "@/components/site/BatchVerify";
 import { Info, Scale, Target, MessagesSquare, ArrowRight, ChevronDown, X, Search, ShieldCheck } from "lucide-react";
 import type { Product } from "@/data/products";
 
-// Subtle category accent colors — 6px top-left bar on each card
+// Subtle category accent colors. 6px top-left bar on each card
 const CATEGORY_ACCENTS: Record<string, string> = {
   "Tissue Recovery": "bg-teal-300/60",
   "Regenerative": "bg-amber-300/60",
@@ -83,9 +83,9 @@ export const Route = createFileRoute("/shop/")({
   }),
   head: () => ({
     meta: [
-      { title: "Shop Peptides — VERATIS" },
+      { title: "Shop Peptides. VERATIS" },
       { name: "description", content: "Browse research-grade peptides. Every batch HPLC and mass-spec verified." },
-      { property: "og:title", content: "Catalog of research-grade peptides — VERATIS" },
+      { property: "og:title", content: "Catalog of research-grade peptides. VERATIS" },
       { property: "og:description", content: "Browse the VERATIS catalog. Every vial is lot-traceable to an independent certificate of analysis." },
       { property: "og:url", content: "https://veratisbio.com/shop" },
     ],
@@ -183,7 +183,7 @@ function ShopPage() {
         lead="Every entry below is produced under the same lyophilization, sealing, and verification protocol. Each vial carries a unique lot number traceable to an independent certificate of analysis."
       />
 
-      {/* Hero trust stat — mean purity promoted to top of catalog */}
+      {/* Hero trust stat. mean purity promoted to top of catalog */}
       <section className="border-y border-border bg-mist/25">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="flex items-baseline gap-4 sm:gap-5">
@@ -291,7 +291,7 @@ function ShopPage() {
                 />
               </div>
 
-              {/* Chip row — horizontal scroll on mobile with fade edges */}
+              {/* Chip row. horizontal scroll on mobile with fade edges */}
               <div className="relative -mx-1 min-w-0 max-w-full overflow-hidden">
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 px-1 scrollbar-hide" style={{ scrollbarWidth: "none" }}>
                   {["All", ...ALL_CATEGORIES.filter((c) => products.some((p) => p.category === c))].map((c) => {
@@ -428,7 +428,7 @@ function ShopPage() {
       <section className="border-y border-border bg-mist/30">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 py-16 md:py-24">
           <div className="max-w-2xl">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Catalog tools</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">Catalog tools</p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">Need help choosing?</h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
               Browse by research goal or talk to our team.
@@ -437,7 +437,7 @@ function ShopPage() {
           <div className="mt-10 grid md:grid-cols-3 gap-4 md:gap-5">
             {[
               { icon: Scale, title: "Compare peptides", body: "See mechanism, half-life, and research notes side by side.", cta: "Open comparison", to: "/standards" as const },
-              { icon: Target, title: "By research goal", body: "Filter peptides by what you're studying — recovery, metabolic, longevity, more.", cta: "Browse by goal", to: "/shop" as const },
+              { icon: Target, title: "By research goal", body: "Filter peptides by what you're studying. recovery, metabolic, longevity, more.", cta: "Browse by goal", to: "/shop" as const },
               { icon: MessagesSquare, title: "Talk to our team", body: "Bulk research orders or COA questions? We respond within 1 business day.", cta: "Contact", to: "/contact" as const },
             ].map(({ icon: Icon, title, body, cta, to }) => (
               <Link
@@ -457,7 +457,7 @@ function ShopPage() {
         </div>
       </section>
 
-      {/* Catalog help bar — sits above footer */}
+      {/* Catalog help bar. sits above footer */}
       <section className="bg-background border-t border-border">
         <div className="mx-auto max-w-7xl px-5 sm:px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-[12.5px] text-foreground/75">
           <p>Questions about purity, dosing, or COAs?</p>

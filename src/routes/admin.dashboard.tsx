@@ -7,7 +7,7 @@ export const Route = createFileRoute("/admin/dashboard")({
   component: AdminDashboardPage,
   head: () => ({
     meta: [
-      { title: "Admin dashboard — VERATIS" },
+      { title: "Admin dashboard. VERATIS" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -127,7 +127,7 @@ function AdminDashboardPage() {
         };
 
         if (role !== "admin") {
-          setState({ kind: "denied", reason: "Access denied — admin role required.", debug });
+          setState({ kind: "denied", reason: "Access denied. admin role required.", debug });
           return;
         }
 
@@ -223,11 +223,11 @@ function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
   return (
     <div className="mt-6 border border-ink/10 bg-mist/25 p-3 text-left text-[11px] leading-relaxed text-foreground/65">
       <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">Auth debug</div>
-      <div>Supabase user id: {debug.userId ?? "—"}</div>
+      <div>Supabase user id: {debug.userId ?? "."}</div>
       <div>Session exists: {debug.sessionExists ? "true" : "false"}</div>
-      <div>Profile role: {debug.profileRole ?? "—"}</div>
+      <div>Profile role: {debug.profileRole ?? "."}</div>
       <div>Route status: {debug.routeStatus}</div>
-      <div>Last auth error: {debug.lastAuthError ?? "—"}</div>
+      <div>Last auth error: {debug.lastAuthError ?? "."}</div>
     </div>
   );
 }

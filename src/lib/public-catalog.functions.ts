@@ -1,4 +1,4 @@
-// Public catalog server functions. No auth required — uses the admin client
+// Public catalog server functions. No auth required. uses the admin client
 // scoped to safe public projections (status='published', non-archived).
 // Safe to call from public route loaders and components.
 import { createServerFn } from "@tanstack/react-start";
@@ -44,7 +44,7 @@ const LOT_PUBLIC_COLUMNS =
   "water_content, endotoxin, release_date, best_before, lab_partner, tested_by, " +
   "coa_url, coa_download_enabled, status";
 
-/** Public COA archive — released + public_visible only. */
+/** Public COA archive. released + public_visible only. */
 export const listPublicLots = createServerFn({ method: "GET" }).handler(async () => {
   // The public archive mirrors the live storefront: one entry per currently
   // published, non-archived product. We surface the latest matching lot when
@@ -103,7 +103,7 @@ export const listPublicLots = createServerFn({ method: "GET" }).handler(async ()
   });
 });
 
-/** Public Verify Batch lookup — returns null when not publicly verifiable. */
+/** Public Verify Batch lookup. returns null when not publicly verifiable. */
 export const lookupPublicLot = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
     z.object({ lot_number: z.string().min(1).max(128) }).parse(d),
@@ -127,7 +127,7 @@ export const lookupPublicLot = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error) throw new Error(error.message);
 
-    // Fallback: mirror listPublicLots — if no formally released lot row
+    // Fallback: mirror listPublicLots. if no formally released lot row
     // exists but the lot identifier matches a currently published product's
     // own lot_number, surface that product so the archive and the verify
     // lookup stay in sync.
@@ -198,7 +198,7 @@ export const listPublicLotsForProduct = createServerFn({ method: "POST" })
   });
 
 /**
- * Public COA download — returns a short-lived signed URL for a lot's COA
+ * Public COA download. returns a short-lived signed URL for a lot's COA
  * file, but only when the lot is released, publicly visible, and the COA
  * download is enabled. Lets the public Verify page download the actual
  * uploaded PDF/JPG/PNG without exposing the private bucket.

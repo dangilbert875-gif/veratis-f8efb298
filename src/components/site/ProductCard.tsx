@@ -110,7 +110,7 @@ export function ProductCard({
         to="/shop/$slug"
         params={{ slug: p.slug }}
         className="flex flex-col flex-1"
-        aria-label={`${title} — view details`}
+        aria-label={`${title}. view details`}
       >
         <div className={`relative aspect-square bg-mist rounded-[3px] overflow-hidden border border-border/70 w-full mx-auto ${compactImage ? "max-w-[320px] sm:max-w-none" : ""}`}>
           {accentClass ? (
@@ -145,14 +145,14 @@ export function ProductCard({
               lot={lot}
               purity={p.purity}
               size="card"
-              alt={`${title} — ${sizeFor(p.size)} lyophilized research vial`}
+              alt={`${title}. ${sizeFor(p.size)} lyophilized research vial`}
               imageUrl={p.image}
             />
           </div>
 
         </div>
 
-        {/* Title block — fixed-height, balanced wrap */}
+        {/* Title block. fixed-height, balanced wrap */}
         <div className="mt-3 sm:mt-5 text-center sm:text-left">
           <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
             {p.category}
@@ -170,7 +170,7 @@ export function ProductCard({
           </p>
         </div>
 
-        {/* Price + availability row — clean horizontal rhythm */}
+        {/* Price + availability row. clean horizontal rhythm */}
         <div className="mt-auto pt-3 border-t border-border/70 flex items-baseline justify-center sm:justify-between gap-6 sm:gap-3">
           <div className="flex flex-col gap-1 items-center sm:items-start">
             <p className={`text-[10px] font-mono uppercase tracking-[0.2em] ${available ? "text-foreground/65" : "text-foreground/55"}`}>

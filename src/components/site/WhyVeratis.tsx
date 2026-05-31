@@ -5,7 +5,7 @@ const rows: { topic: string; typical: string; veratis: string }[] = [
   { topic: "Testing laboratory",      typical: "Unnamed or in-house",                veratis: "Independent ISO/IEC 17025:2017 accredited lab" },
   { topic: "Archive permanence",      typical: "COA disappears on relabel",         veratis: "Permanent record, append-only, public lookup" },
   { topic: "Lot traceability",        typical: "No lot on vial or carton",          veratis: "Serialized lot on vial, carton, and tamper seal" },
-  { topic: "Endotoxin",               typical: "Not reported",                      veratis: "Published per lot — LAL kinetic chromogenic" },
+  { topic: "Endotoxin",               typical: "Not reported",                      veratis: "Published per lot. LAL kinetic chromogenic" },
   { topic: "Release procedure",       typical: "Single sign-off, undocumented",     veratis: "Two-analyst sign-off against published spec" },
 ];
 
@@ -14,7 +14,7 @@ export function WhyVeratis() {
     <section className="mx-auto max-w-7xl px-6 py-24 md:py-28">
       <div className="grid md:grid-cols-12 gap-12 md:gap-16 items-end mb-12">
         <div className="md:col-span-5">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Why VERATIS</p>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">Why VERATIS</p>
           <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
             What the industry does.<br />
             What we do instead.
@@ -22,7 +22,7 @@ export function WhyVeratis() {
         </div>
         <div className="md:col-span-6 md:col-start-7">
           <p className="text-[14.5px] text-muted-foreground leading-[1.75]">
-            A side-by-side comparison against common practice in the research-peptide market — not against any specific competitor. Every claim on our side is documented elsewhere on this site.
+            A side-by-side comparison against common practice in the research-peptide market. not against any specific competitor. Every claim on our side is documented elsewhere on this site.
           </p>
         </div>
       </div>

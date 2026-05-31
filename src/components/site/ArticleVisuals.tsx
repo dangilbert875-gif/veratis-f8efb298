@@ -84,7 +84,7 @@ export function Chromatogram({ caption, figureNumber = "1" }: FigureProps) {
   );
 }
 
-/** Schematic peptide chain — circles for residues, lines for peptide bonds. */
+/** Schematic peptide chain. circles for residues, lines for peptide bonds. */
 export function PeptideSchematic({ caption, figureNumber = "1", sequence = ["G", "E", "P", "P", "P", "G", "K", "P", "A", "D", "D", "A", "G", "L", "V"] }: FigureProps & { sequence?: string[] }) {
   const r = 14;
   const gap = 32;
@@ -122,7 +122,7 @@ export function PeptideSchematic({ caption, figureNumber = "1", sequence = ["G",
   );
 }
 
-/** Append-only archive timeline — small nodes on a horizontal line. */
+/** Append-only archive timeline. small nodes on a horizontal line. */
 export function ArchiveTimeline({ caption, figureNumber = "1" }: FigureProps) {
   const events = [
     { d: "Manufacture", t: "Apr 02" },

@@ -22,7 +22,7 @@ export async function postN8nOpsEvent(
 ): Promise<void> {
   const url = process.env.N8N_OPS_WEBHOOK_URL;
   if (!url) {
-    console.warn(`[n8n ops] ${event_type} not sent — N8N_OPS_WEBHOOK_URL not set`);
+    console.warn(`[n8n ops] ${event_type} not sent. N8N_OPS_WEBHOOK_URL not set`);
     return;
   }
   const payload = {

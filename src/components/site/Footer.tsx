@@ -7,7 +7,7 @@ import { usePageEnabled } from "@/hooks/usePageEnabled";
 export function Footer() {
   const lotCount = batches.length;
   const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
-  const lastRelease = batches[0]?.testedOn ?? "—";
+  const lastRelease = batches[0]?.testedOn ?? ".";
   const educationState = usePageEnabled("education");
   const companyLinks: Array<[string, string]> = [
     ["About", "/about"],
@@ -55,7 +55,7 @@ export function Footer() {
             Documented. Verified. Archived.
           </p>
           <p className="mt-5 text-[13.5px] text-background/55 leading-[1.8] max-w-md">
-            A verification platform for research peptides. Every lot independently assayed, signed, archived, and publicly retrievable — for the lifetime of the lot.
+            A verification platform for research peptides. Every lot independently assayed, signed, archived, and publicly retrievable. for the lifetime of the lot.
           </p>
           <Logo className="mt-8 h-auto w-[168px] lg:w-[188px] text-background opacity-90" />
           <ul className="mt-9 flex flex-wrap gap-x-5 gap-y-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-background/50">
@@ -99,7 +99,7 @@ export function Footer() {
         <FooterCol title="Company" links={companyLinks} />
       </div>
 
-      {/* Calibration footer — operational signature */}
+      {/* Calibration footer. operational signature */}
       <div className="border-t border-background/10">
         <div className="mx-auto max-w-7xl px-6 py-6 grid md:grid-cols-3 gap-y-3 gap-x-6 items-center text-[10px] font-mono uppercase tracking-[0.2em] text-background/40">
           <a

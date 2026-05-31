@@ -111,7 +111,7 @@ export function InternalNotes({
         <TextArea
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="Operational note — supports *italic*, **bold**, `code`."
+          placeholder="Operational note. supports *italic*, **bold**, `code`."
         />
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-[11px] text-foreground/65">
@@ -164,7 +164,7 @@ export function InternalNotes({
                 {n.pinned && (
                   <span className="uppercase tracking-[0.18em] text-foreground/60">Pinned</span>
                 )}
-                <span>{n.author_label ?? "—"}</span>
+                <span>{n.author_label ?? "."}</span>
                 <span className="tabular-nums">{relTime(n.created_at)}</span>
               </div>
             </li>

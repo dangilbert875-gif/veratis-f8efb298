@@ -45,10 +45,10 @@ const OrderShippedEmail = ({
   return (
     <Html lang="en" dir="ltr">
       <Head />
-      <Preview>Order {orderNumber} has shipped{trackingNumber ? ` — tracking ${trackingNumber}` : ''}</Preview>
+      <Preview>Order {orderNumber} has shipped{trackingNumber ? `. tracking ${trackingNumber}` : ''}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Text style={eyebrow}>— {SITE_NAME}</Text>
+          <Text style={eyebrow}>{SITE_NAME}</Text>
           <Heading style={h1}>
             {customerName ? `${customerName}, your order is on its way.` : 'Your order is on its way.'}
           </Heading>
@@ -57,8 +57,8 @@ const OrderShippedEmail = ({
           </Text>
 
           <Section style={refBox}>
-            <Text style={refLabel}>— Tracking number</Text>
-            <Text style={refNumber}>{trackingNumber || '—'}</Text>
+            <Text style={refLabel}>Tracking number</Text>
+            <Text style={refNumber}>{trackingNumber || '.'}</Text>
             {carrier ? <Text style={carrierStyle}>via {carrier}</Text> : null}
           </Section>
 
@@ -71,7 +71,7 @@ const OrderShippedEmail = ({
           {shippingAddress && (
             <>
               <Hr style={hr} />
-              <Text style={sectionLabel}>— Shipping to</Text>
+              <Text style={sectionLabel}>Shipping to</Text>
               <Text style={addr}>{shippingAddress.name}</Text>
               <Text style={addr}>
                 {shippingAddress.address_1}
@@ -89,7 +89,7 @@ const OrderShippedEmail = ({
             Questions? Reply to this email, reach us at support@veratisbio.com, or contact us on Telegram{' '}
             <a href="https://t.me/veratisbio" style={link}>@veratisbio</a>.
           </Text>
-          <Text style={footer}>— The {SITE_NAME} team</Text>
+          <Text style={footer}>The {SITE_NAME} team</Text>
         </Container>
       </Body>
     </Html>
@@ -99,7 +99,7 @@ const OrderShippedEmail = ({
 export const template = {
   component: OrderShippedEmail,
   subject: (data: Record<string, any>) =>
-    `Order ${data?.orderNumber ?? ''} shipped — VERATIS`,
+    `Order ${data?.orderNumber ?? ''} shipped. VERATIS`,
   displayName: 'Order shipped',
   previewData: {
     orderNumber: '1502',

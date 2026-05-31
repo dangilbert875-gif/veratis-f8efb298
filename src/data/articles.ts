@@ -60,7 +60,7 @@ export const articles: Article[] = [
   {
     slug: "hplc-purity-readings",
     title: "Understanding HPLC purity readings",
-    deck: "What 99.4% actually measures — and what it deliberately leaves out of the result.",
+    deck: "What 99.4% actually measures. and what it deliberately leaves out of the result.",
     category: "HPLC Analysis",
     readMinutes: 6,
     publishedOn: "2026-02-11",
@@ -73,11 +73,11 @@ export const articles: Article[] = [
     mostReferenced: true,
     featuredMethod: true,
     pullQuote:
-      "A purity number is a statement about what the detector saw at one wavelength — nothing more, nothing less.",
+      "A purity number is a statement about what the detector saw at one wavelength. nothing more, nothing less.",
     relatedCompounds: ["bpc-157-12mg", "bpc-tb-500-blend"],
     archiveLots: ["PP-2612", "PP-2608"],
     references: [
-      "ICH Q2(R2) — Validation of Analytical Procedures (2023).",
+      "ICH Q2(R2). Validation of Analytical Procedures (2023).",
       "USP <621> Chromatography, United States Pharmacopeia.",
       "Snyder, Kirkland & Dolan, Introduction to Modern Liquid Chromatography, 3rd ed.",
     ],
@@ -86,8 +86,8 @@ export const articles: Article[] = [
       { kind: "figure", figure: "chromatogram", caption: "Representative RP-HPLC trace at 214 nm. Main peak integrated at Rt 12.84 min; satellite peaks visible at 8.3, 16.3, and 19.4 min are summed into the denominator of the purity calculation." },
       { kind: "definition", term: "Area-percent purity", body: "Integrated UV area of the main peak divided by the total integrated UV area between the void volume and the gradient wash, at a stated detection wavelength." },
       { kind: "h", text: "What the number includes" },
-      { kind: "p", text: "Every UV-absorbing species eluting between the void volume and the gradient wash is counted toward total area. Truncations, deamidated isomers, oxidation products, residual scavengers — if it absorbs at the detection wavelength and elutes in the integration window, it appears in the denominator." },
-      { kind: "quote", text: "A purity number is a statement about what the detector saw at one wavelength — nothing more, nothing less." },
+      { kind: "p", text: "Every UV-absorbing species eluting between the void volume and the gradient wash is counted toward total area. Truncations, deamidated isomers, oxidation products, residual scavengers. if it absorbs at the detection wavelength and elutes in the integration window, it appears in the denominator." },
+      { kind: "quote", text: "A purity number is a statement about what the detector saw at one wavelength. nothing more, nothing less." },
       { kind: "h", text: "What it does not include" },
       { kind: "list", items: [
         "Counter-ions and residual salts (quantified separately by ion chromatography).",
@@ -96,7 +96,7 @@ export const articles: Article[] = [
         "Endotoxin (LAL kinetic chromogenic).",
         "Bacterial bioburden (membrane filtration, plate count).",
       ]},
-      { kind: "p", text: "This is why a single HPLC percentage, taken alone, is incomplete. A lot released against a published specification is released against the full panel — purity is one column of the table, not the table itself." },
+      { kind: "p", text: "This is why a single HPLC percentage, taken alone, is incomplete. A lot released against a published specification is released against the full panel. purity is one column of the table, not the table itself." },
       { kind: "h", text: "Reading the chromatogram" },
       { kind: "table", head: ["Field", "What it tells you"], rows: [
         ["Retention time", "Identity check vs. reference standard."],
@@ -110,7 +110,7 @@ export const articles: Article[] = [
   {
     slug: "reading-a-coa",
     title: "Reading a certificate of analysis",
-    deck: "Every section of a COA explained — and the red flags that justify refusing a lot.",
+    deck: "Every section of a COA explained. and the red flags that justify refusing a lot.",
     category: "Verification Systems",
     readMinutes: 7,
     publishedOn: "2026-01-22",
@@ -124,7 +124,7 @@ export const articles: Article[] = [
     relatedCompounds: ["bpc-157-12mg"],
     archiveLots: ["PP-2612"],
     references: [
-      "ISO/IEC 17025:2017 — General requirements for the competence of testing and calibration laboratories.",
+      "ISO/IEC 17025:2017. General requirements for the competence of testing and calibration laboratories.",
       "WHO Technical Report Series No. 957, Annex 3.",
     ],
     body: [
@@ -132,7 +132,7 @@ export const articles: Article[] = [
       { kind: "h", text: "The minimum responsible fields" },
       { kind: "list", items: [
         "Product name, internal code, and molecular formula.",
-        "Lot number — unique, never reused, never recycled across batches.",
+        "Lot number. unique, never reused, never recycled across batches.",
         "Date of manufacture and date of release (these are not the same date).",
         "Identity result with method (e.g. ESI-MS, observed vs. theoretical mass).",
         "Purity result with method, column, wavelength, and gradient summary.",
@@ -146,7 +146,7 @@ export const articles: Article[] = [
         "The same COA appears across multiple lots or shipments.",
         "No laboratory name, no accreditation number, no signature.",
         "Method is described only as “HPLC” with no column, wavelength, or gradient.",
-        "Specification limits are absent — only results, with nothing to fail against.",
+        "Specification limits are absent. only results, with nothing to fail against.",
         "Release date predates manufacture date, or expiry exceeds compound stability data.",
       ]},
       { kind: "p", text: "Every VERATIS certificate is signed against a published specification, archived permanently, and resolvable by lot number from any device. If a lot does not resolve, the vial was not produced here." },
@@ -170,7 +170,7 @@ export const articles: Article[] = [
     archiveLots: ["PP-2611"],
     references: [
       "de Hoffmann & Stroobant, Mass Spectrometry: Principles and Applications, 3rd ed.",
-      "ICH Q6A — Specifications for new drug substances and products.",
+      "ICH Q6A. Specifications for new drug substances and products.",
     ],
     body: [
       { kind: "p", text: "HPLC quantifies. Mass spectrometry identifies. The two tests answer different questions and a release record needs both." },
@@ -201,7 +201,7 @@ export const articles: Article[] = [
     image: lab,
     pullQuote: "Most peptide degradation in a research freezer is caused by the freezer, not the peptide.",
     references: [
-      "ICH Q1A(R2) — Stability testing of new drug substances and products.",
+      "ICH Q1A(R2). Stability testing of new drug substances and products.",
       "Wang, W. Lyophilization and development of solid protein pharmaceuticals. Int. J. Pharm. 2000.",
     ],
     body: [
@@ -209,7 +209,7 @@ export const articles: Article[] = [
       { kind: "h", text: "Operational rules" },
       { kind: "list", items: [
         "Store sealed vials at −20 °C in a non-defrost (manual) freezer.",
-        "Allow vials to equilibrate to room temperature before opening — condensation on a cold vial introduces water into the cake.",
+        "Allow vials to equilibrate to room temperature before opening. condensation on a cold vial introduces water into the cake.",
         "Aliquot reconstituted material; do not freeze-thaw the working solution repeatedly.",
         "Log every freezer excursion. A single excursion is not a release-defeating event; an unlogged one is.",
       ]},
@@ -244,9 +244,9 @@ export const articles: Article[] = [
       ]},
       { kind: "h", text: "Reject" },
       { kind: "list", items: [
-        "Collapsed, retracted, or glassy cake — indicates primary drying above the collapse temperature.",
-        "Splatter or material on the stopper — vial overfilled or vacuum ramp too aggressive.",
-        "Discoloration or pink/brown tinge — oxidation event in formulation.",
+        "Collapsed, retracted, or glassy cake. indicates primary drying above the collapse temperature.",
+        "Splatter or material on the stopper. vial overfilled or vacuum ramp too aggressive.",
+        "Discoloration or pink/brown tinge. oxidation event in formulation.",
       ]},
       { kind: "quote", text: "A collapsed cake is not cosmetic. It is a stability problem you can see from across the bench." },
     ],
@@ -296,11 +296,11 @@ export const articles: Article[] = [
     pullQuote: "An archive that can be edited is not an archive. It is a draft.",
     archiveLots: ["PP-2612", "PP-2611", "PP-2608"],
     references: [
-      "ISO/IEC 17025:2017 §7.5 — Technical records.",
-      "21 CFR Part 11 — Electronic Records and Electronic Signatures.",
+      "ISO/IEC 17025:2017 §7.5. Technical records.",
+      "21 CFR Part 11. Electronic Records and Electronic Signatures.",
     ],
     body: [
-      { kind: "p", text: "The verification system has one job: given a lot number, return the exact certificate that was released for that lot — unchanged, signed, dated, and resolvable indefinitely." },
+      { kind: "p", text: "The verification system has one job: given a lot number, return the exact certificate that was released for that lot. unchanged, signed, dated, and resolvable indefinitely." },
       { kind: "figure", figure: "timeline", caption: "Release timeline for a representative lot. Each event is recorded as an append-only entry; corrections issue a new revision rather than overwriting the previous one." },
       { kind: "h", text: "Architecture" },
       { kind: "list", items: [
@@ -311,7 +311,7 @@ export const articles: Article[] = [
       ]},
       { kind: "quote", text: "An archive that can be edited is not an archive. It is a draft." },
       { kind: "h", text: "What this means for you" },
-      { kind: "p", text: "Every vial that leaves the facility can be authenticated from any device, by anyone, at any time, against the original signed record. There is no logged-in version of the truth — there is only the record." },
+      { kind: "p", text: "Every vial that leaves the facility can be authenticated from any device, by anyone, at any time, against the original signed record. There is no logged-in version of the truth. there is only the record." },
     ],
   },
   {
@@ -361,15 +361,15 @@ export const articles: Article[] = [
     featured: true,
     mostReferenced: true,
     pullQuote:
-      "BPC-157 is a defined 15-residue sequence with a well-characterized analytical profile — the literature around it is what remains contested.",
+      "BPC-157 is a defined 15-residue sequence with a well-characterized analytical profile. the literature around it is what remains contested.",
     relatedCompounds: ["bpc-157-12mg", "tb-500-fragment-12mg", "ghk-cu-100mg", "bpc-tb-500-blend"],
     archiveLots: ["PP-2612", "PP-2611"],
     references: [
       "Sikiric, P. et al. The pentadecapeptide BPC 157 and the cytoprotection concept. Curr. Pharm. Des. (2018).",
       "Seiwerth, S. et al. BPC 157 and standard angiogenic growth factors. Front. Pharmacol. (2021).",
       "Chang, C.-H. et al. The promoting effect of pentadecapeptide BPC 157 on tendon healing. J. Appl. Physiol. (2011).",
-      "ICH Q6A — Specifications for new drug substances and products.",
-      "USP <1047> Biotechnology-derived articles — peptide analysis.",
+      "ICH Q6A. Specifications for new drug substances and products.",
+      "USP <1047> Biotechnology-derived articles. peptide analysis.",
     ],
     faq: [
       {
@@ -395,13 +395,13 @@ export const articles: Article[] = [
     ],
     body: [
       { kind: "h", text: "Overview" },
-      { kind: "p", text: "BPC-157 — Body Protection Compound 157 — is a synthetic 15-residue peptide widely referenced in the regenerative and cytoprotection literature. The sequence corresponds to a fragment first described in studies of human gastric juice and is supplied today as a research-use synthetic compound rather than as a biologically extracted material." },
+      { kind: "p", text: "BPC-157. Body Protection Compound 157. is a synthetic 15-residue peptide widely referenced in the regenerative and cytoprotection literature. The sequence corresponds to a fragment first described in studies of human gastric juice and is supplied today as a research-use synthetic compound rather than as a biologically extracted material." },
       { kind: "p", text: "Its prominence in preclinical literature comes less from a single landmark finding than from a sustained body of in-vitro and animal work exploring tissue signaling, vascular response, and gastrointestinal protection. For the analytical chemist, BPC-157 is also a useful reference subject: the molecule itself is well defined, while the literature around it remains a fast-moving target." },
       { kind: "definition", term: "Pentadecapeptide", body: "A peptide composed of fifteen amino acid residues. The BPC-157 sequence is reported as Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val." },
-      { kind: "quote", text: "BPC-157 is a defined 15-residue sequence with a well-characterized analytical profile — the literature around it is what remains contested." },
+      { kind: "quote", text: "BPC-157 is a defined 15-residue sequence with a well-characterized analytical profile. the literature around it is what remains contested." },
       { kind: "h", text: "Molecular Background" },
       { kind: "p", text: "The compound is a linear pentadecapeptide assembled by solid-phase peptide synthesis (SPPS), most commonly using Fmoc chemistry, followed by cleavage, precipitation, and reverse-phase HPLC purification. The high proline content of the sequence contributes to a relatively rigid backbone and to the resistance to gastric proteolysis frequently noted in early literature." },
-      { kind: "p", text: "Because the molecule contains no cysteine residues, it carries no disulfide bridges; identity confirmation by mass spectrometry is therefore straightforward — the deconvoluted intact mass is compared directly to the theoretical mass calculated from the sequence. The absence of aromatic residues other than the proline ring system means RP-HPLC purity is typically read at 214 nm, where the amide bond absorbs, rather than at 280 nm." },
+      { kind: "p", text: "Because the molecule contains no cysteine residues, it carries no disulfide bridges; identity confirmation by mass spectrometry is therefore straightforward. the deconvoluted intact mass is compared directly to the theoretical mass calculated from the sequence. The absence of aromatic residues other than the proline ring system means RP-HPLC purity is typically read at 214 nm, where the amide bond absorbs, rather than at 280 nm." },
       { kind: "table", head: ["Field", "Reported value"], rows: [
         ["Compound", "Body Protection Compound 157 (BPC-157)"],
         ["Length", "15 residues (pentadecapeptide)"],
@@ -413,7 +413,7 @@ export const articles: Article[] = [
         ["Detection wavelength", "214 nm (amide bond)"],
       ]},
       { kind: "h", text: "Research Interest" },
-      { kind: "p", text: "Areas commonly explored in the preclinical literature include tissue signaling, angiogenic response, and the broader cytoprotection model first articulated by the group that introduced the sequence. Studies in animal models have examined musculoskeletal recovery endpoints — particularly tendon and ligament — as well as gastrointestinal mucosal response and modulation of inflammatory pathways." },
+      { kind: "p", text: "Areas commonly explored in the preclinical literature include tissue signaling, angiogenic response, and the broader cytoprotection model first articulated by the group that introduced the sequence. Studies in animal models have examined musculoskeletal recovery endpoints. particularly tendon and ligament. as well as gastrointestinal mucosal response and modulation of inflammatory pathways." },
       { kind: "p", text: "These reports remain primarily preclinical. They describe proposed mechanisms and observed effects in defined laboratory systems; they do not establish therapeutic efficacy in human populations, and the regulatory status of the compound reflects that distinction." },
       { kind: "list", items: [
         "Tissue and tendon recovery research in rodent models.",
@@ -443,7 +443,7 @@ export const articles: Article[] = [
       { kind: "h", text: "Common Misconceptions" },
       { kind: "p", text: "Several familiar misunderstandings recur in the consumer-facing market for research peptides. They are worth naming explicitly because each one corresponds to a specific analytical fact." },
       { kind: "list", items: [
-        "\"99% purity\" is a complete quality statement. It is not — it is an area-percent figure from a single chromatographic method at one wavelength, and it is silent on identity, endotoxin, and water.",
+        "\"99% purity\" is a complete quality statement. It is not. it is an area-percent figure from a single chromatographic method at one wavelength, and it is silent on identity, endotoxin, and water.",
         "Identity and purity are the same measurement. They are not. HPLC quantifies; mass spectrometry identifies. A lot can be 99.5% pure and still be the wrong molecule.",
         "A COA is universal across a product. A COA is lot-specific. The same product, two different lots, will have two distinct certificates and two distinct lot numbers.",
         "Recycled or generic COAs are equivalent to lot-specific documents. They are not, and the presence of an identical COA across multiple shipments is itself a red flag.",

@@ -323,11 +323,11 @@ function AdminAuthDebugPanel({ debug }: { debug: AdminDebugState }) {
       <div className="mb-2 text-[9px] tracking-[0.24em] uppercase text-foreground/45">
         Auth debug
       </div>
-      <div>Supabase user id: {debug.userId ?? "—"}</div>
+      <div>Supabase user id: {debug.userId ?? "."}</div>
       <div>Session exists: {debug.sessionExists ? "true" : "false"}</div>
-      <div>Profile role: {debug.profileRole ?? "—"}</div>
+      <div>Profile role: {debug.profileRole ?? "."}</div>
       <div>Route status: {debug.routeStatus}</div>
-      <div>Last auth error: {debug.lastAuthError ?? "—"}</div>
+      <div>Last auth error: {debug.lastAuthError ?? "."}</div>
     </div>
   );
 }

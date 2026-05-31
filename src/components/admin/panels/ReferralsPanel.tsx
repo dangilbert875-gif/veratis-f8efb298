@@ -58,7 +58,7 @@ export function ReferralsPanel() {
               <tbody>{data.map((r: any) => (
                 <tr key={r.id} className="border-b border-ink/5">
                   <td className="px-5 py-3 font-mono">{r.code}</td>
-                  <td className="px-5 py-3 text-foreground/70">{r.label ?? "—"}</td>
+                  <td className="px-5 py-3 text-foreground/70">{r.label ?? "."}</td>
                   <td className="px-5 py-3 tabular-nums">{formatDiscount(r)}</td>
                   <td className="px-5 py-3 text-[10.5px] uppercase tracking-[0.16em] text-foreground/55">{r.active === false ? "Inactive" : "Active"}</td>
                   <td className="px-5 py-3 text-right tabular-nums">{r.clicks}</td>

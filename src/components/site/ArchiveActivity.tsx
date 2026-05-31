@@ -37,14 +37,14 @@ export function ArchiveActivity() {
       <div className="mx-auto max-w-7xl px-6 py-14 md:py-24 grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-20">
         <div className="md:col-span-4">
           <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">
-            — Live archive activity
+           . Live archive activity
           </p>
           <h2 className="text-[1.625rem] sm:text-3xl md:text-[2.25rem] text-ink leading-[1.15] tracking-[-0.02em] [text-wrap:balance]">
             The archive, updating in real time.
           </h2>
           <p className="mt-5 text-[14.5px] text-muted-foreground leading-[1.75] max-w-sm">
             A quiet, timestamped log of every release, assay, and verification event.
-            No customer data — only what an auditor would see.
+            No customer data. only what an auditor would see.
           </p>
           <dl className="mt-9 grid grid-cols-2 gap-y-5 max-w-sm">
             {[

@@ -4,9 +4,9 @@ import { LegalDoc, DocSection } from "@/components/site/LegalDoc";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — VERATIS" },
+      { title: "Privacy Policy. VERATIS" },
       { name: "description", content: "How VERATIS collects, processes, and retains customer information across the verification archive and ordering system." },
-      { property: "og:title", content: "Privacy Policy — VERATIS" },
+      { property: "og:title", content: "Privacy Policy. VERATIS" },
       { property: "og:description", content: "Customer information handling, analytics, payment processing, and data retention standards for the VERATIS verification platform." },
       { property: "og:url", content: "https://veratisbio.com/privacy" },
     ],
@@ -50,8 +50,8 @@ function Page() {
 
       <DocSection number="03" title="Order & verification data">
         <p>
-          Order records — including lot numbers dispatched, shipment tracking,
-          and certificate retrievals — are retained as part of the operational
+          Order records. including lot numbers dispatched, shipment tracking,
+          and certificate retrievals. are retained as part of the operational
           archive. Lot-level certificate data is public; the customer record
           associated with a dispatched lot is not.
         </p>
@@ -71,7 +71,7 @@ function Page() {
         <p>
           We send transactional email for order confirmation, dispatch, lot
           retrieval receipts, and customer-support replies. Optional release
-          notes — new lot announcements, method updates — are opt-in only and
+          notes. new lot announcements, method updates. are opt-in only and
           can be unsubscribed from in a single click.
         </p>
       </DocSection>

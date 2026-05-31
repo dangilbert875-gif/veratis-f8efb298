@@ -48,10 +48,10 @@ const OrderConfirmationEmail = ({
 }: OrderConfirmationProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Order {orderNumber} received — awaiting payment verification</Preview>
+    <Preview>Order {orderNumber} received. awaiting payment verification</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>— {SITE_NAME}</Text>
+        <Text style={eyebrow}>{SITE_NAME}</Text>
         <Heading style={h1}>
           {customerName ? `Thank you, ${customerName}.` : 'Thank you for your order.'}
         </Heading>
@@ -62,13 +62,13 @@ const OrderConfirmationEmail = ({
         </Text>
 
         <Section style={refBox}>
-          <Text style={refLabel}>— Reference</Text>
+          <Text style={refLabel}>Reference</Text>
           <Text style={refNumber}>{orderNumber}</Text>
         </Section>
 
         <Hr style={hr} />
 
-        <Text style={sectionLabel}>— Receipt</Text>
+        <Text style={sectionLabel}>Receipt</Text>
         {items.map((i, idx) => (
           <Section key={idx} style={itemRow}>
             <Text style={itemName}>{i.name}</Text>
@@ -98,7 +98,7 @@ const OrderConfirmationEmail = ({
         {shippingAddress && (
           <>
             <Hr style={hr} />
-            <Text style={sectionLabel}>— Shipping to</Text>
+            <Text style={sectionLabel}>Shipping to</Text>
             <Text style={addr}>{shippingAddress.name}</Text>
             <Text style={addr}>
               {shippingAddress.address_1}
@@ -112,9 +112,9 @@ const OrderConfirmationEmail = ({
         )}
 
         <Hr style={hr} />
-        <Text style={sectionLabel}>— What happens next</Text>
+        <Text style={sectionLabel}>What happens next</Text>
         <Text style={bodyText}>
-          1. We confirm your Bitcoin transaction on-chain — typically within 1–3 hours.
+          1. We confirm your Bitcoin transaction on-chain. typically within 1–3 hours.
         </Text>
         <Text style={bodyText}>
           2. Your specimens ship within 48 hours of confirmation, insured and
@@ -136,7 +136,7 @@ const OrderConfirmationEmail = ({
           Questions? Reply to this email, reach us at support@veratisbio.com, or contact us on Telegram{' '}
           <a href="https://t.me/veratisbio" style={link}>@veratisbio</a>.
         </Text>
-        <Text style={footer}>— The {SITE_NAME} team</Text>
+        <Text style={footer}>The {SITE_NAME} team</Text>
       </Container>
     </Body>
   </Html>
@@ -145,7 +145,7 @@ const OrderConfirmationEmail = ({
 export const template = {
   component: OrderConfirmationEmail,
   subject: (data: Record<string, any>) =>
-    `Order ${data?.orderNumber ?? ''} received — VERATIS`,
+    `Order ${data?.orderNumber ?? ''} received. VERATIS`,
   displayName: 'Order confirmation',
   previewData: {
     orderNumber: '1502',

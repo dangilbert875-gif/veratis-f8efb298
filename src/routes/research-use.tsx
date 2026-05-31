@@ -4,9 +4,9 @@ import { LegalDoc, DocSection } from "@/components/site/LegalDoc";
 export const Route = createFileRoute("/research-use")({
   head: () => ({
     meta: [
-      { title: "Research Use Disclaimer — VERATIS" },
+      { title: "Research Use Disclaimer. VERATIS" },
       { name: "description", content: "VERATIS products are supplied strictly for in-vitro laboratory and research use. Not for human or veterinary consumption." },
-      { property: "og:title", content: "Research Use Disclaimer — VERATIS" },
+      { property: "og:title", content: "Research Use Disclaimer. VERATIS" },
       { property: "og:description", content: "Formal positioning, purchaser responsibilities, and compliance expectations for VERATIS research material." },
       { property: "og:url", content: "https://veratisbio.com/research-use" },
     ],

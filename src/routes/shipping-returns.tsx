@@ -4,9 +4,9 @@ import { LegalDoc, DocSection, DocList } from "@/components/site/LegalDoc";
 export const Route = createFileRoute("/shipping-returns")({
   head: () => ({
     meta: [
-      { title: "Shipping & Returns — VERATIS" },
+      { title: "Shipping & Returns. VERATIS" },
       { name: "description", content: "Shipping rates, transit times, and our straightforward return policy. Currently shipping within the continental United States only." },
-      { property: "og:title", content: "Shipping & Returns — VERATIS" },
+      { property: "og:title", content: "Shipping & Returns. VERATIS" },
       { property: "og:description", content: "Cold-chain insulated dispatch within 48 hours within the continental US. Free shipping over $150. 14-day return window on unopened vials." },
       { property: "og:url", content: "https://veratisbio.com/shipping-returns" },
     ],

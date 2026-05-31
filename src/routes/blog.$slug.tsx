@@ -13,7 +13,7 @@ import { PageDisabled } from "@/components/site/PageDisabled";
 export const Route = createFileRoute("/blog/$slug")({
   head: ({ params }) => {
     const a = articles.find((x) => x.slug === params.slug);
-    if (!a) return { meta: [{ title: "Article — VERATIS" }] };
+    if (!a) return { meta: [{ title: "Article. VERATIS" }] };
     const origin = "https://veratisbio.com";
     const scripts: Array<{ type: string; children: string }> = [
       {
@@ -49,7 +49,7 @@ export const Route = createFileRoute("/blog/$slug")({
     }
     return {
       meta: [
-        { title: `${a.title} — VERATIS Reference` },
+        { title: `${a.title}. VERATIS Reference` },
         { name: "description", content: a.deck },
         { property: "og:title", content: a.title },
         { property: "og:description", content: a.deck },
@@ -232,7 +232,7 @@ function ArticlePage() {
               >
                 “{b.text}”
                 {b.cite && (
-                  <footer className="mt-3 text-[11px] font-mono uppercase tracking-[0.2em] text-foreground/55">— {b.cite}</footer>
+                  <footer className="mt-3 text-[11px] font-mono uppercase tracking-[0.2em] text-foreground/55">{b.cite}</footer>
                 )}
               </blockquote>
             );
@@ -301,7 +301,7 @@ function ArticlePage() {
           </ol>
         </section>
 
-        {/* FAQ — emitted when the article carries Q&A entries; pairs with FAQPage JSON-LD */}
+        {/* FAQ. emitted when the article carries Q&A entries; pairs with FAQPage JSON-LD */}
         {article.faq && article.faq.length > 0 && (
           <section className="mt-16 pt-8 border-t border-border">
             <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-6">
@@ -330,7 +330,7 @@ function ArticlePage() {
           />
         </div>
 
-        {/* Restrained scientific disclaimer — sits below the curated sources, in-flow */}
+        {/* Restrained scientific disclaimer. sits below the curated sources, in-flow */}
         <aside className="mt-12 pt-6 border-t border-border">
           <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">
             Scientific disclaimer

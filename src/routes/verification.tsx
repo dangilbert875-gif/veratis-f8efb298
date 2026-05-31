@@ -6,9 +6,9 @@ import { ShieldCheck, FlaskConical, Beaker, FileText, Archive, ArrowRight } from
 export const Route = createFileRoute("/verification")({
   head: () => ({
     meta: [
-      { title: "How we verify every lot — VERATIS" },
-      { name: "description", content: "Plain-language explanation of how VERATIS verifies every research-peptide lot — independent testing by Janoshik Labs, what each COA covers, retention, and the permanent archive." },
-      { property: "og:title", content: "How we verify every lot — VERATIS" },
+      { title: "How we verify every lot. VERATIS" },
+      { name: "description", content: "Plain-language explanation of how VERATIS verifies every research-peptide lot. independent testing by Janoshik Labs, what each COA covers, retention, and the permanent archive." },
+      { property: "og:title", content: "How we verify every lot. VERATIS" },
       { property: "og:description", content: "Independent ISO 17025 testing, what every certificate of analysis covers, lot retention, and the permanent public archive." },
       { property: "og:url", content: "https://veratisbio.com/verification" },
       { property: "og:type", content: "article" },
@@ -26,7 +26,7 @@ function VerificationPage() {
       <PageHeader
         eyebrow="Verification"
         title="How we verify every lot."
-        lead="Every vial we ship is independently tested, signed, and archived. This page explains what that means in plain language — who tests, what the certificate covers, how long samples are retained, and what the archive guarantees."
+        lead="Every vial we ship is independently tested, signed, and archived. This page explains what that means in plain language. who tests, what the certificate covers, how long samples are retained, and what the archive guarantees."
       />
 
       <section className="mx-auto max-w-5xl px-6 -mt-4 pb-12">
@@ -69,7 +69,7 @@ function VerificationPage() {
               ["Identity (ESI-MS)", "Confirms the molecular mass matches the declared sequence. Rules out the wrong peptide being shipped."],
               ["Purity (RP-HPLC)", "Reversed-phase HPLC quantifies the main peak as a percentage of total UV-absorbing material. We publish the chromatogram."],
               ["Endotoxin (LAL)", "Limulus amebocyte lysate assay quantifies bacterial endotoxin in EU/mg. Reported below 0.5 EU/mg on every released lot."],
-              ["Water content (KF)", "Karl Fischer titration measures residual moisture in the lyophilized cake — relevant for stability."],
+              ["Water content (KF)", "Karl Fischer titration measures residual moisture in the lyophilized cake. relevant for stability."],
               ["Appearance", "Visual inspection of the lyophilized cake (color, uniformity, evidence of collapse)."],
               ["Sterility (optional)", "USP <71> sterility testing is available on request for in-vitro studies that require it."],
             ].map(([k, v]) => (
@@ -87,7 +87,7 @@ function VerificationPage() {
           title="How lot retention works"
           body={[
             "When a lot is released, we set aside a sealed retention sample from the same vial population that you receive. The sample is stored at –20 °C, under nitrogen, in the same conditions as the shipped product.",
-            "Retention samples are held for the full labeled shelf life of the lot (typically 24 months from release). If a customer ever has a question about an older lot — a result they want to confirm, a stability question, a regulatory query — we can pull and re-test the retention sample.",
+            "Retention samples are held for the full labeled shelf life of the lot (typically 24 months from release). If a customer ever has a question about an older lot. a result they want to confirm, a stability question, a regulatory query. we can pull and re-test the retention sample.",
             "This is the single most important sanity check on a research-grade supplier: it means the COA is not a one-time marketing document; it's a falsifiable record we are prepared to defend later.",
           ]}
         />
@@ -98,7 +98,7 @@ function VerificationPage() {
           title="What the permanent archive guarantees"
           body={[
             "Every COA we ever publish stays online for the life of the lot, at a permanent URL keyed by the lot number. We do not silently replace, edit, or unpublish documents.",
-            "If we ever need to amend a result, we publish the amendment alongside the original and date both — the original is never removed. This means a researcher can cite a lot in their methods section and the link will still resolve years later.",
+            "If we ever need to amend a result, we publish the amendment alongside the original and date both. the original is never removed. This means a researcher can cite a lot in their methods section and the link will still resolve years later.",
           ]}
         >
           <div className="mt-6 flex flex-wrap gap-3">
@@ -120,7 +120,7 @@ function VerificationPage() {
 
       <section className="border-t border-border bg-mist/30">
         <div className="mx-auto max-w-3xl px-6 py-14 text-center">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Research use disclosure</p>
+          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">Research use disclosure</p>
           <p className="mt-3 text-[13.5px] text-muted-foreground leading-relaxed">
             All VERATIS products are sold strictly for in-vitro laboratory and research applications. Not for human or veterinary consumption. Not for diagnostic or therapeutic use.
           </p>
@@ -147,7 +147,7 @@ function Block({
     <article>
       <div className="flex items-center gap-3">
         <Icon size={18} strokeWidth={1.5} className="text-ink/70" />
-        <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {eyebrow}</p>
+        <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">{eyebrow}</p>
       </div>
       <h2 className="mt-3 font-display text-2xl md:text-[1.75rem] text-ink tracking-tight leading-tight">{title}</h2>
       <div className="mt-5 space-y-4 text-[14.5px] text-muted-foreground leading-relaxed">

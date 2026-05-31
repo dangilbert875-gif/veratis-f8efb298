@@ -6,10 +6,10 @@ import { FlaskConical, Microscope, ShieldCheck, Snowflake, ClipboardCheck, Archi
 export const Route = createFileRoute("/standards")({
   head: () => ({
     meta: [
-      { title: "Testing Standards — VERATIS" },
-      { name: "description", content: "Our analytical methods, storage protocols, and batch-archival process. HPLC, ESI-MS, endotoxin, cold-chain — documented end to end." },
-      { property: "og:title", content: "Testing Standards — VERATIS" },
-      { property: "og:description", content: "Our analytical methods, storage protocols, and batch-archival process — documented end to end." },
+      { title: "Testing Standards. VERATIS" },
+      { name: "description", content: "Our analytical methods, storage protocols, and batch-archival process. HPLC, ESI-MS, endotoxin, cold-chain. documented end to end." },
+      { property: "og:title", content: "Testing Standards. VERATIS" },
+      { property: "og:description", content: "Our analytical methods, storage protocols, and batch-archival process. documented end to end." },
       { property: "og:url", content: "https://veratisbio.com/standards" },
     ],
     links: [{ rel: "canonical", href: "https://veratisbio.com/standards" }],

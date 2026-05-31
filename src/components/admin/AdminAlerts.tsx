@@ -61,7 +61,7 @@ export function AdminAlerts({ onNavigate }: { onNavigate: (s: SectionId) => void
   if (data.pendingPayouts.count > 0) {
     items.push({
       tone: "neutral",
-      label: `${data.pendingPayouts.count} payout${data.pendingPayouts.count > 1 ? "s" : ""} pending — ${formatUSD(data.pendingPayouts.total)}`,
+      label: `${data.pendingPayouts.count} payout${data.pendingPayouts.count > 1 ? "s" : ""} pending. ${formatUSD(data.pendingPayouts.total)}`,
       section: "payouts",
     });
   }

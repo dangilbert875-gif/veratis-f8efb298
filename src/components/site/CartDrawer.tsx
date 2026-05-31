@@ -33,7 +33,7 @@ export function CartDrawer() {
         <SheetHeader className="px-6 py-5 border-b border-border flex-row items-center justify-between space-y-0">
           <div>
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
-              — Specimen cart
+             . Specimen cart
             </p>
             <SheetTitle key={count} className="mt-1 text-lg text-ink font-display tracking-tight animate-in fade-in slide-in-from-bottom-1 duration-300">
               {count === 0 ? "Empty" : `${count} ${count === 1 ? "item" : "items"}`}
@@ -44,7 +44,7 @@ export function CartDrawer() {
         <div className="flex-1 overflow-y-auto scroll-smooth">
           {items.length === 0 ? (
             <div className="px-6 py-20 text-center">
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-4">— No specimens selected</p>
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-4">No specimens selected</p>
               <p className="text-sm text-muted-foreground">Your cart is empty.</p>
               <button
                 onClick={closeCart}

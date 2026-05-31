@@ -32,7 +32,7 @@ async function assertSuperAdmin(userId: string): Promise<void> {
 }
 
 async function verifyPassword(email: string, password: string): Promise<void> {
-  // Use a transient client with the publishable key — no session persistence.
+  // Use a transient client with the publishable key. no session persistence.
   const tmp = createClient<Database>(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_PUBLISHABLE_KEY!,

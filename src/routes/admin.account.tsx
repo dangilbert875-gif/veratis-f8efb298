@@ -14,7 +14,7 @@ export const Route = createFileRoute("/admin/account")({
   component: AdminAccountPage,
   head: () => ({
     meta: [
-      { title: "Admin account — VERATIS" },
+      { title: "Admin account. VERATIS" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -164,9 +164,9 @@ function Identity({ viewer, superAdminCount }: { viewer: Overview["viewer"]; sup
   return (
     <Card title="Signed in as" hint="Current admin session">
       <dl className="text-[12.5px] space-y-2">
-        <Row k="Email" v={viewer.email ?? "—"} />
-        <Row k="Full name" v={viewer.fullName ?? "—"} />
-        <Row k="Roles" v={viewer.roles.join(", ") || "—"} />
+        <Row k="Email" v={viewer.email ?? "."} />
+        <Row k="Full name" v={viewer.fullName ?? "."} />
+        <Row k="Roles" v={viewer.roles.join(", ") || "."} />
         <Row k="Super admins" v={String(superAdminCount)} />
       </dl>
     </Card>

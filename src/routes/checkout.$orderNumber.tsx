@@ -10,7 +10,7 @@ export const Route = createFileRoute("/checkout/$orderNumber")({
     z.object({ t: z.string().min(8).max(128).optional() }).parse(s),
   head: () => ({
     meta: [
-      { title: "Order confirmation — VERATIS" },
+      { title: "Order confirmation. VERATIS" },
       { name: "description", content: "Your order has been received and payment is being verified." },
       { name: "robots", content: "noindex" },
     ],
@@ -32,14 +32,14 @@ function ConfirmationPage() {
   if (isLoading) {
     return (
       <Layout hideFooter>
-        <PageHeader eyebrow="— Order" title="Loading order…" />
+        <PageHeader eyebrow="Order" title="Loading order…" />
       </Layout>
     );
   }
   if (error || !data) {
     return (
       <Layout hideFooter>
-        <PageHeader eyebrow="— Order" title="Order not found" />
+        <PageHeader eyebrow="Order" title="Order not found" />
         <section className="px-6 lg:px-12 py-16 max-w-3xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">
             We couldn't locate order <span className="font-mono">{orderNumber}</span>.
@@ -54,16 +54,16 @@ function ConfirmationPage() {
 
   return (
     <Layout hideFooter>
-      <PageHeader eyebrow="— Order placed" title="Thank you" />
+      <PageHeader eyebrow="Order placed" title="Thank you" />
 
       <section className="px-6 lg:px-12 py-12 max-w-4xl mx-auto space-y-8">
         <div className="border border-border rounded-[3px] bg-mist/30 px-6 py-5 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Reference</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">Reference</p>
             <p className="mt-1 text-2xl font-display tracking-tight text-ink">{data.order_number}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Amount paid</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">Amount paid</p>
             <p className="mt-1 text-2xl font-display tracking-tight text-ink tabular-nums">
               ${Number(data.total_usd).toFixed(2)} <span className="text-[12px] font-mono text-foreground/55 uppercase tracking-[0.18em]">USD</span>
             </p>
@@ -97,7 +97,7 @@ function ConfirmationPage() {
             <p>{data.shipping_country}</p>
             {data.shipping_method && (
               <p className="mt-2 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
-                — {data.shipping_method === "express" ? "Express overnight" : "Standard cold-chain"}
+               . {data.shipping_method === "express" ? "Express overnight" : "Standard cold-chain"}
               </p>
             )}
           </DetailCard>
@@ -127,7 +127,7 @@ function DetailCard({ title, children }: { title: string; children: React.ReactN
   return (
     <div className="border border-border rounded-[3px] bg-background">
       <div className="px-5 py-3 border-b border-border">
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {title}</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">{title}</p>
       </div>
       <div className="px-5 py-4 text-[12px] text-foreground/75 space-y-0.5">{children}</div>
     </div>

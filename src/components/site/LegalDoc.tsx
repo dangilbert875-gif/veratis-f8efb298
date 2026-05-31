@@ -114,7 +114,7 @@ export function DocSection({
 }
 
 /**
- * Inline definition row — for tables of terms or specs inside a section.
+ * Inline definition row. for tables of terms or specs inside a section.
  */
 export function DocList({ items }: { items: [string, string][] }) {
   return (

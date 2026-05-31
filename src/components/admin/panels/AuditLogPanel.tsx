@@ -25,7 +25,7 @@ function shallowDiff(oldRow: any, newRow: any) {
 }
 
 function fmt(v: any) {
-  if (v === undefined) return "—";
+  if (v === undefined) return ".";
   if (v === null) return "null";
   if (typeof v === "string") return v.length > 80 ? v.slice(0, 80) + "…" : v;
   if (typeof v === "object") return JSON.stringify(v).slice(0, 80);
@@ -93,10 +93,10 @@ export function AuditLogPanel() {
                     {r.action}
                   </span>
                   <span className="text-[12.5px] text-ink flex-1 min-w-0 truncate">
-                    {r.entity_type} · {r.entity_id?.slice(0, 12) ?? "—"}
+                    {r.entity_type} · {r.entity_id?.slice(0, 12) ?? "."}
                   </span>
                   <span className="text-[11px] text-foreground/55 hidden sm:inline">
-                    {r.actor_label ?? "—"}
+                    {r.actor_label ?? "."}
                   </span>
                   <span className="text-[11px] tabular-nums text-foreground/55">
                     {new Date(r.created_at).toLocaleString()}

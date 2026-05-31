@@ -40,7 +40,7 @@ export const Route = createFileRoute("/shop/$slug")({
         return { product, allProducts: allProducts.length ? allProducts : products };
       }
     } catch (err) {
-      // Backend hiccup — log and fall through to static catalog.
+      // Backend hiccup. log and fall through to static catalog.
       // eslint-disable-next-line no-console
       console.warn("[shop.$slug] backend lookup failed, using fallback:", err);
     }
@@ -51,9 +51,9 @@ export const Route = createFileRoute("/shop/$slug")({
   head: ({ loaderData }) => ({
     meta: loaderData
       ? [
-          { title: `${loaderData.product.name} — VERATIS` },
+          { title: `${loaderData.product.name}. VERATIS` },
           { name: "description", content: loaderData.product.short },
-          { property: "og:title", content: `${loaderData.product.name} — VERATIS` },
+          { property: "og:title", content: `${loaderData.product.name}. VERATIS` },
           { property: "og:description", content: loaderData.product.short },
           { property: "og:type", content: "product" },
           { property: "og:url", content: `https://veratisbio.com/shop/${loaderData.product.slug}` },
@@ -184,7 +184,7 @@ function ProductPage() {
                 lot={lotId}
                 purity={p.purity}
                 size="detail"
-                alt={`${title} — lyophilized research vial`}
+                alt={`${title}. lyophilized research vial`}
                 imageUrl={p.image}
               />
             </div>
@@ -209,7 +209,7 @@ function ProductPage() {
             For research use only · not for human or veterinary consumption
           </p>
 
-          {/* Specification block — reads like a lab document, not a product card */}
+          {/* Specification block. reads like a lab document, not a product card */}
           <dl className="mt-7 border border-border rounded-[3px] divide-y divide-border bg-background">
             {[
               ["Identity", `${title}, confirmed by ESI-MS`],
@@ -217,8 +217,8 @@ function ProductPage() {
               ["Endotoxin", lot?.endotoxin ?? "< 0.5 EU/mg"],
               ["Form", "Lyophilized cake, nitrogen-sealed"],
               ["Storage", "–20 °C, protected from light"],
-              ["Released", lot?.testedOn ?? "—"],
-              ["Best before", lot?.expiresOn ?? "—"],
+              ["Released", lot?.testedOn ?? "."],
+              ["Best before", lot?.expiresOn ?? "."],
               ["Lot", lotId],
               ["Assayed by", `${labPartner.name} · ${labPartner.iso}`],
             ].map(([k, v]) => (
@@ -318,7 +318,7 @@ function ProductPage() {
       ) : (
         <section className="border-t border-border bg-mist/40">
           <div className="mx-auto max-w-4xl px-6 py-20">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Compound notes</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">Compound notes</p>
             <h2 className="text-2xl md:text-3xl text-ink">About {p.name}</h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">{p.description}</p>
             <p className="mt-5 text-xs text-muted-foreground italic">
@@ -340,12 +340,12 @@ function ProductPage() {
             {
               icon: Truck,
               title: "Shipping & fulfillment",
-              body: "Orders placed before 2pm ET ship the same business day. All vials ship in insulated mailers with cold packs at no additional cost. Delivery in 2–4 business days via tracked carriers within the continental United States — we do not currently ship to Alaska, Hawaii, US territories, or internationally. Discreet packaging — no exterior product markings.",
+              body: "Orders placed before 2pm ET ship the same business day. All vials ship in insulated mailers with cold packs at no additional cost. Delivery in 2–4 business days via tracked carriers within the continental United States. we do not currently ship to Alaska, Hawaii, US territories, or internationally. Discreet packaging. no exterior product markings.",
             },
             {
               icon: FileText,
               title: "Documentation",
-              body: "Every vial is labeled with its production lot number. Use that lot number on our lab portal to retrieve identity, purity (HPLC), mass-spec confirmation, endotoxin level, and appearance results — signed by an independent ISO 17025 accredited laboratory.",
+              body: "Every vial is labeled with its production lot number. Use that lot number on our lab portal to retrieve identity, purity (HPLC), mass-spec confirmation, endotoxin level, and appearance results. signed by an independent ISO 17025 accredited laboratory.",
             },
             {
               icon: HelpCircle,
@@ -374,7 +374,7 @@ function ProductPage() {
           <div className="mx-auto max-w-7xl px-5 sm:px-6 py-16 sm:py-20">
             <div className="flex items-end justify-between mb-10 gap-4">
               <div>
-                <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Related compounds</p>
+                <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">Related compounds</p>
                 <h2 className="text-2xl md:text-3xl text-ink">In the same research area</h2>
               </div>
               <Link to="/shop" className="text-sm text-foreground/70 hover:text-foreground">

@@ -9,7 +9,7 @@ type Props = {
 };
 
 /**
- * Serialized lot identifier — the brand's operational fingerprint.
+ * Serialized lot identifier. the brand's operational fingerprint.
  * Monospace, hairline border, optional status dot. Use anywhere a
  * batch is referenced in copy (hero, product cards, archive strips).
  */
@@ -46,8 +46,8 @@ export function LotTag({ lot, status, className = "", linked = false }: Props) {
 }
 
 /**
- * Ambient operational realism — a thin marquee-like strip of recent
- * lot codes. Static (no animation by design — restraint > motion).
+ * Ambient operational realism. a thin marquee-like strip of recent
+ * lot codes. Static (no animation by design. restraint > motion).
  */
 export function ArchiveIndexStrip({
   lots,

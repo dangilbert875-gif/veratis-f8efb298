@@ -9,9 +9,9 @@ import { downloadCoa, coaExtension } from "@/lib/coa";
 export const Route = createFileRoute("/coa-archive")({
   head: () => ({
     meta: [
-      { title: "COA Archive — VERATIS" },
+      { title: "COA Archive. VERATIS" },
       { name: "description", content: "Searchable archive of every certificate of analysis ever issued for a VERATIS lot. Public, permanent, never recycled." },
-      { property: "og:title", content: "COA Archive — VERATIS" },
+      { property: "og:title", content: "COA Archive. VERATIS" },
       { property: "og:description", content: "Searchable archive of every certificate of analysis ever issued for a VERATIS lot." },
       { property: "og:url", content: "https://veratisbio.com/coa-archive" },
     ],
@@ -42,7 +42,7 @@ function Page() {
 
   const avg = batches.length
     ? (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2)
-    : "—";
+    : ".";
 
   return (
     <Layout>

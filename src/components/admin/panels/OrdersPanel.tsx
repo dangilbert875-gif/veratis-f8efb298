@@ -102,7 +102,7 @@ function InlineStatusSelect({
 }
 
 function humanize(s: string | null | undefined) {
-  if (!s) return "—";
+  if (!s) return ".";
   return s.replace(/_/g, " ");
 }
 
@@ -214,12 +214,12 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
       patch.status = "shipped";
       if (!o.tracking_number) {
         const t = typeof window !== "undefined"
-          ? window.prompt("Tracking number (optional — leave blank to fill later):", "")
+          ? window.prompt("Tracking number (optional. leave blank to fill later):", "")
           : "";
         if (t && t.trim()) patch.tracking_number = t.trim();
         if (!o.carrier) {
           const c = typeof window !== "undefined"
-            ? window.prompt("Carrier (USPS / UPS / FedEx / DHL / Other) — optional:", "USPS")
+            ? window.prompt("Carrier (USPS / UPS / FedEx / DHL / Other). optional:", "USPS")
             : "";
           if (c && c.trim()) patch.carrier = c.trim();
         }
@@ -326,7 +326,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
 
   return (
     <div className="space-y-5" onClick={() => menuOpen && setMenuOpen(null)}>
-      {/* Health strip — clickable filter chips */}
+      {/* Health strip. clickable filter chips */}
       <div className="grid grid-cols-2 sm:grid-cols-5 border border-ink/10">
         {([
           ["Total",            counts.total,     "all"],
@@ -480,7 +480,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                           >
                             {itemCount(o)} <span className="text-foreground/45">item{itemCount(o) === 1 ? "" : "s"}</span>
                           </span>
-                        ) : <span className="text-foreground/30 text-[11px]">—</span>}
+                        ) : <span className="text-foreground/30 text-[11px]">.</span>}
                       </td>
                       <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <InlineStatusSelect
@@ -505,7 +505,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                             {countryFlag(o.shipping_country) && <span aria-hidden>{countryFlag(o.shipping_country)}</span>}
                             <span>{o.shipping_city}{o.shipping_state ? `, ${o.shipping_state}` : ""}</span>
                           </span>
-                        ) : "—"}
+                        ) : "."}
                       </td>
                       <td className="px-4 py-3 text-foreground/60">{formatDate(o.created_at)}</td>
                       <td className="px-4 py-3">
@@ -518,7 +518,7 @@ export function OrdersPanel({ initialQuickFilter = "all" }: { initialQuickFilter
                             <StatusDot tone="warn" />
                             {alerts.length}
                           </span>
-                        ) : <span className="text-foreground/30 text-[11px]">—</span>}
+                        ) : <span className="text-foreground/30 text-[11px]">.</span>}
                       </td>
                       <td className="px-3 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="relative inline-block">
@@ -737,7 +737,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                     <span className={`mt-1 inline-block w-2 h-2 rounded-full shrink-0 ${step.done ? "bg-emerald-700" : "bg-ink/15"}`} />
                     <div className="flex-1 flex items-baseline justify-between gap-3">
                       <span className={step.done ? "text-ink" : "text-foreground/45"}>{step.label}</span>
-                      <span className="font-mono text-[10.5px] text-foreground/55 tabular-nums">{step.at ? formatDate(step.at) : "—"}</span>
+                      <span className="font-mono text-[10.5px] text-foreground/55 tabular-nums">{step.at ? formatDate(step.at) : "."}</span>
                     </div>
                   </li>
                 ))}
@@ -830,7 +830,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                 <Field label="Country"><TextInput value={form.shipping_country ?? ""} onChange={(e) => set("shipping_country", e.target.value)} /></Field>
                 <Field label="Carrier">
                   <SelectInput value={form.carrier ?? ""} onChange={(e) => set("carrier", e.target.value || null)}>
-                    <option value="">—</option>
+                    <option value="">.</option>
                     {["USPS","UPS","FedEx","DHL","Other"].map((c) => <option key={c} value={c}>{c}</option>)}
                   </SelectInput>
                 </Field>
@@ -849,7 +849,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
               </div>
             </Section>
 
-            {/* D. Payment — Venmo or BTC */}
+            {/* D. Payment. Venmo or BTC */}
             <Section title={o.payment_method === "venmo" ? "Venmo payment" : "BTC payment"}>
               {o.payment_method === "venmo" ? (
                 <div className="grid grid-cols-2 gap-3">
@@ -880,7 +880,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   <div className="rounded-md border border-line bg-mist/30 px-3 py-2 font-mono text-[12px] text-ink">
                     {o.btc_amount != null && Number(o.btc_amount) > 0
                       ? `${Number(o.btc_amount).toFixed(8)} BTC`
-                      : "—"}
+                      : "."}
                   </div>
                   <p className="mt-1 text-[10px] text-ink-soft">
                     BTC total quoted to the customer at checkout. Verify their
@@ -943,7 +943,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                 <div className="space-y-3">
                   {o.payment_proof_url && (
                     <div>
-                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">— Screenshot</div>
+                      <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">Screenshot</div>
                       <a
                         href={o.payment_proof_url}
                         target="_blank"
@@ -973,7 +973,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                   {o.payment_tx_id && (
                     <div>
                       <div className="text-[10px] tracking-[0.18em] uppercase text-foreground/55 mb-1.5">
-                        — {o.payment_method === "venmo" ? "Customer note" : "Customer-provided TX ID / note"}
+                       . {o.payment_method === "venmo" ? "Customer note" : "Customer-provided TX ID / note"}
                       </div>
                       <div className="flex gap-2">
                         <div className="flex-1 min-w-0 px-3 py-2 border border-ink/15 bg-mist/20 font-mono text-[11.5px] text-ink break-all whitespace-pre-wrap">
@@ -1010,7 +1010,7 @@ function OrderDetailDrawer({ orderId, onClose, onChanged }: { orderId: string; o
                         <td className="py-2 text-ink">{it.product_name ?? it.product_id}</td>
                         <td className="py-2 text-right tabular-nums">{it.quantity}</td>
                         <td className="py-2 text-right tabular-nums">{formatUSD(it.unit_price)}</td>
-                        <td className="py-2 font-mono text-[11px] text-foreground/65">{it.lot_number ?? "—"}</td>
+                        <td className="py-2 font-mono text-[11px] text-foreground/65">{it.lot_number ?? "."}</td>
                       </tr>
                     ))}
                   </tbody>
