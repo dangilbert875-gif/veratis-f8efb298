@@ -369,27 +369,26 @@ function Home() {
             <span className="italic text-primary">Publicly verifiable.</span>
           </h2>
 
-          <div className="mx-auto mt-14 h-px w-24 bg-ink/30" />
+          <div className="mx-auto mt-10 h-px w-24 bg-ink/30" />
 
-          <p className="mt-14 max-w-2xl mx-auto text-[16px] md:text-[17px] text-foreground/75 leading-[1.85] font-light">
-            Veratis is a longevity research brand before it is a peptide supplier.
-            The document a researcher receives corresponds, exactly, to the vial in
-            their hand. Not most of the time, not for the marketing batch, but every
-            time, for every lot, archived forever.
+          <p className="mt-10 max-w-2xl mx-auto text-[16px] md:text-[17px] text-foreground/75 leading-[1.85] font-light">
+            Every Veratis compound is independently tested, archived, and traceable
+            to the vial in your hand. Scan the lot. View the certificate. Verify it
+            yourself.
           </p>
 
-          <div className="mt-14 inline-flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-10 inline-flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/shop"
               className="inline-flex items-center gap-2.5 bg-ink text-background pl-7 pr-6 py-[18px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:bg-ink/90 transition"
             >
-              Browse Products <ArrowRight size={14} />
+              Browse Compounds <ArrowRight size={14} />
             </Link>
             <Link
-              to="/coa-archive"
+              to="/verify"
               className="inline-flex items-center gap-2 text-[12.5px] tracking-[0.16em] uppercase text-ink border-b border-ink/30 hover:border-ink pb-2 transition"
             >
-              Browse the archive
+              Verify A Lot
             </Link>
           </div>
 
