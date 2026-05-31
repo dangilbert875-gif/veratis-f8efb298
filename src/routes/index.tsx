@@ -416,7 +416,7 @@ function FAQSection() {
   const items = [
     { q: "Are your peptides legal to purchase?", a: "Yes. Products are sold for laboratory and research use only. They are not intended for human or veterinary consumption." },
     { q: "How fast do orders ship?", a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs." },
-    { q: "What happens if my lot fails verification?", a: "Every lot is independently assayed before release. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately." },
+    { q: "What happens if my lot fails verification?", a: "Any lot that fails to meet Veratis quality standards is rejected and never released for sale. Only lots that successfully pass identity, purity, and applicable quality testing are made available. If you receive a Veratis product, that lot has already passed our release standards." },
     { q: "How do I verify my vial's certificate?", a: "Enter the lot number printed on the vial or carton into our verification tool. The archive returns the original COA in under one second." },
     { q: "What payment methods do you accept?", a: "All major credit cards via encrypted checkout. For cryptocurrency or bulk research orders, contact us directly." },
   ];
