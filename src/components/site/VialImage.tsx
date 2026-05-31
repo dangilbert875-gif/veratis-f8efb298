@@ -73,14 +73,16 @@ export function VialImage({
 
   if (hasUploadedImage) {
     return (
-      <img
-        src={imageUrl as string}
-        alt={alt ?? `${name} ${dosage}`}
-        loading="lazy"
-        width={1024}
-        height={1024}
-        className="w-full h-full object-cover"
-      />
+      <div className="w-full h-full flex items-center justify-center p-3 sm:p-4">
+        <img
+          src={imageUrl as string}
+          alt={alt ?? `${name} ${dosage}`}
+          loading="lazy"
+          width={1024}
+          height={1024}
+          className="w-full h-full object-contain drop-shadow-[0_14px_30px_rgba(15,23,42,0.12)]"
+        />
+      </div>
     );
   }
 
