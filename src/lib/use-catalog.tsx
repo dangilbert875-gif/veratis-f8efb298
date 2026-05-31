@@ -8,7 +8,8 @@ import { protocolImageForSlug } from "@/lib/protocols";
 // Map a DB products row → the existing Product shape so the storefront UI
 // renders unchanged regardless of data source.
 export function mapDbProduct(row: any): Product {
-  const fallbackImage = protocolImageForSlug(row.slug) || vialMaster;
+  const protocolImage = protocolImageForSlug(row.slug);
+  const fallbackImage = protocolImage || vialMaster;
   return {
     slug: row.slug,
     name: row.name,
@@ -18,7 +19,7 @@ export function mapDbProduct(row: any): Product {
     size: row.size_label ?? row.dosage ?? "",
     price: Number(row.price_usd ?? 0),
     purity: row.purity ?? ".",
-    image: row.featured_image || fallbackImage,
+    image: protocolImage || row.featured_image || fallbackImage,
     inStock: (row.stock_status ?? "in_stock") === "in_stock",
     lot: row.lot_number ?? ".",
     short: row.short_description ?? "",
