@@ -177,36 +177,31 @@ function ShopPage() {
 
   return (
     <Layout>
-      <PageHeader
-        eyebrow="Catalog"
-        title="Catalog of compounds."
-        lead="Every entry below is produced under the same lyophilization, sealing, and verification protocol. Each vial carries a unique lot number traceable to an independent certificate of analysis."
-      />
-
-      {/* Hero trust stat. mean purity promoted to top of catalog */}
-      <section className="border-y border-border bg-mist/25">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 py-8 md:py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="flex items-baseline gap-4 sm:gap-5">
-            <span className="font-display text-[2.25rem] sm:text-[3rem] md:text-[3.75rem] leading-none text-ink tabular-nums">
-              {avgPurity}%
-            </span>
-            <div className="min-w-0">
-              <p className="text-[10px] sm:text-[10.5px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-foreground/55">
-                Mean purity · entire catalog
-              </p>
-              <p className="mt-1 text-[12.5px] sm:text-[13px] text-muted-foreground leading-snug max-w-md">
-                HPLC-verified across {batches.length} lots by {labPartner.name}.
-              </p>
-            </div>
+      {/* Editorial intro. echoes the homepage Veratis voice. */}
+      <section className="relative bg-background border-b border-border">
+        <div className="mx-auto max-w-7xl px-6 pt-24 md:pt-32 pb-14 md:pb-20 grid md:grid-cols-12 gap-y-10 md:gap-x-12">
+          <div className="md:col-span-7">
+            <p className="eyebrow">The Catalog</p>
+            <h1 className="mt-6 font-display text-[2.6rem] sm:text-[3.2rem] md:text-[4.25rem] leading-[1.02] tracking-[-0.018em] text-ink">
+              Each compound.<br />
+              <span className="italic font-light">Independently verified.</span>
+            </h1>
           </div>
-          <Link
-            to="/verify"
-            className="self-start md:self-auto hidden md:inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[3px] text-[11.5px] font-mono uppercase tracking-[0.18em] text-ink hover:bg-ink hover:text-background transition"
-          >
-            <ShieldCheck size={13} strokeWidth={1.5} />
-            Verify any lot in under 1 second
-            <ArrowRight size={12} />
-          </Link>
+          <div className="md:col-span-5 md:pt-6">
+            <p className="max-w-md text-[15px] md:text-[16px] leading-[1.7] text-foreground/70 font-light">
+              Every Veratis compound is tested, archived, and traceable to the
+              vial in your hand. Scan the lot. View the certificate.
+              Verify it yourself.
+            </p>
+            <Link
+              to="/verify"
+              className="mt-8 inline-flex items-center gap-2 h-11 px-5 border border-ink/25 rounded-[2px] text-[11px] font-medium uppercase tracking-[0.22em] text-ink hover:bg-ink hover:text-background transition"
+            >
+              <ShieldCheck size={12} strokeWidth={1.5} />
+              Verify a lot
+              <ArrowRight size={11} />
+            </Link>
+          </div>
         </div>
       </section>
 
