@@ -1,29 +1,30 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Layout } from "@/components/site/Layout";
 import { ProductCard } from "@/components/site/ProductCard";
-import { categories } from "@/data/products";
 import { useCatalog } from "@/lib/use-catalog";
-import heroVial from "@/assets/hero-vial.jpg";
-import { FlaskConical, ShieldCheck, Lock, ArrowRight, Microscope, PackageCheck, ClipboardCheck, Snowflake, BadgeCheck, Check, Archive, Bandage, Leaf, TrendingUp, Atom, Sun, Zap, Flame, Plus, Minus, Quote, Mail } from "lucide-react";
-import { useState } from "react";
 import { BatchVerify } from "@/components/site/BatchVerify";
-import { LotTag, ArchiveIndexStrip } from "@/components/site/LotTag";
 import { batches, labPartner } from "@/data/batches";
-import { ArchiveActivity } from "@/components/site/ArchiveActivity";
-import { WhyVeratis } from "@/components/site/WhyVeratis";
+import { ArrowRight, ArrowUpRight, ShieldCheck, Mail, Plus, Minus } from "lucide-react";
+
+import heroLongevity from "@/assets/hero-longevity.jpg";
+import pillarRecover from "@/assets/pillar-recover.jpg";
+import pillarPerform from "@/assets/pillar-perform.jpg";
+import pillarLongevity from "@/assets/pillar-longevity.jpg";
+import pillarRegenerate from "@/assets/pillar-regenerate.jpg";
+import travertineWall from "@/assets/travertine-wall.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
-      { name: "description", content: "Premium research peptides with verified purity, third-party COAs, and discreet fast shipping." },
-      { property: "og:title", content: "VERATIS — Research-Grade Peptides, Third-Party Tested" },
-      { property: "og:description", content: "Independently HPLC and mass-spec verified peptides. Public certificates of analysis for every lot." },
+      { title: "VERATIS — Precision Longevity. Performance. Recovery." },
+      { name: "description", content: "Research-grade peptides for performance, recovery, and longevity. Backed by independent ISO 17025 verification and complete lot-level transparency." },
+      { property: "og:title", content: "VERATIS — Precision Longevity" },
+      { property: "og:description", content: "Operate at your highest level. Research-grade peptides with public, lot-level verification." },
       { property: "og:url", content: "https://veratisbio.com" },
+      { property: "og:image", content: "https://veratisbio.com/og-image.png" },
     ],
-    links: [
-      { rel: "canonical", href: "https://veratisbio.com" },
-    ],
+    links: [{ rel: "canonical", href: "https://veratisbio.com" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -33,16 +34,7 @@ export const Route = createFileRoute("/")({
           name: "VERATIS",
           url: "https://veratisbio.com",
           description:
-            "Research-grade peptides with independent ISO 17025 HPLC and mass-spec verification and public certificates of analysis.",
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "VERATIS",
-          url: "https://veratisbio.com",
+            "Precision longevity. Research-grade peptides with independent ISO 17025 verification and public, lot-level certificates of analysis.",
         }),
       },
     ],
@@ -51,457 +43,358 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const recentLots = batches.slice(0, 8).map((b) => b.lot);
-  const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
   const { products } = useCatalog();
-  const bpcProduct = products.find((p) => p.slug === "bpc-157-12mg");
-  const bpcImage =
-    bpcProduct?.image && !bpcProduct.image.endsWith("vial-master.jpg")
-      ? bpcProduct.image
-      : heroVial;
+  const avgPurity = (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2);
 
-  // Featured product configuration — slug → badge / stock / tagline
-  const featuredConfig: Record<string, { badge?: { label: string; tone?: "amber" | "gray" | "green" }; stockText?: string; stockTone?: "default" | "amber"; tagline?: string }> = {
-    "bpc-157-12mg": {
-      badge: { label: "Most ordered", tone: "amber" },
-      stockText: "12 vials remaining",
-      tagline: "Pentadecapeptide studied for tissue recovery and gastric protection.",
-    },
-    "tb-500-fragment-12mg": {
-      badge: { label: "Popular", tone: "gray" },
-      stockText: "18 vials remaining",
-      tagline: "Thymosin Beta-4 fragment for soft tissue and muscle research.",
-    },
-    "ghk-cu-100mg": {
-      badge: { label: "Best value", tone: "green" },
-      stockText: "Low stock · 6 remaining",
-      stockTone: "amber",
-      tagline: "Copper tripeptide for skin and regenerative research.",
-    },
-    "mots-c-10mg": {
-      stockText: "In stock",
-      tagline: "Mitochondrial-derived peptide for metabolic research.",
-    },
-  };
   const featuredSlugs = ["bpc-157-12mg", "tb-500-fragment-12mg", "ghk-cu-100mg", "mots-c-10mg"];
   const featuredProducts = featuredSlugs
     .map((slug) => products.find((p) => p.slug === slug))
-    .filter(Boolean)
-    .slice(0, 4) as typeof products;
-  // Fallback if any are missing
+    .filter(Boolean) as typeof products;
   const featured = featuredProducts.length === 4 ? featuredProducts : products.slice(0, 4);
 
-  // Icon map for category tiles
-  const categoryIcons: Record<string, typeof Bandage> = {
-    "Tissue Recovery": Bandage,
-    "Regenerative": Leaf,
-    "Growth Hormone": TrendingUp,
-    "Hormonal": Atom,
-    "Pigmentation": Sun,
-    "Mitochondrial": Zap,
-    "Metabolic": Flame,
+  // Editorial product identifier — colored marque + protocol word
+  const identifierMap: Record<string, { word: string; hex: string }> = {
+    "bpc-157-12mg": { word: "REPAIR", hex: "#b87333" },
+    "tb-500-fragment-12mg": { word: "RESTORE", hex: "#8a6b3d" },
+    "ghk-cu-100mg": { word: "REGENERATE", hex: "#6b5b3f" },
+    "mots-c-10mg": { word: "ASCENT", hex: "#3f4a2e" },
+    "ipamorelin-5mg": { word: "SHIFT", hex: "#9a6b4a" },
+    "tesamorelin-5mg": { word: "VECTOR", hex: "#5a4a35" },
+    "melanotan-ii-10mg": { word: "ECLIPSE", hex: "#3a2e25" },
   };
 
   return (
     <Layout>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-6 pt-8 md:pt-14 pb-16 md:pb-36 grid md:grid-cols-12 gap-12 md:gap-16 lg:gap-20 items-center">
-          <div className="md:col-span-7">
-            <LotTag lot="PP-2426" status="verified" linked />
-            <h1 className="mt-6 md:mt-7 text-[2rem] sm:text-4xl md:text-[3.5rem] text-ink leading-[1.08] md:leading-[1.05] tracking-[-0.02em] text-left font-extrabold [text-wrap:balance]">
-              Third-party tested,<br />
-              research-grade peptides.
-            </h1>
-            <p className="mt-6 md:mt-8 max-w-xl text-[15px] sm:text-[1.0625rem] text-muted-foreground leading-[1.65] md:leading-[1.7]">
-              Every batch undergoes independent HPLC and mass-spec analysis.
-              Full certificates of analysis are published for every lot — signed, dated, public.
-            </p>
-            <div className="mt-8 md:mt-10 flex flex-wrap gap-3">
-              <Link
-                to="/shop"
-                className="group inline-flex items-center gap-2.5 bg-ink text-background pl-6 pr-5 py-4 rounded-md text-[13px] font-medium tracking-wide hover:bg-ink/90 hover:-translate-y-px transition shadow-[0_1px_2px_rgba(15,23,42,0.08),0_8px_24px_-12px_rgba(15,23,42,0.35)]"
-              >
-                Shop peptides
-                <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
-              </Link>
-              <Link
-                to="/coa-archive"
-                className="group inline-flex items-center gap-2 border border-ink/30 bg-transparent px-6 py-4 rounded-md text-[13px] font-medium tracking-wide text-ink hover:border-ink/60 hover:bg-ink/[0.03] transition"
-              >
-                <ShieldCheck size={15} className="text-primary" strokeWidth={2} />
-                View COA archive
-              </Link>
-            </div>
-            <Link
-              to="/verification"
-              className="mt-4 inline-flex items-center gap-2 text-[12px] font-mono uppercase tracking-[0.18em] text-foreground/70 hover:text-ink transition"
-            >
-              How we verify every lot <ArrowRight size={12} />
-            </Link>
-            <p className="mt-4 text-[12.5px] text-muted-foreground tabular-nums">
-              From $25 per vial <span className="text-foreground/30 mx-1">·</span> Free shipping over $150
-            </p>
-            <ul className="mt-7 md:mt-8 flex flex-wrap items-center gap-x-4 sm:gap-x-5 gap-y-2 text-[11.5px] sm:text-[12px] text-muted-foreground">
-              {[
-                { icon: BadgeCheck, label: "ISO 17025 verified" },
-                { icon: FlaskConical, label: "Batch-level COAs" },
-                { icon: Snowflake, label: "Cold-chain shipping" },
-                { icon: Lock, label: "Secure checkout" },
-              ].map(({ icon: Icon, label }) => (
-                <li key={label} className="inline-flex items-center gap-1.5">
-                  <Icon size={13} className="text-ink/70" strokeWidth={1.75} />
-                  {label}
-                </li>
-              ))}
-            </ul>
-            <dl className="mt-10 md:mt-14 grid grid-cols-3 gap-0 max-w-lg divide-x divide-border border-t border-border pt-6 md:pt-8">
-              {[
-                ["99.4%", "Average HPLC purity"],
-                ["ISO 17025", "Certified testing"],
-                ["48 hrs", "Ships within"],
-              ].map(([v, k], i) => (
-                <div key={k} className={i === 0 ? "pr-2 sm:pr-6" : "px-2 sm:px-6"}>
-                  <dt className="text-[0.95rem] sm:text-[1.5rem] md:text-[1.75rem] text-ink font-display leading-tight tabular-nums whitespace-nowrap [text-wrap:balance]">{v}</dt>
-                  <dd className="text-[9px] sm:text-[10.5px] md:text-[11px] text-muted-foreground mt-2 sm:mt-2.5 uppercase tracking-[0.12em] sm:tracking-[0.16em] leading-snug">{k}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-          <div className="md:col-span-5 relative">
-            <div className="aspect-[4/5] bg-mist rounded-2xl overflow-hidden border border-border shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
-              <img src={bpcImage} alt="VERATIS BPC-157 12 mg lyophilized vial, Lot PP-2426" width={1024} height={1280} className="w-full h-full object-cover" />
-            </div>
-            {/* Lot certificate card */}
-            <div className="absolute -bottom-8 -left-6 md:-left-10 bg-background border border-border rounded-xl p-5 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)] hidden md:block w-[290px]">
-              <div className="flex items-center justify-between">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Certificate of analysis</p>
-                <span className="inline-flex items-center gap-1 text-[10px] text-primary">
-                  <BadgeCheck size={12} strokeWidth={2} /> Lab verified
-                </span>
-              </div>
-              <p className="mt-2.5 font-display text-[15px] text-ink leading-tight">BPC-157 · 12 mg lyophilized</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5 tabular-nums">Lot PP-2426 · Tested 04 May 2026</p>
-              <dl className="mt-4 space-y-2 text-[12px]">
-                {[
-                  ["Purity (HPLC)", "99.42%"],
-                  ["Identity (MS)", "Confirmed"],
-                  ["Endotoxin", "< 0.5 EU/mg"],
-                ].map(([k, v]) => (
-                  <div key={k} className="flex items-center justify-between">
-                    <dt className="text-muted-foreground">{k}</dt>
-                    <dd className="text-ink tabular-nums inline-flex items-center gap-1">
-                      <Check size={11} className="text-primary" strokeWidth={2.5} />
-                      {v}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          </div>
-        </div>
-        <ArchiveIndexStrip lots={recentLots} />
-      </section>
+      {/* ─── SECTION 1 · HERO ─────────────────────────────────────────── */}
+      <section className="relative min-h-[88vh] md:min-h-[92vh] flex items-end overflow-hidden bg-ink">
+        <img
+          src={heroLongevity}
+          alt="Sunlit travertine sanctuary with an amber apothecary vial at golden hour"
+          width={1920}
+          height={1216}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Warm bottom-up gradient for text legibility, never neon */}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink/40 to-transparent" />
 
-      {/* Why VERATIS Exists — brand philosophy */}
-      <section className="mx-auto max-w-7xl px-6 pt-24 pb-8">
-        <div className="grid md:grid-cols-12 gap-12 md:gap-16">
-          <div className="md:col-span-5">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Why VERATIS exists</p>
-            <h2 className="text-3xl md:text-[2.5rem] text-ink leading-[1.1] tracking-[-0.02em]">
-              The industry's quietest standard.
-            </h2>
-          </div>
-          <div className="md:col-span-7">
-            <p className="text-[1.0625rem] text-foreground/80 leading-[1.75]">
-              Most peptide suppliers recycle a single certificate across dozens of lots, redact the laboratory name, or publish nothing at all. We were chemists before we were a company, and we found that unacceptable.
-            </p>
-            <p className="mt-5 text-[1.0625rem] text-foreground/80 leading-[1.75]">
-              VERATIS exists to operate on the opposite premise — that the document a researcher receives must correspond, exactly, to the vial in their hand. Every lot. Every time. Verifiable by anyone.
-            </p>
-            <ul className="mt-10 grid sm:grid-cols-2 gap-x-8 gap-y-5">
-              {[
-                ["Public batch documentation", "Every lot's COA is posted to the archive at the moment of release."],
-                ["Independent verification", "Sealed vials are couriered blind to an ISO 17025 accredited laboratory."],
-                ["Documented purity standards", "≥ 98% purity, < 1.0 EU/mg endotoxin — published, not implied."],
-                ["Never recycled, never redacted", "Each certificate is signed, dated, and tied to a single production lot."],
-              ].map(([k, v]) => (
-                <li key={k} className="border-l border-ink/30 pl-4">
-                  <p className="text-[13px] text-ink font-medium">{k}</p>
-                  <p className="mt-1 text-[13px] text-muted-foreground leading-relaxed">{v}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured products */}
-      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
-        <div className="flex items-end justify-between mb-8 md:mb-10 gap-4">
-          <div>
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Featured</p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight [text-wrap:balance]">Best-selling peptides</h2>
-          </div>
-          <Link to="/shop" className="text-[12px] sm:text-sm text-foreground/70 hover:text-foreground inline-flex items-center gap-1 whitespace-nowrap pb-1">
-            Shop all <ArrowRight size={14} />
-          </Link>
-        </div>
-        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-4 gap-x-6 sm:gap-x-6 gap-y-14 sm:gap-y-12">
-          {featured.map((p) => {
-            const cfg = featuredConfig[p.slug] ?? {};
-            return (
-              <ProductCard
-                key={p.slug}
-                p={p}
-                badge={cfg.badge}
-                stockText={cfg.stockText}
-                stockTone={cfg.stockTone}
-                tagline={cfg.tagline}
-              />
-            );
-          })}
-        </div>
-      </section>
-
-      <ArchiveActivity />
-
-      {/* Our Testing Process */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="max-w-2xl">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Our testing process</p>
-          <h2 className="text-3xl md:text-4xl text-ink">Four checkpoints. One verdict.</h2>
-          <p className="mt-5 text-muted-foreground leading-relaxed">
-            Every lot moves through the same sequence before it leaves our facility. If a single step fails specification, the batch is rejected — never blended, never released.
+        <div className="relative mx-auto max-w-7xl w-full px-6 pb-16 md:pb-24 pt-32">
+          <p className="eyebrow text-background/70">— Precision Longevity</p>
+          <h1 className="mt-6 font-display text-background text-[2.75rem] sm:text-6xl md:text-[5.5rem] lg:text-[6.5rem] leading-[0.98] tracking-[-0.02em] font-light [text-wrap:balance] max-w-5xl">
+            Performance.<br />
+            Recovery. <span className="italic text-background/85">Longevity.</span>
+          </h1>
+          <p className="mt-8 max-w-xl text-[15px] md:text-[17px] text-background/80 leading-[1.7] font-light">
+            Research-grade peptides backed by independent verification and complete
+            lot-level transparency. Built for those who measure their life in decades.
           </p>
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Link
+              to="/shop"
+              className="group inline-flex items-center gap-3 bg-background text-ink pl-7 pr-6 py-[18px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:bg-background/90 transition shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)]"
+            >
+              Browse Products
+              <ArrowRight size={15} className="transition group-hover:translate-x-0.5" />
+            </Link>
+            <Link
+              to="/verify"
+              className="group inline-flex items-center gap-2.5 border border-background/40 text-background pl-6 pr-5 py-[17px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:border-background hover:bg-background/5 transition backdrop-blur-sm"
+            >
+              <ShieldCheck size={14} strokeWidth={1.5} />
+              Verify a Lot
+            </Link>
+          </div>
+
+          {/* Quiet status strip */}
+          <div className="mt-16 md:mt-24 pt-6 border-t border-background/15 flex flex-wrap items-center justify-between gap-4 text-background/55">
+            <span className="eyebrow !text-background/55">— Independently Verified · ISO 17025</span>
+            <span className="font-display italic text-[13px] tracking-tight text-background/65">
+              Operate at your highest level.
+            </span>
+          </div>
         </div>
-        <ol className="mt-14 grid md:grid-cols-4 gap-px bg-border rounded-lg overflow-hidden border border-border">
-          {[
-            { icon: Microscope, step: "01", title: "Synthesis", text: "Solid-phase synthesis in a cGMP facility with sequence confirmation by mass spectrometry." },
-            { icon: FlaskConical, step: "02", title: "Independent assay", text: "Each lot is shipped blind to an ISO 17025 accredited laboratory for HPLC and MS analysis." },
-            { icon: ClipboardCheck, step: "03", title: "COA review", text: "Identity, purity, and endotoxin limits are reviewed against published specs before release." },
-            { icon: PackageCheck, step: "04", title: "Cold-chain pack", text: "Vials are sealed under nitrogen, vacuum-stoppered, and dispatched with insulated cold packs." },
-          ].map(({ icon: Icon, step, title, text }) => (
-            <li key={step} className="bg-background p-8 relative">
-              <span className="font-mono text-[11px] tabular-nums tracking-[0.2em] text-foreground/65">{step}</span>
-              <Icon size={22} className="text-ink/80 mt-4" strokeWidth={1.5} />
-              <h3 className="mt-4 text-lg text-ink">{title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{text}</p>
-            </li>
-          ))}
-        </ol>
       </section>
 
-      {/* Testimonials — trusted by researchers */}
-      <section className="border-y border-border bg-mist/30">
-        <div className="mx-auto max-w-7xl px-6 py-20 md:py-28">
-          <div className="max-w-2xl">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Field response</p>
-            <h2 className="text-3xl md:text-4xl text-ink tracking-tight">Trusted by researchers.</h2>
-            <p className="mt-4 text-muted-foreground leading-relaxed">
-              What independent investigators say about our archive.
+      {/* ─── SECTION 2 · THE PILLARS ─────────────────────────────────── */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-7xl px-6 pt-24 md:pt-32 pb-10">
+          <div className="grid md:grid-cols-12 gap-8 items-end">
+            <div className="md:col-span-7">
+              <p className="eyebrow">— The Four Pillars</p>
+              <h2 className="mt-5 font-display text-4xl md:text-6xl text-ink leading-[1.02] tracking-[-0.02em] font-light [text-wrap:balance]">
+                A protocol for the<br /><span className="italic">long arc</span> of human performance.
+              </h2>
+            </div>
+            <div className="md:col-span-5 md:pl-8">
+              <p className="text-[15px] text-muted-foreground leading-[1.8] font-light max-w-md">
+                Veratis is built around four disciplines that compound over decades.
+                Each compound in our catalog answers to one of them — and to the
+                certificate that proves it.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          {[
+            { title: "RECOVER", sub: "Repair & restoration", body: "Tissue, sleep, soft-tissue recovery, gastric integrity.", img: pillarRecover },
+            { title: "PERFORM", sub: "Physical & cognitive performance", body: "Output, focus, body composition, executive endurance.", img: pillarPerform },
+            { title: "LONGEVITY", sub: "Healthspan & optimization", body: "Mitochondrial function, metabolic resilience, the long game.", img: pillarLongevity },
+            { title: "REGENERATE", sub: "Cellular renewal", body: "Skin, connective tissue, copper-peptide signaling, ritual.", img: pillarRegenerate },
+          ].map((p) => (
+            <article
+              key={p.title}
+              className="group relative aspect-[3/4] overflow-hidden rounded-sm bg-ink"
+            >
+              <img
+                src={p.img}
+                alt={`${p.title} — ${p.sub}`}
+                width={1024}
+                height={1280}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover transition duration-[1200ms] group-hover:scale-[1.04]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/15 to-transparent" />
+              <div className="absolute inset-0 p-6 md:p-7 flex flex-col justify-end text-background">
+                <h3 className="font-display text-[1.75rem] md:text-[2rem] tracking-[0.04em] font-light leading-none">
+                  {p.title}
+                </h3>
+                <div className="mt-3 h-px w-8 bg-background/60" />
+                <p className="mt-4 text-[12px] uppercase tracking-[0.18em] text-background/75 font-light">{p.sub}</p>
+                <p className="mt-2 text-[13px] text-background/65 leading-[1.55] font-light max-w-[24ch]">{p.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── SECTION 3 · WHY VERATIS ─────────────────────────────────── */}
+      <section className="relative bg-mist">
+        <div className="mx-auto max-w-7xl px-6 py-24 md:py-36">
+          <div className="max-w-4xl">
+            <p className="eyebrow">— Why Veratis</p>
+            <h2 className="mt-6 font-display text-4xl md:text-6xl lg:text-7xl text-ink leading-[1.02] tracking-[-0.025em] font-light [text-wrap:balance]">
+              Don't trust us.<br />
+              <span className="italic text-primary/85">Verify for yourself.</span>
+            </h2>
+            <p className="mt-8 max-w-xl text-[16px] text-muted-foreground leading-[1.8] font-light">
+              The peptide industry runs on hidden lab reports, redacted names, and
+              certificates recycled across dozens of batches. Veratis was built on the
+              opposite premise — every claim is documentable, every lot retrievable,
+              every signature traceable to an accredited laboratory.
             </p>
           </div>
-          <div className="mt-12 grid md:grid-cols-3 gap-6">
+
+          <div className="mt-16 md:mt-20 grid grid-cols-2 lg:grid-cols-5 gap-px bg-border border border-border rounded-sm overflow-hidden">
             {[
-              {
-                quote: "The archive is the first peptide vendor system I've seen that I'd actually trust enough to cite in methodology.",
-                attr: "Postdoctoral researcher, biomedical engineering",
-              },
-              {
-                quote: "Verification under one second. Lot match every time. This is how every vendor should operate.",
-                attr: "Independent compound chemist",
-              },
-              {
-                quote: "Switched from three other suppliers. The COA workflow alone saves me hours per month.",
-                attr: "Lab director, contract research organization",
-              },
-            ].map((t, i) => (
-              <figure key={i} className="bg-background border border-border rounded-[3px] p-7 flex flex-col">
-                <Quote size={18} className="text-primary/70 mb-4" strokeWidth={1.5} />
-                <blockquote className="text-[15px] text-ink/90 leading-[1.65] italic font-display tracking-[-0.005em] [text-wrap:balance] flex-1">
-                  "{t.quote}"
-                </blockquote>
-                <figcaption className="mt-6 pt-5 border-t border-border/70 text-[11px] font-mono uppercase tracking-[0.16em] text-foreground/55">
-                  — {t.attr}
-                </figcaption>
-              </figure>
+              { k: "Independent COAs", v: "Every lot, signed and dated by a third-party laboratory." },
+              { k: "Public Archive", v: "Permanent, append-only record. Never overwritten." },
+              { k: "Lot-Level Traceability", v: "From synthesis through assay to your vial." },
+              { k: "QR Verification", v: "Scan the carton seal. Retrieve the original in under a second." },
+              { k: "ISO 17025 Testing", v: `Assayed by ${labPartner.name}, ${labPartner.iso}.` },
+            ].map(({ k, v }) => (
+              <div key={k} className="bg-background p-7 md:p-8 flex flex-col">
+                <p className="font-display text-[1.05rem] md:text-[1.15rem] text-ink leading-snug tracking-tight">{k}</p>
+                <p className="mt-3 text-[12.5px] text-muted-foreground leading-[1.7] font-light flex-1">{v}</p>
+                <div className="mt-5 h-px w-6 bg-primary/60" />
+              </div>
             ))}
           </div>
-          <p className="mt-8 text-[11px] text-muted-foreground italic">
-            Testimonials from verified purchasers. Identifying information withheld on request.
-          </p>
+
+          {/* Quiet metric ribbon */}
+          <dl className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 border-t border-border pt-10">
+            {[
+              [`${batches.length}`, "Lots on permanent record"],
+              [`${avgPurity}%`, "Mean HPLC purity"],
+              ["100%", "Pass rate, year-to-date"],
+              ["< 0.5 EU/mg", "Endotoxin ceiling"],
+            ].map(([v, k]) => (
+              <div key={k}>
+                <dt className="font-display text-[1.75rem] md:text-[2.5rem] text-ink leading-none tabular-nums tracking-[-0.01em] font-light">{v}</dt>
+                <dd className="mt-3 eyebrow">{k}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
-      {/* COA Preview */}
-      <section className="border-y border-border bg-ink text-background">
-        <div className="mx-auto max-w-7xl px-6 py-16 md:py-36 grid md:grid-cols-12 gap-10 md:gap-12 lg:gap-20 items-start">
-          <div className="md:col-span-5 md:pr-4">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary mb-4">— Signature system</p>
-            <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.5rem] text-background leading-[1.12] md:leading-[1.1] tracking-[-0.02em] [text-wrap:balance]">
-              Authenticate any vial, in under five seconds.
-            </h2>
-            <p className="mt-5 md:mt-6 text-[14px] sm:text-[15px] text-background/70 leading-[1.7] md:leading-[1.75] max-w-md">
-              Enter the lot printed on the label. The archive returns the original certificate — purity, identity, endotoxin — signed by an independent laboratory at the moment of release.
-            </p>
-            <ul className="mt-8 space-y-3.5 text-[13px] text-background/80">
-              {[
-                "Live query against our laboratory archive",
-                "Permanent record — never recycled between batches",
-                "Same lookup that powers our outer carton QR codes",
-              ].map((t) => (
-                <li key={t} className="inline-flex items-start gap-2.5">
-                  <Check size={14} className="text-primary mt-0.5 shrink-0" strokeWidth={2.5} />
-                  {t}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-9">
-              <Link to="/coa-archive" className="inline-flex items-center gap-2 border border-background/25 text-background px-5 py-3 rounded-md text-[13px] font-medium hover:bg-background/5 transition">
-                <Archive size={14} /> Browse full archive <ArrowRight size={13} />
-              </Link>
+      {/* ─── SECTION 4 · FEATURED PRODUCTS ───────────────────────────── */}
+      <section className="bg-background">
+        <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+            <div className="max-w-2xl">
+              <p className="eyebrow">— The Protocol</p>
+              <h2 className="mt-5 font-display text-4xl md:text-5xl lg:text-6xl text-ink leading-[1.04] tracking-[-0.02em] font-light [text-wrap:balance]">
+                Each compound, <span className="italic">a discipline.</span>
+              </h2>
             </div>
-            <div className="mt-10 pt-6 border-t border-background/10 grid grid-cols-3 gap-x-3 sm:gap-x-4 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.14em] sm:tracking-[0.16em] text-background/40">
-              <div>
-                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">{batches.length}</p>
-                <p className="mt-1">Lots archived</p>
-              </div>
-              <div>
-                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">{avgPurity}%</p>
-                <p className="mt-1">Mean purity</p>
-              </div>
-              <div>
-                <p className="text-background tabular-nums text-[17px] sm:text-[20px] font-display tracking-tight leading-none">100%</p>
-                <p className="mt-1">YTD pass rate</p>
-              </div>
-            </div>
-          </div>
-          <div className="md:col-span-7">
-            <BatchVerify />
-          </div>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
-        <div className="flex items-end justify-between mb-8 md:mb-10">
-          <div>
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Research areas</p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl text-ink tracking-tight leading-tight">By research category</h2>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          {categories.map((c) => {
-            const Icon = categoryIcons[c.name] ?? FlaskConical;
-            return (
-              <Link
-                key={c.slug}
-                to="/shop"
-                className="group relative bg-background border border-border rounded-[3px] p-5 sm:p-8 min-h-[150px] sm:min-h-[190px] flex flex-col hover:border-ink/50 hover:shadow-[0_8px_24px_-16px_rgba(15,23,42,0.2)] transition"
-              >
-                <Icon size={26} className="text-ink/75 mb-4" strokeWidth={1.25} />
-                <h3 className="font-display text-[1.0625rem] sm:text-[1.375rem] text-ink leading-[1.15] tracking-tight [text-wrap:balance] hyphens-auto break-words">
-                  {c.name}
-                </h3>
-                <p className="mt-auto pt-4 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 tabular-nums">
-                  {String(c.count).padStart(2, "0")} compounds
-                </p>
-                <ArrowRight size={14} className="absolute top-5 right-5 sm:top-6 sm:right-6 text-foreground/35 group-hover:text-ink group-hover:translate-x-0.5 transition" />
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      <WhyVeratis />
-
-      {/* Operational metrics — replaces testimonials */}
-      <section className="mx-auto max-w-7xl px-6 py-16 md:py-24">
-        <div className="grid md:grid-cols-12 gap-10 md:gap-20">
-          <div className="md:col-span-5">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Operational record</p>
-            <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.5rem] text-ink leading-[1.12] md:leading-[1.1] tracking-[-0.02em] [text-wrap:balance]">
-              Measured in lots, not in slogans.
-            </h2>
-            <p className="mt-6 text-muted-foreground leading-[1.75] max-w-md">
-              The clearest signal of a serious peptide operation is its archive. Below is ours — every figure derived from production data, independently assayed, publicly retrievable.
-            </p>
-            <Link to="/coa-archive" className="mt-7 inline-flex items-center gap-2 text-[13px] text-ink border border-border rounded-md px-5 py-3 hover:border-ink/40 transition">
-              <Archive size={14} /> Browse the archive
+            <Link
+              to="/shop"
+              className="inline-flex items-center gap-2 text-[12px] tracking-[0.18em] uppercase text-ink border-b border-ink/30 hover:border-ink pb-2 transition self-start md:self-end"
+            >
+              View the full library <ArrowUpRight size={13} />
             </Link>
           </div>
-          <div className="md:col-span-7">
-            <dl className="grid grid-cols-2 border-t border-border">
-              {[
-                [`${batches.length}`, "Lots on permanent record"],
-                [`${avgPurity}%`, "Mean HPLC purity, all lots"],
-                ["100%", "Pass rate year-to-date"],
-                ["≥ 98%", "Minimum release specification"],
-                ["< 0.5 EU/mg", "Endotoxin ceiling"],
-                ["48 hrs", "Median dispatch time"],
-                [labPartner.iso, "Lab partner accreditation"],
-                [labPartner.city, "Independent assay location"],
-              ].map(([v, k], i) => (
-                <div
-                  key={k}
-                  className={[
-                    "py-5 sm:py-7 px-1 min-w-0",
-                    i % 2 === 0 ? "pr-3 sm:pr-6 border-r border-border" : "pl-3 sm:pl-6",
-                    i >= 2 ? "border-t border-border" : "",
-                  ].join(" ")}
-                >
-                  <dt className="font-display text-[1.125rem] sm:text-[1.5rem] md:text-[2rem] text-ink leading-tight tabular-nums tracking-[-0.01em] [text-wrap:balance]">{v}</dt>
-                  <dd className="mt-2 sm:mt-3 text-[9.5px] sm:text-[10.5px] font-mono uppercase tracking-[0.16em] sm:tracking-[0.18em] text-foreground/55 leading-snug">{k}</dd>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+            {featured.map((p) => {
+              const id = identifierMap[p.slug] ?? { word: "PROTOCOL", hex: "#8a6b3d" };
+              return (
+                <div key={p.slug} className="group">
+                  {/* Editorial identifier strip above the card */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ backgroundColor: id.hex }}
+                    />
+                    <span
+                      className="text-[10px] tracking-[0.28em] uppercase font-medium"
+                      style={{ color: id.hex }}
+                    >
+                      {id.word}
+                    </span>
+                  </div>
+                  <ProductCard p={p} />
                 </div>
-              ))}
-            </dl>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* ─── SECTION 5 · LOT VERIFICATION ────────────────────────────── */}
+      <section
+        className="relative bg-ink text-background overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(180deg, rgba(28,22,18,0.92), rgba(28,22,18,0.96)), url(${travertineWall})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="mx-auto max-w-7xl px-6 py-24 md:py-36 grid lg:grid-cols-12 gap-14 lg:gap-20 items-start">
+          <div className="lg:col-span-5">
+            <p className="eyebrow !text-primary/80">— Chain of Verification</p>
+            <h2 className="mt-6 font-display text-4xl md:text-5xl lg:text-[3.75rem] leading-[1.04] tracking-[-0.02em] font-light text-background [text-wrap:balance]">
+              The vial in your hand,<br />
+              <span className="italic text-background/85">the document on the wall.</span>
+            </h2>
+            <p className="mt-8 text-[15px] text-background/70 leading-[1.8] font-light max-w-md">
+              Enter the lot printed on the label. The archive returns the original
+              certificate — purity, identity, endotoxin — signed by an independent
+              laboratory at the moment of release.
+            </p>
+
+            <ol className="mt-12 space-y-6 max-w-md">
+              {[
+                ["Lot number", "Stamped on every vial and tamper seal."],
+                ["QR code", "Scan the carton — resolves to the archive."],
+                ["Certificate", "Original PDF, signed by the assaying lab."],
+                ["Chain of custody", "Synthesis → courier → ISO 17025 → release."],
+              ].map(([k, v], i) => (
+                <li key={k} className="grid grid-cols-[auto_1fr] gap-5 items-start">
+                  <span className="font-display tabular-nums text-[1.5rem] text-primary/70 leading-none font-light">
+                    0{i + 1}
+                  </span>
+                  <div>
+                    <p className="text-[13px] tracking-[0.18em] uppercase text-background">{k}</p>
+                    <p className="mt-2 text-[13.5px] text-background/60 leading-[1.65] font-light">{v}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="lg:col-span-7">
+            <BatchVerify />
+            <p className="mt-5 eyebrow !text-background/45">
+              — Live query · permanent archive · 0.8s median
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 6 · THE STANDARD ────────────────────────────────── */}
+      <section className="travertine-surface relative overflow-hidden">
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <img
+            src={travertineWall}
+            alt=""
+            aria-hidden
+            width={1920}
+            height={1024}
+            loading="lazy"
+            className="w-full h-full object-cover mix-blend-multiply"
+          />
+        </div>
+        <div className="relative mx-auto max-w-5xl px-6 py-32 md:py-48 text-center">
+          <p className="eyebrow">— The Standard</p>
+          <h2 className="mt-10 font-display text-[3rem] sm:text-6xl md:text-8xl text-ink leading-[0.98] tracking-[-0.025em] font-light">
+            Every lot.<br />
+            Every time.<br />
+            <span className="italic text-primary">Publicly verifiable.</span>
+          </h2>
+
+          <div className="mx-auto mt-14 h-px w-24 bg-ink/30" />
+
+          <p className="mt-14 max-w-2xl mx-auto text-[16px] md:text-[17px] text-foreground/75 leading-[1.85] font-light">
+            Veratis is a longevity company before it is a peptide supplier. We exist to
+            make the document a researcher receives correspond, exactly, to the vial in
+            their hand — not most of the time, not for the marketing batch, but every
+            time, for every lot, archived forever.
+          </p>
+
+          <div className="mt-14 inline-flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to="/shop"
+              className="inline-flex items-center gap-2.5 bg-ink text-background pl-7 pr-6 py-[18px] rounded-full text-[12.5px] font-medium tracking-[0.14em] uppercase hover:bg-ink/90 transition"
+            >
+              Begin the protocol <ArrowRight size={14} />
+            </Link>
+            <Link
+              to="/coa-archive"
+              className="inline-flex items-center gap-2 text-[12.5px] tracking-[0.16em] uppercase text-ink border-b border-ink/30 hover:border-ink pb-2 transition"
+            >
+              Browse the archive
+            </Link>
+          </div>
+
+          {/* Refined signature mark */}
+          <div className="mt-20 flex flex-col items-center gap-3 text-foreground/45">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M12 2 L12 22 M2 12 L22 12 M5 5 L19 19 M19 5 L5 19" stroke="currentColor" strokeWidth="0.5" />
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="0.5" />
+            </svg>
+            <p className="eyebrow !text-foreground/45">— VERATIS · Precision Longevity</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ (preserved) */}
       <FAQSection />
 
-      {/* Email capture */}
+      {/* Email capture (preserved, restyled to warm palette) */}
       <EmailCapture />
-
     </Layout>
   );
 }
 
 function FAQSection() {
   const items = [
-    {
-      q: "Are your peptides legal to purchase?",
-      a: "Yes — for laboratory and research use only. All products ship with a \"Research Use Only\" designation and are not intended for human or veterinary consumption. By purchasing, you confirm you are a qualified researcher.",
-    },
-    {
-      q: "How fast do orders ship?",
-      a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs. Domestic delivery typically arrives within 3–5 business days.",
-    },
-    {
-      q: "What happens if my lot fails verification?",
-      a: "It won't — every lot is independently assayed before release and rejected if any specification fails. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately.",
-    },
-    {
-      q: "How do I verify my vial's certificate?",
-      a: "Enter the lot number printed on the vial or outer carton into our verification tool. The archive returns the original COA in under one second — purity, identity, endotoxin, signed and dated.",
-    },
-    {
-      q: "What payment methods do you accept?",
-      a: "All major credit cards via encrypted checkout. For cryptocurrency or bulk research orders, contact us directly.",
-    },
+    { q: "Are your peptides legal to purchase?", a: "Yes — for laboratory and research use only. All products ship with a \"Research Use Only\" designation and are not intended for human or veterinary consumption." },
+    { q: "How fast do orders ship?", a: "Median dispatch is 48 hours. Vials are sealed under nitrogen, vacuum-stoppered, and packed with insulated cold packs." },
+    { q: "What happens if my lot fails verification?", a: "It won't — every lot is independently assayed before release. In the unlikely event of a discrepancy, we issue a full refund or replacement immediately." },
+    { q: "How do I verify my vial's certificate?", a: "Enter the lot number printed on the vial or carton into our verification tool. The archive returns the original COA in under one second." },
+    { q: "What payment methods do you accept?", a: "All major credit cards via encrypted checkout. For cryptocurrency or bulk research orders, contact us directly." },
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="border-y border-border bg-mist/30">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:py-28 grid md:grid-cols-12 gap-10 md:gap-16">
+    <section className="bg-mist/50 border-y border-border">
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-32 grid md:grid-cols-12 gap-12 md:gap-20">
         <div className="md:col-span-4">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— FAQ</p>
-          <h2 className="text-3xl md:text-4xl text-ink tracking-tight leading-[1.1]">Common questions.</h2>
-          <p className="mt-5 text-muted-foreground leading-relaxed max-w-xs">
-            If you don't see your question, <Link to="/contact" className="text-ink underline underline-offset-4 hover:text-primary">contact us</Link>.
+          <p className="eyebrow">— Common questions</p>
+          <h2 className="mt-5 font-display text-4xl md:text-5xl text-ink leading-[1.05] tracking-[-0.02em] font-light">Quietly answered.</h2>
+          <p className="mt-6 text-muted-foreground leading-[1.8] font-light max-w-xs">
+            If you don't see your question, <Link to="/contact" className="text-ink underline underline-offset-4 hover:text-primary">write to us</Link>.
           </p>
         </div>
         <div className="md:col-span-8">
@@ -514,19 +407,15 @@ function FAQSection() {
                     type="button"
                     onClick={() => setOpen(isOpen ? null : i)}
                     aria-expanded={isOpen}
-                    className="w-full min-h-[64px] py-5 flex items-center justify-between gap-6 text-left group"
+                    className="w-full py-6 flex items-center justify-between gap-6 text-left group"
                   >
-                    <span className="font-display text-[1.0625rem] sm:text-[1.125rem] text-ink tracking-tight leading-snug">
-                      {item.q}
-                    </span>
-                    <span className="shrink-0 inline-flex items-center justify-center h-8 w-8 rounded-full border border-border text-ink/60 group-hover:border-ink/40 group-hover:text-ink transition">
+                    <span className="font-display text-[1.125rem] md:text-[1.25rem] text-ink tracking-tight leading-snug">{item.q}</span>
+                    <span className="shrink-0 inline-flex items-center justify-center h-9 w-9 rounded-full border border-border text-ink/60 group-hover:border-ink/40 group-hover:text-ink transition">
                       {isOpen ? <Minus size={14} /> : <Plus size={14} />}
                     </span>
                   </button>
                   {isOpen ? (
-                    <div className="pb-6 pr-12 text-[14.5px] text-muted-foreground leading-[1.75]">
-                      {item.a}
-                    </div>
+                    <div className="pb-7 pr-12 text-[14.5px] text-muted-foreground leading-[1.8] font-light">{item.a}</div>
                   ) : null}
                 </li>
               );
@@ -543,47 +432,41 @@ function EmailCapture() {
   const [submitted, setSubmitted] = useState(false);
   return (
     <section className="bg-ink text-background">
-      <div className="mx-auto max-w-7xl px-6 py-20 md:py-24 grid md:grid-cols-12 gap-10 md:gap-16 items-start">
-        <div className="md:col-span-6">
-          <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary mb-4">— Lot release notifications</p>
-          <h2 className="font-display text-[1.875rem] sm:text-3xl md:text-[2.25rem] text-background leading-[1.12] tracking-[-0.02em] [text-wrap:balance]">
-            Notified when new lots release.
+      <div className="mx-auto max-w-7xl px-6 py-24 md:py-28 grid md:grid-cols-12 gap-12 md:gap-16 items-end">
+        <div className="md:col-span-7">
+          <p className="eyebrow !text-primary/80">— Dispatch</p>
+          <h2 className="mt-5 font-display text-4xl md:text-5xl text-background leading-[1.05] tracking-[-0.02em] font-light [text-wrap:balance]">
+            Quiet correspondence. <span className="italic text-background/85">Monthly.</span>
           </h2>
-          <p className="mt-5 text-[14.5px] text-background/65 leading-[1.75] max-w-md">
-            Approximately one email per month. New lot announcements, archive updates, and standards publications. No marketing.
+          <p className="mt-6 max-w-md text-[15px] text-background/65 leading-[1.8] font-light">
+            New lot releases, archive updates, and standards publications. One letter, end of each month. No marketing.
           </p>
         </div>
-        <div className="md:col-span-6 md:pt-6">
+        <div className="md:col-span-5">
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!email) return;
-              setSubmitted(true);
-            }}
+            onSubmit={(e) => { e.preventDefault(); if (!email) return; setSubmitted(true); }}
             className="flex flex-col sm:flex-row gap-3"
           >
             <div className="relative flex-1">
               <Mail size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-background/40" strokeWidth={1.5} />
               <input
-                aria-label="Email address for newsletter"
+                aria-label="Email address"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="your.email@lab.edu"
-                className="w-full h-12 pl-11 pr-4 rounded-[3px] bg-background/[0.06] border border-background/20 text-background placeholder:text-background/35 text-[14px] focus:outline-none focus:border-primary/70 focus:bg-background/[0.08] transition"
+                placeholder="your.email@domain.com"
+                className="w-full h-14 pl-11 pr-4 rounded-full bg-background/[0.06] border border-background/20 text-background placeholder:text-background/35 text-[14px] font-light focus:outline-none focus:border-primary/70 focus:bg-background/[0.08] transition"
               />
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center h-12 px-6 rounded-[3px] bg-primary text-primary-foreground text-[12.5px] font-medium tracking-wide hover:bg-primary/90 active:scale-[0.99] transition whitespace-nowrap"
+              className="inline-flex items-center justify-center h-14 px-7 rounded-full bg-primary text-primary-foreground text-[12px] tracking-[0.16em] uppercase font-medium hover:bg-primary/90 transition whitespace-nowrap"
             >
-              {submitted ? "Subscribed ✓" : "Subscribe"}
+              {submitted ? "Received ✓" : "Subscribe"}
             </button>
           </form>
-          <p className="mt-3 text-[11.5px] text-background/45">
-            We never share your email. Unsubscribe anytime.
-          </p>
+          <p className="mt-4 text-[11.5px] text-background/45 font-light">Unsubscribe at any time.</p>
         </div>
       </div>
     </section>
