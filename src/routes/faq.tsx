@@ -7,7 +7,7 @@ const sections = [
   {
     title: "Products & testing",
     items: [
-      ["Are your peptides for human use?", "No. All VERATIS products are intended strictly for in-vitro laboratory and research use. They are not for human or veterinary consumption."],
+      ["Are your peptides for human use?", "Yes. Products are sold for laboratory and research use only. They are not intended for human or veterinary consumption."],
       ["How is purity verified?", "Every batch is tested by an independent ISO 17025 accredited laboratory using HPLC and mass spectrometry. Each lot receives a unique COA that you can download from the product page."],
       ["Where are your peptides manufactured?", "Our peptides are synthesized in cGMP facilities in the United States and Europe, then validated by our partner labs before release."],
       ["What is the shelf life?", "Lyophilized vials stored at −20 °C are typically stable for 24 months. Once reconstituted, follow standard cold-storage protocols for short-term stability."],
