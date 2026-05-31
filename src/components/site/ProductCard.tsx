@@ -5,6 +5,7 @@ import { useCart } from "@/lib/cart";
 import { useState } from "react";
 import { Minus, Plus, FileText } from "lucide-react";
 import { downloadCoa } from "@/lib/coa";
+import { protocolForSlug } from "@/lib/protocols";
 
 function titleFor(name: string) {
   return name
@@ -67,6 +68,7 @@ export function ProductCard({
   const title = titleFor(p.name);
   const { addItem } = useCart();
   const [qty, setQty] = useState(1);
+  const protocol = protocolForSlug(p.slug);
 
   const badgeToneClass =
     badge?.tone === "amber"
@@ -153,10 +155,17 @@ export function ProductCard({
         </div>
 
         {/* Title block. fixed-height, balanced wrap */}
-        <div className="mt-3 sm:mt-5 text-center sm:text-left">
-          <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
-            {p.category}
-          </p>
+        <div className="mt-4 sm:mt-5 text-center sm:text-left">
+          {protocol ? (
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full protocol-chip text-[9.5px] font-mono uppercase tracking-[0.22em]">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: protocol.colorVar }} />
+              {protocol.name}
+            </div>
+          ) : (
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
+              {p.category}
+            </p>
+          )}
           <h3
             className="mt-2 sm:mt-2.5 text-[16px] sm:text-[15px] text-ink font-display tracking-tight leading-[1.25] min-h-[2.5em] line-clamp-2 [text-wrap:balance]"
           >
@@ -227,18 +236,28 @@ export function ProductCard({
       ) : null}
 
       <div className={`${showQuantity ? "mt-2" : "mt-4"} flex gap-2`}>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (available) addItem(p, qty);
-          }}
-          disabled={!available}
-          className="flex-1 inline-flex items-center justify-center h-12 sm:h-11 border border-ink/20 rounded-[3px] text-[11px] sm:text-[10.5px] font-medium uppercase tracking-[0.22em] text-ink bg-background transition-all duration-200 hover:bg-ink hover:text-background hover:border-ink hover:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_20px_-10px_rgba(15,23,42,0.25)] active:scale-[0.985] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-ink disabled:hover:shadow-none touch-manipulation"
-        >
-          {available ? "Add to Cart" : "Reserved"}
-        </button>
+        {showQuantity ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (available) addItem(p, qty);
+            }}
+            disabled={!available}
+            className="flex-1 inline-flex items-center justify-center h-12 sm:h-11 border border-ink/20 rounded-[3px] text-[11px] sm:text-[10.5px] font-medium uppercase tracking-[0.22em] text-ink bg-background transition-all duration-200 hover:bg-ink hover:text-background hover:border-ink hover:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_20px_-10px_rgba(15,23,42,0.25)] active:scale-[0.985] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-background disabled:hover:text-ink disabled:hover:shadow-none touch-manipulation"
+          >
+            {available ? "Add to Cart" : "Reserved"}
+          </button>
+        ) : (
+          <Link
+            to="/shop/$slug"
+            params={{ slug: p.slug }}
+            className="flex-1 inline-flex items-center justify-center h-12 sm:h-11 border border-ink/20 rounded-[3px] text-[11px] sm:text-[10.5px] font-medium uppercase tracking-[0.22em] text-ink bg-background transition-all duration-200 hover:bg-ink hover:text-background hover:border-ink hover:shadow-[0_1px_2px_rgba(15,23,42,0.06),0_8px_20px_-10px_rgba(15,23,42,0.25)] active:scale-[0.985] touch-manipulation"
+          >
+            View Product
+          </Link>
+        )}
         {showViewCoa ? (
           <button
             type="button"
