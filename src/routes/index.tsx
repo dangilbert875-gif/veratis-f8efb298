@@ -132,19 +132,22 @@ function Home() {
 
         <div className="mx-auto max-w-7xl px-6 pb-24 md:pb-32 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           {[
-            { title: "REPAIR",     compound: "BPC-157",     body: "Supports tissue, gut lining, ligament, and tendon recovery pathways.",       img: pillarRecover,    hex: "#3f4a2e" }, // green
-            { title: "RESTORE",    compound: "TB-500",      body: "Supports recovery pathways and soft-tissue repair.",                          img: sysRestore,       hex: "#2d5a5a" }, // teal
-            { title: "REGENERATE", compound: "GHK-Cu",      body: "Supports copper peptide, skin, hair, and connective tissue pathways.",       img: pillarRegenerate, hex: "#b87333" }, // copper
-            { title: "ASCENT",     compound: "Ipamorelin",  body: "Supports growth hormone secretagogue pathways.",                              img: sysAscent,        hex: "#1f2d4a" }, // navy
-            { title: "SHIFT",      compound: "Retatrutide", body: "Supports metabolic signaling and body composition pathways.",                 img: pillarPerform,    hex: "#9a6b4a" }, // cognac
-            { title: "VECTOR",     compound: "Tirzepatide", body: "Supports metabolic signaling and weight-management pathways.",                img: sysVector,        hex: "#6b6b3f" }, // olive
-            { title: "ECLIPSE",    compound: "Melanotan-2", body: "Supports melanocortin and pigmentation pathways.",                            img: sysEclipse,       hex: "#5a4a35" }, // bronze
-            { title: "REJUVENATE", compound: "MOTS-C",      body: "Supports mitochondrial signaling and cellular energy pathways.",              img: pillarLongevity,  hex: "#3a5878" }, // blue
+            { title: "REPAIR",     compound: "BPC-157",     body: "Supports tissue, gut lining, ligament, and tendon recovery pathways.",       img: pillarRecover,    hex: "#3f4a2e", slug: "bpc-157-12mg" },
+            { title: "RESTORE",    compound: "TB-500",      body: "Supports recovery pathways and soft-tissue repair.",                          img: sysRestore,       hex: "#2d5a5a", slug: "tb-500-fragment-12mg" },
+            { title: "REGENERATE", compound: "GHK-Cu",      body: "Supports copper peptide, skin, hair, and connective tissue pathways.",       img: pillarRegenerate, hex: "#b87333", slug: "ghk-cu-50mg" },
+            { title: "ASCENT",     compound: "Ipamorelin",  body: "Supports growth hormone secretagogue pathways.",                              img: sysAscent,        hex: "#1f2d4a", slug: "ipamorelin-10mg" },
+            { title: "SHIFT",      compound: "Retatrutide", body: "Supports metabolic signaling and body composition pathways.",                 img: pillarPerform,    hex: "#9a6b4a", slug: "retatrutide-12mg" },
+            { title: "VECTOR",     compound: "Tirzepatide", body: "Supports metabolic signaling and weight-management pathways.",                img: sysVector,        hex: "#6b6b3f", slug: "tirzepatide-10mg" },
+            { title: "ECLIPSE",    compound: "Melanotan-2", body: "Supports melanocortin and pigmentation pathways.",                            img: sysEclipse,       hex: "#5a4a35", slug: "melanotan-2-10mg" },
+            { title: "REJUVENATE", compound: "MOTS-C",      body: "Supports mitochondrial signaling and cellular energy pathways.",              img: pillarLongevity,  hex: "#3a5878", slug: "mots-c-10mg" },
           ].map((p) => (
-            <article
+            <Link
               key={p.title}
+              to="/shop/$slug"
+              params={{ slug: p.slug }}
+              aria-label={`${p.title} — ${p.compound}`}
               style={{ ["--accent" as any]: p.hex }}
-              className="group relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-ink isolate ring-1 ring-inset ring-background/0 hover:ring-[color:var(--accent)]/40 shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)] transition-[box-shadow,ring-color] duration-700 ease-out"
+              className="group relative block aspect-[3/4] w-full overflow-hidden rounded-sm bg-ink isolate ring-1 ring-inset ring-background/0 hover:ring-[color:var(--accent)]/40 shadow-[0_1px_2px_rgba(0,0,0,0.06)] hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.55)] transition-[box-shadow,ring-color] duration-700 ease-out"
             >
               <img
                 src={p.img}
@@ -188,7 +191,7 @@ function Home() {
                   {p.body}
                 </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
