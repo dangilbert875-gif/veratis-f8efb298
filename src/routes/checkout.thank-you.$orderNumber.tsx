@@ -11,7 +11,7 @@ export const Route = createFileRoute("/checkout/thank-you/$orderNumber")({
     z.object({ t: z.string().min(8).max(128).optional() }).parse(s),
   head: () => ({
     meta: [
-      { title: "Thank you — VERATIS" },
+      { title: "Thank you. VERATIS" },
       { name: "description", content: "Your order has been received and payment is being verified." },
       { name: "robots", content: "noindex" },
     ],
@@ -36,7 +36,7 @@ function ThankYouPage() {
 
   return (
     <Layout hideFooter>
-      <PageHeader eyebrow="— Order received" title="Thank you" />
+      <PageHeader eyebrow="Order received" title="Thank you" />
 
       <section className="px-6 lg:px-12 py-12 max-w-3xl mx-auto space-y-10 print:py-4">
         {/* Confirmation hero */}
@@ -53,12 +53,12 @@ function ThankYouPage() {
               {(data as any)?.payment_method === "venmo"
                 ? "We've received your Venmo payment submission and will verify it shortly."
                 : "We've received your payment and are verifying it on-chain now."}{" "}
-              Please take a screenshot of this page for your records — you'll receive
+              Please take a screenshot of this page for your records. you'll receive
               a confirmation email within 48 hours once your order ships.
             </p>
           </div>
           <div className="inline-flex items-center gap-3 px-5 py-2.5 border border-border rounded-[3px] bg-mist/40">
-            <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Order number</span>
+            <span className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">Order number</span>
             <span className="text-[14px] font-display tracking-tight text-ink">{orderNumber}</span>
           </div>
         </div>
@@ -67,7 +67,7 @@ function ThankYouPage() {
         {data && (
           <div className="border border-border rounded-[3px] bg-background">
             <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">— Receipt</p>
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">Receipt</p>
               <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55">
                 {new Date(data.created_at as any).toLocaleDateString()}
               </p>
@@ -126,7 +126,7 @@ function ThankYouPage() {
         {/* What happens next */}
         <div className="border border-border rounded-[3px] bg-background">
           <div className="px-6 py-4 border-b border-border">
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">— What happens next</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">What happens next</p>
           </div>
           <ol className="divide-y divide-border">
             <Step
@@ -140,8 +140,8 @@ function ThankYouPage() {
               icon={<Clock size={14} strokeWidth={1.5} />}
               title="Payment verification"
               body={(data as any)?.payment_method === "venmo"
-                ? "We match your Venmo payment against your Order # — typically within a few hours during business hours."
-                : "We confirm your Bitcoin transaction on-chain — typically within 1–3 hours, depending on network congestion."}
+                ? "We match your Venmo payment against your Order #. typically within a few hours during business hours."
+                : "We confirm your Bitcoin transaction on-chain. typically within 1–3 hours, depending on network congestion."}
             />
             <Step
               icon={<Package size={14} strokeWidth={1.5} />}
@@ -212,7 +212,7 @@ function SummaryCard({ title, children }: { title: string; children: React.React
   return (
     <div className="border border-border rounded-[3px] bg-background">
       <div className="px-5 py-3 border-b border-border">
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {title}</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">{title}</p>
       </div>
       <div className="px-5 py-4 text-[12px] text-foreground/75 space-y-0.5">{children}</div>
     </div>

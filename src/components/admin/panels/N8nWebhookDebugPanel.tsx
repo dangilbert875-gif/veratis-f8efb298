@@ -6,7 +6,7 @@ import { listN8nWebhookDebug, sendTestN8nWebhook } from "@/lib/admin.functions";
 import { Card, Empty, GhostButton, PrimaryButton } from "../ui";
 
 function fmt(value: unknown) {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return ".";
   if (typeof value === "boolean") return value ? "true" : "false";
   return String(value);
 }
@@ -110,7 +110,7 @@ export function N8nWebhookDebugPanel() {
                     </span>
                   </div>
                   <div className="mt-2 text-[11px] font-mono text-foreground/60 break-all">
-                    {detail.url ?? "—"}
+                    {detail.url ?? "."}
                   </div>
                   {detail.error_message && (
                     <div className="mt-2 text-[11px] text-red-800">

@@ -6,7 +6,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — VERATIS" },
+      { title: "Contact. VERATIS" },
       { name: "description", content: "Get in touch with the VERATIS team. We reply within one business day." },
       { property: "og:title", content: "Contact VERATIS" },
       { property: "og:description", content: "Talk to a chemist, not a script. Batch questions, custom assays, and wholesale inquiries answered within one business day." },
@@ -53,7 +53,7 @@ function Contact() {
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    // Honeypot — silently reject bots
+    // Honeypot. silently reject bots
     if (String(data.get("website") ?? "").length > 0) {
       setSent(true);
       return;
@@ -99,7 +99,7 @@ function Contact() {
       <PageHeader
         eyebrow="Contact"
         title="Talk to a chemist, not a script."
-        lead="Reach us on Telegram for the fastest response. Email works too — we reply within one business day."
+        lead="Reach us on Telegram for the fastest response. Email works too. we reply within one business day."
       />
 
       {/* Self-serve prompt */}
@@ -244,7 +244,7 @@ function Contact() {
           <div className="flex items-start gap-2 border border-primary/20 bg-primary/5 rounded-md px-4 py-3">
             <Zap size={14} className="mt-0.5 text-primary shrink-0" />
             <p className="text-xs leading-relaxed text-muted-foreground">
-              <span className="text-ink font-medium">Telegram is our fastest response channel.</span> We also respond to emails — typically within one business day.
+              <span className="text-ink font-medium">Telegram is our fastest response channel.</span> We also respond to emails. typically within one business day.
             </p>
           </div>
 

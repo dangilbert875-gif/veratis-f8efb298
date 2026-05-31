@@ -389,7 +389,7 @@ export const patchOrder = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
 
-    // Audit log — record status-relevant transitions. Uses supabaseAdmin
+    // Audit log. record status-relevant transitions. Uses supabaseAdmin
     // so the write bypasses the SELECT-only RLS policy on audit_logs.
     try {
       if (prior) {

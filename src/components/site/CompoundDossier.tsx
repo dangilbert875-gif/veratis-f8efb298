@@ -26,7 +26,7 @@ export function CompoundDossier({
         return d?.key === key;
       })
     )
-    // de-duplicate by compound key — only show the first SKU per related compound
+    // de-duplicate by compound key. only show the first SKU per related compound
     .filter((p, _i, arr) => {
       const k = dossierForSlug(p.slug)?.key;
       return arr.findIndex((q) => dossierForSlug(q.slug)?.key === k) === arr.indexOf(p);
@@ -114,7 +114,7 @@ export function CompoundDossier({
           />
         </Section>
 
-        {/* Sibling sizes — other SKUs of the same compound */}
+        {/* Sibling sizes. other SKUs of the same compound */}
         {siblingSizes.length > 0 && (
           <Section eyebrow="Other sizes of this compound" heading="">
             <ul className="divide-y divide-border border-y border-border">
@@ -212,7 +212,7 @@ function Section({
   return (
     <section className="grid md:grid-cols-[180px_1fr] gap-6 md:gap-12 py-10 border-t border-border first:border-t-0 first:pt-0">
       <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 pt-1">
-        — {eyebrow}
+       . {eyebrow}
       </p>
       <div className="space-y-4 text-[15.5px] leading-[1.75] text-foreground/85">
         {heading && (

@@ -99,9 +99,9 @@ export function CoaUploadsPanel() {
                 {filtered.map((r) => (
                   <tr key={r.id} className="border-b border-ink/5">
                     <td className="px-5 py-3 font-mono">{r.lot_number}</td>
-                    <td className="px-5 py-3">{r.products?.name ?? "—"}</td>
-                    <td className="px-5 py-3 tabular-nums">{r.purity ?? "—"}</td>
-                    <td className="px-5 py-3 text-foreground/70">{r.lab_partner ?? r.tested_by ?? "—"}</td>
+                    <td className="px-5 py-3">{r.products?.name ?? "."}</td>
+                    <td className="px-5 py-3 tabular-nums">{r.purity ?? "."}</td>
+                    <td className="px-5 py-3 text-foreground/70">{r.lab_partner ?? r.tested_by ?? "."}</td>
                     <td className="px-5 py-3 text-foreground/70">{formatDate(r.release_date)}</td>
                     <td className="px-5 py-3">
                       <StatusPill tone={r.active ? "ok" : "neutral"}>
@@ -290,7 +290,7 @@ function LotEditor({
               {lot ? "Edit lot" : "New lot"}
             </div>
             <h2 className="mt-1 text-[16px] font-medium tracking-tight font-mono">
-              {form.lot_number || "—"}
+              {form.lot_number || "."}
             </h2>
           </div>
           <div className="flex gap-2">
@@ -314,7 +314,7 @@ function LotEditor({
                 value={form.product_id ?? ""}
                 onChange={(e) => set("product_id", e.target.value || null)}
               >
-                <option value="">— Unassigned —</option>
+                <option value="">Unassigned.</option>
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}

@@ -116,7 +116,7 @@ export function VialImage({
         className="w-full h-full object-cover"
       />
 
-      {/* Label overlay — identical geometry on every vial */}
+      {/* Label overlay. identical geometry on every vial */}
       <div style={labelStyle} className="flex flex-col justify-between">
         {/* Top: VERATIS wordmark + teal hairline */}
         <div className="flex flex-col items-center" style={{ paddingTop: "7%" }}>

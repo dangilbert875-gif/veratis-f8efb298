@@ -28,7 +28,7 @@ export function buildCoaText(b: CoaInput): string {
   const purity = typeof b.purity === "number" ? `${b.purity.toFixed(2)}%` : String(b.purity);
   const issued = new Date().toISOString().slice(0, 10);
   return (
-    `VERATIS — CERTIFICATE OF ANALYSIS\n` +
+    `VERATIS. CERTIFICATE OF ANALYSIS\n` +
     `==================================\n\n` +
     line("Lot", b.lot) +
     line("Product", b.product) +

@@ -41,7 +41,7 @@ export function AgeGate({ children }: { children: React.ReactNode }) {
     <>
       {/*
         Security: do not render gated content into the DOM until the visitor
-        has confirmed age. Visual blur is not a content guard — withholding the
+        has confirmed age. Visual blur is not a content guard. withholding the
         markup prevents trivial DevTools bypass of the gate.
       */}
       {verified === true ? (

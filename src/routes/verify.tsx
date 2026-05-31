@@ -8,9 +8,9 @@ import { ArrowRight, FlaskConical, Fingerprint, Archive, Link2 } from "lucide-re
 export const Route = createFileRoute("/verify")({
   head: () => ({
     meta: [
-      { title: "Verify Batch — VERATIS" },
+      { title: "Verify Batch. VERATIS" },
       { name: "description", content: "Authenticate any VERATIS vial by its lot number. Retrieve the original certificate of analysis signed by an independent ISO 17025 laboratory." },
-      { property: "og:title", content: "Verify Batch — VERATIS" },
+      { property: "og:title", content: "Verify Batch. VERATIS" },
       { property: "og:description", content: "Authenticate any VERATIS vial by its lot number." },
     ],
   }),
@@ -50,7 +50,7 @@ function Page() {
       n: "03",
       icon: Archive,
       title: "Permanent archive",
-      text: "The signed certificate is committed to an append-only archive — never overwritten, never recycled between batches.",
+      text: "The signed certificate is committed to an append-only archive. never overwritten, never recycled between batches.",
     },
     {
       n: "04",
@@ -80,10 +80,10 @@ function Page() {
           </div>
 
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 mt-10 md:mt-14">
-            {/* Left rail — context */}
+            {/* Left rail. context */}
             <div className="lg:col-span-5 xl:col-span-4">
               <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-primary/80 mb-5">
-                — Verify batch · retrieval 1.2
+               . Verify batch · retrieval 1.2
               </p>
               <h1 className="font-display text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em] text-background">
                 Authenticate<br />your vial.
@@ -122,7 +122,7 @@ function Page() {
               </dl>
             </div>
 
-            {/* Right — verification module */}
+            {/* Right. verification module */}
             <div className="lg:col-span-7 xl:col-span-8">
               <BatchVerify />
               <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.2em] text-background/55 flex flex-wrap items-center justify-between gap-2">
@@ -140,7 +140,7 @@ function Page() {
           <div className="grid md:grid-cols-12 gap-10">
             <div className="md:col-span-4">
               <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">
-                — How verification works
+               . How verification works
               </p>
               <h2 className="font-display text-3xl md:text-[2.25rem] leading-[1.12] tracking-[-0.02em] text-ink">
                 Four steps,<br />independently auditable.
@@ -182,7 +182,7 @@ function Page() {
           Counterfeits exist. We help you check.
         </h2>
         <p className="mt-4 text-muted-foreground leading-relaxed">
-          If a lot does not resolve, the vial was not produced by VERATIS — or it
+          If a lot does not resolve, the vial was not produced by VERATIS. or it
           was tampered with after dispatch. Send us a photo of the label and we
           will help you trace it.
         </p>

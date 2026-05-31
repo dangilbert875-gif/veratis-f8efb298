@@ -25,8 +25,8 @@ export function BatchVerify({ compact = false }: { compact?: boolean }) {
     count: batches.length,
     avg: batches.length
       ? (batches.reduce((s, b) => s + b.purity, 0) / batches.length).toFixed(2)
-      : "—",
-    lastRelease: batches[0]?.testedOn ?? "—",
+      : ".",
+    lastRelease: batches[0]?.testedOn ?? ".",
     medianResponse: "0.8s",
   };
 

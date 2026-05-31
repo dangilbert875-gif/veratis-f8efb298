@@ -15,10 +15,10 @@ export function mapDbProduct(row: any): Product {
     classification: row.molecular_class ?? undefined,
     size: row.size_label ?? row.dosage ?? "",
     price: Number(row.price_usd ?? 0),
-    purity: row.purity ?? "—",
+    purity: row.purity ?? ".",
     image: row.featured_image || vialMaster,
     inStock: (row.stock_status ?? "in_stock") === "in_stock",
-    lot: row.lot_number ?? "—",
+    lot: row.lot_number ?? ".",
     short: row.short_description ?? "",
     description: row.full_description ?? row.short_description ?? "",
     inventoryCount:
@@ -37,7 +37,7 @@ type State = {
 
 /**
  * Live catalog hook. Fetches published products from the backend and falls
- * back to the bundled static catalog if the request fails — the storefront
+ * back to the bundled static catalog if the request fails. the storefront
  * is never broken by a transient backend hiccup.
  */
 export function useCatalog(): State {
@@ -63,7 +63,7 @@ export function useCatalog(): State {
       })
       .catch((err) => {
         if (cancelled) return;
-        // Silent fallback — keep the static catalog visible. Log for debugging.
+        // Silent fallback. keep the static catalog visible. Log for debugging.
         // eslint-disable-next-line no-console
         console.warn("[catalog] backend unavailable, using fallback:", err?.message ?? err);
         setState({

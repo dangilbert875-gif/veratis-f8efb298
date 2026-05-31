@@ -22,7 +22,7 @@ const OrderCancelledEmail = ({
     <Preview>Order {orderNumber} has been cancelled</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Text style={eyebrow}>— {SITE_NAME}</Text>
+        <Text style={eyebrow}>{SITE_NAME}</Text>
         <Heading style={h1}>
           {customerName ? `${customerName}, your order has been cancelled.` : 'Your order has been cancelled.'}
         </Heading>
@@ -32,14 +32,14 @@ const OrderCancelledEmail = ({
         </Text>
 
         <Section style={refBox}>
-          <Text style={refLabel}>— Reference</Text>
+          <Text style={refLabel}>Reference</Text>
           <Text style={refNumber}>{orderNumber}</Text>
         </Section>
 
         {reason ? (
           <>
             <Hr style={hr} />
-            <Text style={sectionLabel}>— Reason</Text>
+            <Text style={sectionLabel}>Reason</Text>
             <Text style={bodyText}>{reason}</Text>
           </>
         ) : null}
@@ -55,7 +55,7 @@ const OrderCancelledEmail = ({
           Questions? Reply to this email, reach us at support@veratisbio.com, or contact us on Telegram{' '}
           <a href="https://t.me/veratisbio" style={link}>@veratisbio</a>.
         </Text>
-        <Text style={footer}>— The {SITE_NAME} team</Text>
+        <Text style={footer}>The {SITE_NAME} team</Text>
       </Container>
     </Body>
   </Html>
@@ -64,7 +64,7 @@ const OrderCancelledEmail = ({
 export const template = {
   component: OrderCancelledEmail,
   subject: (data: Record<string, any>) =>
-    `Order ${data?.orderNumber ?? ''} cancelled — VERATIS`,
+    `Order ${data?.orderNumber ?? ''} cancelled. VERATIS`,
   displayName: 'Order cancelled',
   previewData: {
     orderNumber: '1502',

@@ -236,7 +236,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     const total = Math.max(0, Math.round((itemsTotal + shippingCost - discountAmount) * 100) / 100);
 
-    // Sequential order number starting at 1501 (1501, 1502, 1503…) — always
+    // Sequential order number starting at 1501 (1501, 1502, 1503…). always
     // assigned server-side. If the client pre-reserved a number for this
     // checkout session (so the buyer sees the same # in the Venmo/BTC note
     // that they'll see on the receipt), reuse it as long as it isn't already
@@ -309,7 +309,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    // Best-effort n8n webhook — fired once per order immediately after DB creation.
+    // Best-effort n8n webhook. fired once per order immediately after DB creation.
     const orderItems = pricedItems;
     const normalizedPaymentMethod = valueOrNA(
       order!.payment_method ?? data.payment_method,
@@ -379,7 +379,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
     }
 
     // Decrement inventory atomically for each line item. Best-effort: log
-    // errors but never fail the order — the order is already recorded.
+    // errors but never fail the order. the order is already recorded.
     for (const i of pricedItems) {
       const { error: decErr } = await supabaseAdmin.rpc("decrement_product_inventory", {
         _slug: i.slug,
@@ -409,7 +409,7 @@ export const createCheckoutOrder = createServerFn({ method: "POST" })
       }
     }
 
-    // Best-effort order confirmation email — never fail the order if email errors.
+    // Best-effort order confirmation email. never fail the order if email errors.
     try {
       const siteOrigin = process.env.SITE_URL || "https://veratis.lovable.app";
 

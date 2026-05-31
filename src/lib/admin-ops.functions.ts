@@ -14,7 +14,7 @@ async function assertAdmin(supabase: any, userId: string) {
 }
 
 // ─────────────────────────────────────────────
-// Activity feed — unified across audit_logs,
+// Activity feed. unified across audit_logs,
 // verification_logs, and article_views.
 // ─────────────────────────────────────────────
 
@@ -153,11 +153,11 @@ function summarize(row: any): string {
   })();
   const verb =
     act === "INSERT" ? "created" : act === "DELETE" ? "deleted" : "updated";
-  return `${t.replace(/_/g, " ")} ${verb} — ${headline}`;
+  return `${t.replace(/_/g, " ")} ${verb}. ${headline}`;
 }
 
 // ─────────────────────────────────────────────
-// Audit log viewer — paginated, with diff
+// Audit log viewer. paginated, with diff
 // ─────────────────────────────────────────────
 
 const auditFilter = z.object({
@@ -315,7 +315,7 @@ export const deleteNote = createServerFn({ method: "POST" })
   });
 
 // ─────────────────────────────────────────────
-// Relational links — used by detail drawers
+// Relational links. used by detail drawers
 // ─────────────────────────────────────────────
 
 export const getProductRelations = createServerFn({ method: "POST" })

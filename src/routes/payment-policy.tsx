@@ -4,9 +4,9 @@ import { LegalDoc, DocSection, DocList } from "@/components/site/LegalDoc";
 export const Route = createFileRoute("/payment-policy")({
   head: () => ({
     meta: [
-      { title: "Payment Policy — VERATIS" },
+      { title: "Payment Policy. VERATIS" },
       { name: "description", content: "Bitcoin-only settlement standards, invoice handling, refund routing, and fraud prevention for the VERATIS ordering system." },
-      { property: "og:title", content: "Payment Policy — VERATIS" },
+      { property: "og:title", content: "Payment Policy. VERATIS" },
       { property: "og:description", content: "Encrypted checkout, on-chain settlement, invoice validity, and refund routing standards." },
       { property: "og:url", content: "https://veratisbio.com/payment-policy" },
     ],

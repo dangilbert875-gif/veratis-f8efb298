@@ -110,7 +110,7 @@ export function ProductRelatedLinks({
             {data.recentOrders.slice(0, 6).map((o: any) => (
               <LinkRow
                 key={o.id}
-                label={`Order ${o.order_id?.slice(0, 8) ?? "—"}`}
+                label={`Order ${o.order_id?.slice(0, 8) ?? "."}`}
                 sub={`qty ${o.quantity}`}
                 onClick={go("orders")}
               />

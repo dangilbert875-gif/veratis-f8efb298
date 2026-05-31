@@ -42,7 +42,7 @@
 :root {
   --radius: 0.5rem;
   /* Brand: travertine warmth, sunlit stone, bronze accents.
-     Anchored in oklch warm-yellow hues (~70-90) — no blue casts. */
+     Anchored in oklch warm-yellow hues (~70-90). no blue casts. */
   --background: oklch(0.985 0.008 75);       /* warm paper / sunlit stone */
   --foreground: oklch(0.26 0.020 55);        /* warm earth-brown text */
   --ink: oklch(0.18 0.018 50);               /* deep espresso / dark walnut */
@@ -54,7 +54,7 @@
   --card-foreground: oklch(0.26 0.020 55);
   --popover: oklch(0.995 0.005 75);
   --popover-foreground: oklch(0.26 0.020 55);
-  --primary: oklch(0.55 0.075 55);           /* bronze — replaces teal */
+  --primary: oklch(0.55 0.075 55);           /* bronze. replaces teal */
   --primary-foreground: oklch(0.985 0.008 75);
   --secondary: oklch(0.94 0.018 78);
   --secondary-foreground: oklch(0.26 0.020 55);
@@ -70,7 +70,7 @@
   /* Deep warm espresso surface for archive / verification panels.
      Reads as luxury concierge medicine, not cyber. */
   --archive: oklch(0.22 0.020 55);
-  /* Operational state tokens — muted, archival, never saturated. */
+  /* Operational state tokens. muted, archival, never saturated. */
   --state-success: oklch(0.55 0.06 155);
   --state-warning: oklch(0.62 0.08 75);
   --state-danger:  oklch(0.55 0.10 25);
@@ -138,7 +138,7 @@
   color: color-mix(in oklab, var(--foreground) 65%, transparent);
 }
 
-/* Warm sunlit travertine surface — sand wash + soft light shaft. */
+/* Warm sunlit travertine surface. sand wash + soft light shaft. */
 .travertine-surface {
   background-color: var(--travertine);
   background-image:
@@ -165,7 +165,7 @@
 }
 
 /* Subtle layered surface used by the verification terminal.
-   A vignette + faint diagonal sheen + monochrome grain — no neon. */
+   A vignette + faint diagonal sheen + monochrome grain. no neon. */
 .archive-surface {
   background-color: var(--archive);
   background-image:

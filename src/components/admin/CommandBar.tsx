@@ -200,7 +200,7 @@ export function CommandBar({
                     }
                     className="cmd-item"
                   >
-                    <span>{c.full_name || c.email || "—"}</span>
+                    <span>{c.full_name || c.email || "."}</span>
                     {c.full_name && c.email && <span className="cmd-sub">{c.email}</span>}
                   </Command.Item>
                 ))}

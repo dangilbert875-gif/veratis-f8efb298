@@ -7,7 +7,7 @@ export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({
     meta: [
-      { title: "Sign in — VERATIS" },
+      { title: "Sign in. VERATIS" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),

@@ -2,7 +2,7 @@ import logoUrl from "@/assets/veratis-logo.png";
 
 type Props = {
   className?: string;
-  /** Pixel height — width auto-scales by image aspect ratio. */
+  /** Pixel height. width auto-scales by image aspect ratio. */
   height?: number;
   alt?: string;
 };

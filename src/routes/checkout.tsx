@@ -18,7 +18,7 @@ type PaymentMethod = "btc" | "venmo";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Checkout — VERATIS" },
+      { title: "Checkout. VERATIS" },
       { name: "description", content: "Secure Bitcoin checkout for laboratory-verified research compounds." },
       { name: "robots", content: "noindex" },
     ],
@@ -278,12 +278,12 @@ function CheckoutPage() {
 
   // Show the pre-reserved order number (same value the server will use on
   // submit) so the Venmo note / BTC reference matches the receipt.
-  const orderReference = reservedOrderNumber ?? "—";
+  const orderReference = reservedOrderNumber ?? ".";
 
   if (items.length === 0) {
     return (
       <Layout hideFooter>
-        <PageHeader eyebrow="— Checkout" title="Your cart is empty" />
+        <PageHeader eyebrow="Checkout" title="Your cart is empty" />
         <section className="px-6 lg:px-12 py-20 max-w-3xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">Add specimens from the catalog before proceeding to checkout.</p>
           <Link
@@ -374,7 +374,7 @@ function CheckoutPage() {
 
   return (
     <Layout hideFooter>
-      <PageHeader eyebrow="— Checkout" title="Complete your order" />
+      <PageHeader eyebrow="Checkout" title="Complete your order" />
 
       <section className="px-5 sm:px-6 lg:px-12 py-10 sm:py-12 max-w-6xl mx-auto grid lg:grid-cols-[minmax(0,1fr)_380px] gap-10 lg:gap-12">
         {/* LEFT: form */}
@@ -427,7 +427,7 @@ function CheckoutPage() {
               </div>
 
               <div className="mt-6 pt-6 border-t border-border">
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">— Dispatch method</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-3">Dispatch method</p>
                 <div className="p-4 border border-ink rounded-[3px] bg-mist/50">
                   <div className="flex items-center justify-between">
                     <p className="text-[12.5px] text-ink">Standard cold-chain</p>
@@ -440,11 +440,11 @@ function CheckoutPage() {
                   </p>
                   {shippingCost === 0 ? (
                     <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-emerald-700 mt-2">
-                      — Free shipping unlocked (orders over ${FREE_SHIPPING_THRESHOLD})
+                     . Free shipping unlocked (orders over ${FREE_SHIPPING_THRESHOLD})
                     </p>
                   ) : (
                     <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55 mt-2">
-                      — Free over ${FREE_SHIPPING_THRESHOLD} · add ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(0)} to qualify
+                     . Free over ${FREE_SHIPPING_THRESHOLD} · add ${(FREE_SHIPPING_THRESHOLD - subtotal).toFixed(0)} to qualify
                     </p>
                   )}
                 </div>
@@ -461,7 +461,7 @@ function CheckoutPage() {
             <div className="mb-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 px-4 py-3 border border-border rounded-[3px] bg-mist/30">
               <div className="min-w-0">
                 <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">
-                  — Order # (include in payment)
+                 . Order # (include in payment)
                 </p>
                 <p className="mt-0.5 font-mono text-[13px] text-ink tabular-nums">{orderReference}</p>
               </div>
@@ -570,7 +570,7 @@ function CheckoutPage() {
                   </p>
 
                   <div>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Scan or copy BTC address</p>
+                    <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">Scan or copy BTC address</p>
                      <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 min-w-0">
                        <div className="mx-auto sm:mx-0 shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
                          <img
@@ -603,7 +603,7 @@ function CheckoutPage() {
 
                   {btcAmount && (
                     <div>
-                      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Exact amount</p>
+                      <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">Exact amount</p>
                       <button
                         type="button"
                         onClick={() => copyVal("amt", btcAmount)}
@@ -619,7 +619,7 @@ function CheckoutPage() {
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-foreground/55">
                     <span>
-                      — {btcRate
+                     . {btcRate
                         ? `Rate: 1 BTC = $${btcRate.toLocaleString(undefined, { maximumFractionDigits: 2 })} USD · Coinbase spot`
                         : "Fetching live BTC/USD rate from Coinbase…"}
                       {rateFetchedAt && btcRate ? ` · ${new Date(rateFetchedAt).toLocaleTimeString()}` : ""}
@@ -665,7 +665,7 @@ function CheckoutPage() {
                   className="mt-0.5 h-4 w-4 rounded border-amber-700/40 text-ink focus:ring-ink/30 accent-ink"
                 />
                 <span className="text-[12.5px] text-foreground/85 leading-relaxed">
-                  <span className="block text-[10.5px] font-mono uppercase tracking-[0.18em] text-amber-900 mb-1">— Required research-use affirmation</span>
+                  <span className="block text-[10.5px] font-mono uppercase tracking-[0.18em] text-amber-900 mb-1">Required research-use affirmation</span>
                   I confirm these products are purchased strictly for laboratory research use, will not be administered to humans or animals, and that I am a qualified researcher or affiliated with a research institution.
                 </span>
               </label>
@@ -705,7 +705,7 @@ function CheckoutPage() {
                     title={!researchAffirmed ? "Confirm the research-use affirmation first" : undefined}
                     className="inline-flex items-center justify-center gap-2 h-12 sm:h-11 w-full sm:w-auto px-6 bg-ink text-background rounded-[3px] text-[11px] font-medium uppercase tracking-[0.18em] hover:bg-ink/90 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-ink"
                   >
-                    <Upload size={14} /> I've sent payment — upload proof
+                    <Upload size={14} /> I've sent payment. upload proof
                   </button>
                 ) : (
                   <button onClick={placeOrder} disabled={submitting || !researchAffirmed}
@@ -722,7 +722,7 @@ function CheckoutPage() {
         {/* RIGHT: summary */}
         <aside className="lg:sticky lg:top-24 self-start border border-border rounded-[3px] bg-mist/30 min-w-0 w-full">
           <div className="px-5 py-4 border-b border-border">
-            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— Order summary</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">Order summary</p>
           </div>
           <ul className="divide-y divide-border">
             {items.map((i) => (
@@ -755,7 +755,7 @@ function CheckoutPage() {
             <Row label="Cold-chain shipping" value={shippingCost === 0 ? "Free" : `$${shippingCost}`} />
             {shippingCost > 0 && (
               <p className="text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/55">
-                — Free over ${FREE_SHIPPING_THRESHOLD}
+               . Free over ${FREE_SHIPPING_THRESHOLD}
               </p>
             )}
             {promo && discountAmount > 0 && (
@@ -781,7 +781,7 @@ function CheckoutPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 backdrop-blur-sm" onClick={() => !uploading && setProofOpen(false)}>
           <div className="w-full max-w-lg bg-background border border-border rounded-[4px] shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">— Proof of payment</p>
+              <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/65">Proof of payment</p>
               <button onClick={() => !uploading && setProofOpen(false)} className="text-foreground/55 hover:text-ink" aria-label="Close">
                 <X size={16} />
               </button>
@@ -794,12 +794,12 @@ function CheckoutPage() {
               </p>
 
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Screenshot</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">Screenshot</p>
                 {proofPreview ? (
                   <div className="relative border border-border rounded-[3px] overflow-hidden bg-mist/30">
                     {proofFile?.type === "application/pdf" ? (
                       <div className="w-full h-48 flex items-center justify-center text-[11px] font-mono uppercase tracking-[0.18em] text-foreground/65">
-                        — PDF attached · {proofFile.name}
+                       . PDF attached · {proofFile.name}
                       </div>
                     ) : (
                       <img src={proofPreview} alt="Proof preview" className="w-full max-h-64 object-contain" />
@@ -828,7 +828,7 @@ function CheckoutPage() {
               </div>
 
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Notes (optional)</p>
+                <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">Notes (optional)</p>
                 <textarea
                   value={txId}
                   onChange={(e) => setTxId(e.target.value)}
@@ -837,7 +837,7 @@ function CheckoutPage() {
                   className={`${inp} min-h-[64px] resize-y font-mono text-[12px]`}
                 />
                 <p className="mt-1.5 text-[10.5px] font-mono uppercase tracking-[0.16em] text-foreground/45">
-                  — Screenshot or notes required (one or both)
+                 . Screenshot or notes required (one or both)
                 </p>
               </div>
 
@@ -874,7 +874,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   return (
     <div className="border border-border rounded-[3px] bg-background">
       <div className="px-5 py-4 border-b border-border">
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">— {title}</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55">{title}</p>
       </div>
       <div className="px-5 py-5 space-y-4">{children}</div>
     </div>
@@ -893,7 +893,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
 function Review({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="py-3 border-b border-border last:border-b-0 grid grid-cols-1 sm:grid-cols-[120px_minmax(0,1fr)] gap-2 sm:gap-4 text-[12.5px]">
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-foreground/55">— {label}</p>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] sm:tracking-[0.22em] text-foreground/55">{label}</p>
       <div className="text-ink space-y-0.5 min-w-0">{children}</div>
     </div>
   );
@@ -1015,7 +1015,7 @@ function VenmoPaymentBlock({
 
       {/* Handle */}
       <div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Venmo handle</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">Venmo handle</p>
         <button
           type="button"
           onClick={() => onCopy("venmoHandle", `@${VENMO_HANDLE}`)}
@@ -1030,7 +1030,7 @@ function VenmoPaymentBlock({
 
       {/* Amount */}
       <div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Exact amount (USD)</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">Exact amount (USD)</p>
         <button
           type="button"
           onClick={() => onCopy("venmoAmt", amountStr)}
@@ -1045,7 +1045,7 @@ function VenmoPaymentBlock({
 
       {/* Order # */}
       <div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">— Order # (paste into Venmo note)</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-1.5">Order # (paste into Venmo note)</p>
         <button
           type="button"
           onClick={() => onCopy("venmoOrder", orderNumber)}
@@ -1060,7 +1060,7 @@ function VenmoPaymentBlock({
 
       {/* QR */}
       <div>
-        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2 text-center sm:text-left">— Scan Venmo QR code</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2 text-center sm:text-left">Scan Venmo QR code</p>
         <div className="flex flex-col items-center sm:flex-row sm:items-center gap-3 min-w-0">
           <div className="shrink-0 p-2.5 bg-white border border-border rounded-[3px]">
             <QRCodeSVG

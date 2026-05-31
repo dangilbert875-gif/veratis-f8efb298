@@ -5,9 +5,9 @@ import lab from "@/assets/lab.jpg";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — VERATIS" },
+      { title: "About. VERATIS" },
       { name: "description", content: "VERATIS manufactures research-grade peptides with verified purity and full documentation." },
-      { property: "og:title", content: "About — VERATIS" },
+      { property: "og:title", content: "About. VERATIS" },
       { property: "og:description", content: "Founded by analytical chemists. Every lot is third-party HPLC and mass-spec verified before release." },
       { property: "og:url", content: "https://veratisbio.com/about" },
     ],
@@ -22,15 +22,15 @@ function About() {
       <PageHeader
         eyebrow="About"
         title="A laboratory, not a marketplace."
-        lead="VERATIS was founded by chemists who were tired of suppliers shipping mystery vials. We do one thing — and we document it."
+        lead="VERATIS was founded by chemists who were tired of suppliers shipping mystery vials. We do one thing. and we document it."
       />
       <section className="mx-auto max-w-5xl px-6 py-20 grid md:grid-cols-5 gap-12">
         <div className="md:col-span-3">
           <p className="text-lg leading-relaxed text-foreground/85">
-            Every peptide we sell is synthesized in cGMP facilities, characterized by mass spectrometry, and assayed for purity by HPLC. We then send each lot to an independent ISO 17025 accredited laboratory for an additional verification — and we publish the result.
+            Every peptide we sell is synthesized in cGMP facilities, characterized by mass spectrometry, and assayed for purity by HPLC. We then send each lot to an independent ISO 17025 accredited laboratory for an additional verification. and we publish the result.
           </p>
           <p className="mt-5 text-muted-foreground leading-relaxed">
-            That extra step is the whole company. The COA you download is tied to the exact vial you receive — never a representative sample, never a recycled certificate.
+            That extra step is the whole company. The COA you download is tied to the exact vial you receive. never a representative sample, never a recycled certificate.
           </p>
           <p className="mt-5 text-muted-foreground leading-relaxed">
             We ship from a temperature-controlled facility in the United States, with insulation and cold packs sized for the transit window. Most orders leave the bench within 48 hours.

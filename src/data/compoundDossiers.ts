@@ -1,5 +1,5 @@
 /**
- * Compound dossiers — long-form, research-only educational content surfaced
+ * Compound dossiers. long-form, research-only educational content surfaced
  * on every product detail page. Keyed by compound family so multiple SKUs
  * of the same molecule (e.g. retatrutide 12/30/60 mg) share one dossier.
  *
@@ -39,7 +39,7 @@ export type Dossier = {
   storage: string;
   related: CompoundKey[];
   faq: { q: string; a: string }[];
-  /** Long-tail SEO terms — used as keywords meta, not as visible copy. */
+  /** Long-tail SEO terms. used as keywords meta, not as visible copy. */
   keywords: string[];
 };
 
@@ -60,7 +60,7 @@ export const dossiers: Record<CompoundKey, Dossier> = {
     sequenceNote: "Gly-Glu-Pro-Pro-Pro-Gly-Lys-Pro-Ala-Asp-Asp-Ala-Gly-Leu-Val",
     overview: [
       "BPC-157 is a stable 15-residue synthetic pentadecapeptide derived from a sequence first identified in human gastric juice. The acronym stands for Body Protection Compound, the name given to the parent protein from which the fragment was originally characterized in the early 1990s.",
-      "Unlike many peptides studied in research models, BPC-157 is notably stable in aqueous conditions and resistant to gastric enzymatic degradation in vitro — a property that has shaped much of the experimental literature around it.",
+      "Unlike many peptides studied in research models, BPC-157 is notably stable in aqueous conditions and resistant to gastric enzymatic degradation in vitro. a property that has shaped much of the experimental literature around it.",
     ],
     origin:
       "BPC-157 was first described by a group at the University of Zagreb investigating cytoprotective fractions of gastric juice. The pentadecapeptide fragment was synthesized and used as a research tool to probe tissue-protective pathways. It has no endogenous receptor confirmed in the literature; mechanistic work remains active.",
@@ -316,7 +316,7 @@ export const dossiers: Record<CompoundKey, Dossier> = {
   "hcg": {
     key: "hcg",
     displayName: "HCG (human chorionic gonadotropin)",
-    classification: "Glycoprotein hormone — α/β heterodimer",
+    classification: "Glycoprotein hormone. α/β heterodimer",
     overview: [
       "Human chorionic gonadotropin is a heterodimeric glycoprotein hormone composed of an α-subunit shared with other pituitary glycoproteins (LH, FSH, TSH) and a β-subunit specific to HCG. It is studied extensively in endocrine and reproductive biology research.",
       "Because HCG is a glycoprotein rather than a short synthetic peptide, the dosage unit on the vial is reported in International Units (IU) rather than milligrams.",
@@ -443,7 +443,7 @@ export const dossiers: Record<CompoundKey, Dossier> = {
   "retatrutide": {
     key: "retatrutide",
     displayName: "Retatrutide",
-    classification: "Triple agonist peptide — GLP-1 / GIP / glucagon receptors",
+    classification: "Triple agonist peptide. GLP-1 / GIP / glucagon receptors",
     overview: [
       "Retatrutide is an investigational synthetic peptide designed as a single-molecule agonist at three incretin and metabolic receptors: GLP-1, GIP, and glucagon. It belongs to a generation of multi-receptor metabolic peptides developed after semaglutide and tirzepatide.",
     ],
@@ -512,7 +512,7 @@ export const dossiers: Record<CompoundKey, Dossier> = {
   "tirzepatide": {
     key: "tirzepatide",
     displayName: "Tirzepatide",
-    classification: "Dual agonist peptide — GLP-1 / GIP receptors",
+    classification: "Dual agonist peptide. GLP-1 / GIP receptors",
     overview: [
       "Tirzepatide is a synthetic peptide designed as a dual agonist at the GLP-1 and GIP receptors. It established the dual-incretin scaffold that retatrutide later extended with glucagon-receptor activity.",
     ],
@@ -561,7 +561,7 @@ export function dossierForSlug(slug: string): Dossier | undefined {
   return undefined;
 }
 
-/** Find product slugs that share a compound key — used for "Related research". */
+/** Find product slugs that share a compound key. used for "Related research". */
 export function siblingSlugsForKey(
   key: CompoundKey,
   allSlugs: string[],

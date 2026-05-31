@@ -23,13 +23,13 @@ import {
 export const Route = createFileRoute("/how-to-pay")({
   head: () => ({
     meta: [
-      { title: "How To Pay — VERATIS" },
+      { title: "How To Pay. VERATIS" },
       {
         name: "description",
         content:
           "VERATIS currently accepts Bitcoin (BTC) for all orders. A clear, three-step payment process with full transparency and secure verification.",
       },
-      { property: "og:title", content: "How To Pay — VERATIS" },
+      { property: "og:title", content: "How To Pay. VERATIS" },
       {
         property: "og:description",
         content:
@@ -97,7 +97,7 @@ function HowToPayPage() {
               title: "Create your order",
               points: [
                 "Add products to your cart and proceed to checkout.",
-                "Enter shipping details — packaging is plain and unmarked.",
+                "Enter shipping details. packaging is plain and unmarked.",
                 "Select Bitcoin (BTC) as your payment method to receive an order summary and a unique payment reference.",
               ],
             },
@@ -222,7 +222,7 @@ function HowToPayPage() {
             </h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
               You don't need prior experience with cryptocurrency. The process
-              is the same as sending money from one app to another — open an
+              is the same as sending money from one app to another. open an
               account, fund it, and send the amount shown at checkout to the
               address we provide.
             </p>
@@ -318,7 +318,7 @@ const faqs: [string, string][] = [
   ],
   [
     "What happens if I send the wrong amount?",
-    "If the amount received is below the order total, we'll email you with the remaining balance and a fresh confirmation window. If it's above, the surplus is automatically credited toward your next order or refunded on request — your choice.",
+    "If the amount received is below the order total, we'll email you with the remaining balance and a fresh confirmation window. If it's above, the surplus is automatically credited toward your next order or refunded on request. your choice.",
   ],
   [
     "When will my order ship?",

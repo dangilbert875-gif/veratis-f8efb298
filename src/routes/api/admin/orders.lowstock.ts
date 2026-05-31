@@ -7,7 +7,7 @@ export const Route = createFileRoute("/api/admin/orders/lowstock")({
       GET: async ({ request }) => {
         const unauthorized = checkAdminApiKey(request);
         if (unauthorized) return unauthorized;
-        // Fetch published products and filter in JS — Postgres doesn't support
+        // Fetch published products and filter in JS. Postgres doesn't support
         // column-vs-column comparison directly through PostgREST filters.
         const { data, error } = await supabaseAdmin
           .from("products")

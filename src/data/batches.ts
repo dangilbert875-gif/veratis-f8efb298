@@ -66,7 +66,7 @@ export const batches: Batch[] = products.map((p, i) => {
     size: p.size,
     purity,
     identity: "Confirmed",
-    endotoxin: isWaterOrAcid ? "—" : "< 0.5 EU/mg",
+    endotoxin: isWaterOrAcid ? "." : "< 0.5 EU/mg",
     water: "1.8%",
     appearance,
     testedOn: tested,

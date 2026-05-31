@@ -45,7 +45,7 @@ const STATUS_LABEL: Record<LotStatus, string> = {
   retest_required: "Retest required",
 };
 
-// muted, premium tones — green / amber / gray / red
+// muted, premium tones. green / amber / gray / red
 const STATUS_TONE: Record<LotStatus, "ok" | "warn" | "neutral" | "bad"> = {
   released: "ok",
   awaiting_coa: "warn",
@@ -133,7 +133,7 @@ export function ArchivePanel() {
       missingCoa,
       pending,
       missingProduct,
-      avgPurity: purityCount ? (puritySum / purityCount).toFixed(2) : "—",
+      avgPurity: purityCount ? (puritySum / purityCount).toFixed(2) : ".",
       lastUpdated: lastUpdated ? new Date(lastUpdated) : null,
     };
   }, [rows]);
@@ -232,7 +232,7 @@ export function ArchivePanel() {
 
   const bulkRelease = async () => {
     if (!selected.size) return;
-    if (!confirm(`Mark ${selected.size} lot${selected.size === 1 ? "" : "s"} as Released?\n\nLots without a COA will still be released — verify each one before publishing.`)) return;
+    if (!confirm(`Mark ${selected.size} lot${selected.size === 1 ? "" : "s"} as Released?\n\nLots without a COA will still be released. verify each one before publishing.`)) return;
     for (const id of selected) {
       try { await changeStatus({ data: { id, status: "released" } }); } catch {}
     }
@@ -278,7 +278,7 @@ export function ArchivePanel() {
   return (
     <div className="space-y-5">
       {/* Health strip */}
-      <Card title="Archive health" hint={health.lastUpdated ? `Last update ${health.lastUpdated.toLocaleString()}` : "—"}>
+      <Card title="Archive health" hint={health.lastUpdated ? `Last update ${health.lastUpdated.toLocaleString()}` : "."}>
         <div className="grid grid-cols-2 md:grid-cols-6 divide-x divide-ink/10 border-t border-ink/10">
           <HealthCell label="Total lots" value={health.total} />
           <HealthCell label="Released" value={health.released} />
@@ -403,15 +403,15 @@ export function ArchivePanel() {
                         <button className="hover:underline" onClick={() => setEditing(r)}>{r.lot_number}</button>
                       </td>
                       <td className="px-3 py-3">
-                        {r.products?.name ?? <span className="text-foreground/40">— Unlinked —</span>}
+                        {r.products?.name ?? <span className="text-foreground/40">Unlinked.</span>}
                       </td>
-                      <td className="px-3 py-3 text-right tabular-nums">{r.purity ?? "—"}</td>
+                      <td className="px-3 py-3 text-right tabular-nums">{r.purity ?? "."}</td>
                       <td className="px-3 py-3">
                         {r.coa_url
                           ? <StatusPill tone="ok">On file</StatusPill>
                           : <StatusPill tone="warn">Missing</StatusPill>}
                       </td>
-                      <td className="px-3 py-3 text-foreground/70">{r.lab_partner ?? r.tested_by ?? "—"}</td>
+                      <td className="px-3 py-3 text-foreground/70">{r.lab_partner ?? r.tested_by ?? "."}</td>
                       <td className="px-3 py-3 text-foreground/70">{formatDate(r.release_date)}</td>
                       <td className="px-3 py-3">
                         <StatusPill tone={STATUS_TONE[s]}>{STATUS_LABEL[s]}</StatusPill>
@@ -613,7 +613,7 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
               {lot ? "Edit lot" : "New verification lot"}
             </div>
             <h2 className="mt-1 text-[16px] font-medium tracking-tight font-mono">
-              {form.lot_number || "—"}
+              {form.lot_number || "."}
             </h2>
           </div>
           <div className="flex items-center gap-2">
@@ -640,7 +640,7 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
                   value={form.product_id ?? ""}
                   onChange={(e) => set("product_id", e.target.value || null)}
                 >
-                  <option value="">— Unassigned —</option>
+                  <option value="">Unassigned.</option>
                   {products.map((p) => (
                     <option key={p.id} value={p.id}>{p.name}</option>
                   ))}
@@ -683,7 +683,7 @@ function LotDrawer({ lot, onClose, onSaved }: { lot: Lot | null; onClose: () => 
                 </div>
               ) : (
                 <div className="text-[11px] tracking-[0.16em] uppercase text-foreground/55">
-                  Visibility follows status — toggle a flag to override.
+                  Visibility follows status. toggle a flag to override.
                 </div>
               )}
               <Toggle

@@ -11,18 +11,18 @@ export function mapDbLot(row: any): Batch {
   })();
   return {
     lot: row.lot_number ?? "",
-    product: row.products?.name ?? "—",
+    product: row.products?.name ?? ".",
     slug: row.products?.slug ?? "",
     size: "",
     purity: purityNum,
     identity: "Confirmed",
-    endotoxin: row.endotoxin ?? "—",
-    water: row.water_content ?? "—",
-    appearance: "—",
+    endotoxin: row.endotoxin ?? ".",
+    water: row.water_content ?? ".",
+    appearance: ".",
     testedOn: row.release_date ?? "",
     expiresOn: row.best_before ?? "",
-    lab: row.lab_partner ?? "—",
-    method: row.identity_method ?? "—",
+    lab: row.lab_partner ?? ".",
+    method: row.identity_method ?? ".",
     released: true,
     notes: undefined,
     coaUrl: row.coa_url ?? undefined,
@@ -38,7 +38,7 @@ type State = {
 /**
  * Public verification-archive hook. Fetches released + publicly visible
  * lots, falls back to the bundled static archive only on backend error
- * (never when the backend returns an empty published set — empty means
+ * (never when the backend returns an empty published set. empty means
  * "nothing is publicly released right now").
  */
 export function usePublicLots(): State {

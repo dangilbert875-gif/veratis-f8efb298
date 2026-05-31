@@ -1,7 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 
 /**
- * Referenced Sources — the canonical editorial module for surfacing
+ * Referenced Sources. the canonical editorial module for surfacing
  * external scientific references across the Veratis archive.
  *
  * Used on compound dossiers, education articles, and methodology pages.
@@ -47,7 +47,7 @@ const KIND_PROVIDER: Partial<Record<SourceKind, string>> = {
 };
 
 /**
- * Quiet CTA copy by kind — replaces generic "View on ..." button language.
+ * Quiet CTA copy by kind. replaces generic "View on ..." button language.
  */
 function ctaFor(kind: SourceKind): string {
   switch (kind) {

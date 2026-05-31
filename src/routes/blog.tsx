@@ -10,9 +10,9 @@ import { PageDisabled } from "@/components/site/PageDisabled";
 export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
-      { title: "Reference Library — VERATIS" },
+      { title: "Reference Library. VERATIS" },
       { name: "description", content: "A working reference library for peptide handling, HPLC analysis, lyophilization, cold-chain storage, endotoxin standards, mass spectrometry, and laboratory protocol." },
-      { property: "og:title", content: "Reference Library — VERATIS" },
+      { property: "og:title", content: "Reference Library. VERATIS" },
       { property: "og:description", content: "Long-form notes on HPLC, mass spectrometry, lyophilization, cold-chain storage, and verification systems." },
       { property: "og:url", content: "https://veratisbio.com/blog" },
     ],
@@ -101,7 +101,7 @@ function Blog() {
       <section className="mx-auto max-w-7xl px-6 py-20">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
           <div>
-            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">— Catalogue</p>
+            <p className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-foreground/55 mb-2">Catalogue</p>
             <h2 className="font-display text-3xl md:text-[2.25rem] leading-[1.1] tracking-[-0.02em] text-ink">All entries</h2>
           </div>
           <label className="relative w-full md:w-80">

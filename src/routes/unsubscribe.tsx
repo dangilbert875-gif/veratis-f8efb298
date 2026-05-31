@@ -8,7 +8,7 @@ export const Route = createFileRoute("/unsubscribe")({
   }),
   head: () => ({
     meta: [
-      { title: "Unsubscribe — VERATIS" },
+      { title: "Unsubscribe. VERATIS" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -65,7 +65,7 @@ function UnsubscribePage() {
 
   return (
     <Layout>
-      <PageHeader eyebrow="— Email preferences" title="Unsubscribe" />
+      <PageHeader eyebrow="Email preferences" title="Unsubscribe" />
       <section className="px-6 lg:px-12 py-16 max-w-xl mx-auto">
         <div className="border border-border rounded-[3px] bg-background p-8 space-y-5 text-center">
           {state.kind === "loading" && (
