@@ -56,17 +56,6 @@ function Home() {
     .filter(Boolean) as typeof products;
   const featured = featuredProducts.length === 4 ? featuredProducts : products.slice(0, 4);
 
-  // Editorial product identifier: colored marque + identity word
-  const identifierMap: Record<string, { word: string; hex: string }> = {
-    "bpc-157-12mg": { word: "REPAIR", hex: "#3f4a2e" },          // green
-    "tb-500-fragment-12mg": { word: "RESTORE", hex: "#2d5a5a" }, // teal
-    "ghk-cu-100mg": { word: "REGENERATE", hex: "#b87333" },      // copper
-    "mots-c-10mg": { word: "ASCENT", hex: "#1f2d4a" },           // navy
-    "ipamorelin-5mg": { word: "SHIFT", hex: "#9a6b4a" },         // cognac
-    "tesamorelin-5mg": { word: "VECTOR", hex: "#6b6b3f" },       // olive
-    "melanotan-ii-10mg": { word: "ECLIPSE", hex: "#5a4a35" },    // bronze
-    "epitalon-50mg": { word: "REJUVENATE", hex: "#3a5878" },     // blue
-  };
 
   return (
     <Layout>
