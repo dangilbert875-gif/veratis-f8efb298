@@ -245,7 +245,7 @@ function Home() {
       {/* SECTION 4 · FEATURED PRODUCTS */}
       <section className="bg-background">
         <div className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div className="max-w-2xl">
               <p className="eyebrow">The Library</p>
               <h2 className="mt-5 font-display text-4xl md:text-5xl lg:text-6xl text-ink leading-[1.04] tracking-[-0.02em] font-light [text-wrap:balance]">
@@ -260,28 +260,10 @@ function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
-            {featured.map((p) => {
-              const id = identifierMap[p.slug] ?? { word: "RESEARCH", hex: "#8a6b3d" };
-              return (
-                <div key={p.slug} className="group">
-                  {/* Editorial identifier strip above the card */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <span
-                      className="h-1.5 w-1.5 rounded-full"
-                      style={{ backgroundColor: id.hex }}
-                    />
-                    <span
-                      className="text-[10px] tracking-[0.28em] uppercase font-medium"
-                      style={{ color: id.hex }}
-                    >
-                      {id.word}
-                    </span>
-                  </div>
-                  <ProductCard p={p} showQuantity showViewCoa stockState="in_stock" />
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+            {featured.map((p) => (
+              <ProductCard key={p.slug} p={p} showQuantity showViewCoa stockState="in_stock" />
+            ))}
           </div>
         </div>
       </section>
